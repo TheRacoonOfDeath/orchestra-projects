@@ -103,6 +103,12 @@ def text(page):
 
 
 def manage_url(project, tab="overview"):
+    """A project on the projects page."""
+    return f"{DASHBOARD}&orchestra_project={project}&orchestra_tab={tab}"
+
+
+def admin_url(project, tab="overview"):
+    """A project in wp-admin, for administrators."""
     return f"/wp-admin/admin.php?page=orchestra-projects&project={project}&tab={tab}"
 
 
@@ -125,27 +131,28 @@ def project_nonce(session, project, op):
 def act(session, project, op, **fields):
     """Sends a form of the project screens. Returns the page shown after the redirect."""
     data = {"action": "orchestra_projects", "project": str(project), "op": op,
-            "_wpnonce": project_nonce(session, project, op)}
+            "_wpnonce": project_nonce(session, project, op),
+            "redirect_to": manage_url(project, TAB_OF.get(op, "program"))}
     data.update({k: (v if isinstance(v, list) else str(v)) for k, v in fields.items()})
     return session.post("/wp-admin/admin-post.php", data)
 
 
 def create_project(session, title, start, end, concert, conductors=(), organizers=()):
-    _, page = session.get("/wp-admin/post-new.php?post_type=orchestra_project")
-    post_id = field(page, "post_ID")
+    """Creates a project with the form on the projects page."""
+    _, page = session.get(f"{DASHBOARD}&orchestra_project=new")
     data = {
-        "action": "editpost", "post_ID": post_id, "post_type": "orchestra_project",
-        "_wpnonce": field(page, "_wpnonce"), "user_ID": field(page, "user_ID"),
-        "original_post_status": field(page, "original_post_status") or "auto-draft",
-        "orchestra_projects_project_nonce": field(page, "orchestra_projects_project_nonce"),
-        "post_title": title, "content": f"Description of {title}", "publish": "Publish",
+        "action": "orchestra_projects", "op": "save", "project": "0",
+        "_wpnonce": field(page, "_wpnonce") or "missing", "redirect_to": field(page, "redirect_to") or DASHBOARD,
+        "orchestra_projects_title": title, "orchestra_projects_description": f"Description of {title}",
         "orchestra_projects_start_date": start, "orchestra_projects_end_date": end,
         "orchestra_projects_concert_date": concert,
         "orchestra_projects_staff[conductor][]": [str(i) for i in conductors],
         "orchestra_projects_staff[organizer][]": [str(i) for i in organizers],
     }
-    _, page = session.post("/wp-admin/post.php", data)
-    return int(post_id), page
+    _, page = session.post("/wp-admin/admin-post.php", data)
+    project_id = wp_eval(f'echo (new WP_Query(["post_type" => "orchestra_project", "title" => "{title}",'
+                         ' "fields" => "ids", "orderby" => "ID"]))->posts[0] ?? 0;')
+    return int(project_id or 0), page
 
 
 def projects_api(code):
@@ -182,14 +189,18 @@ def response_nonce(page, participation_id):
 def respond(session, participation_id, response, nonce_page):
     return session.post("/wp-admin/admin-post.php", {
         "action": "orchestra_projects_respond", "participation": str(participation_id), "response": response,
-        "_wpnonce": response_nonce(nonce_page, participation_id) or "missing", "_wp_http_referer": DASHBOARD,
+        "_wpnonce": response_nonce(nonce_page, participation_id) or "missing", "redirect_to": DASHBOARD,
     })
 
 
 ids = {login: user_id(login) for login in ["admin", "organizer", "conductor", "mia", "max", "mo", "ina", "sam"]}
 PIRATES, DANCE, MARCH = SEED["pirates"], SEED["dance"], SEED["march"]
 HORN1, HORN2, VIOLIN1 = SEED["pirates:Horn 1"], SEED["pirates:Horn 2"], SEED["dance:Violin 1"]
-DASHBOARD = f"/?page_id={SEED['page']}"
+PAGES = wp_json(
+    'echo json_encode(array_combine($t = ["orchestra_projects", "orchestra_email", "orchestra_members", "orchestra_portal"],'
+    ' array_map(fn ($s) => Orchestra\\Core\\Ui\\Pages::url($s), $t)));'
+)
+DASHBOARD, EMAIL = PAGES["orchestra_projects"], PAGES["orchestra_email"]
 
 admin = Session("admin", "admin")
 organizer = Session("organizer")
@@ -210,10 +221,15 @@ check({"orchestra_projects_project_manage", "orchestra_projects_participation_ma
       and "orchestra_projects_assignment_manage" not in caps[2], "organizers manage projects and play")
 
 # --- Creating projects ----------------------------------------------------------------------
-status, _ = conductor.get("/wp-admin/post-new.php?post_type=orchestra_project")
-check(status == 403, "conductors cannot create projects")
-status, _ = mia.get("/wp-admin/admin.php?page=orchestra-projects")
-check(status == 403, "members cannot open the project screens")
+_, page = conductor.get(f"{DASHBOARD}&orchestra_project=new")
+check("orchestra_projects_title" not in page and "New project" not in page, "conductors cannot create projects")
+status, _ = conductor.post("/wp-admin/admin-post.php", {"action": "orchestra_projects", "op": "save", "project": "0",
+                                                       "orchestra_projects_title": "X", "_wpnonce": "x"})
+check(status == 403, "conductors cannot save new projects")
+_, page = mia.get("/wp-admin/admin.php?page=orchestra-projects")
+check("orchestra--admin" not in page and "Hello Mia" in page, "members are sent from wp-admin to the Orchestra pages")
+_, page = conductor.get("/wp-admin/admin.php?page=orchestra-projects")
+check("orchestra--admin" not in page, "conductors use the projects page instead of wp-admin")
 
 spring, page = create_project(organizer, "Spring Concert 2027", "2027-03-01", "2027-05-10", "2027-05-09",
                               conductors=[ids["conductor"], ids["mia"]], organizers=[ids["organizer"]])
@@ -231,12 +247,26 @@ bad, page = create_project(organizer, "Broken dates", "2027-05-10", "2027-03-01"
 check("The end date must not be before the start date." in text(page) and "Concert date is not a valid date." in text(page),
       "invalid dates are rejected with messages")
 
-_, page = organizer.get("/wp-admin/admin.php?page=orchestra-projects")
-check("Spring Concert 2027" in page and "Add Project" in page, "organizers see the project list")
-_, page = conductor.get("/wp-admin/admin.php?page=orchestra-projects")
-check("Spring Concert 2027" in page and "Add Project" not in page, "conductors see the project list")
-status, _ = conductor.get(manage_url(999999))
-check(status == 404, "unknown projects are not found")
+_, page = organizer.get(DASHBOARD)
+check("Spring Concert 2027" in page and "New project" in page, "organizers see all projects and can create them")
+_, page = conductor.get(DASHBOARD)
+check("Spring Concert 2027" in page and "New project" not in page, "conductors see all projects")
+_, page = conductor.get(manage_url(999999))
+check("does not exist" in page, "unknown projects are not found")
+_, page = admin.get("/wp-admin/admin.php?page=orchestra-projects")
+check("Spring Concert 2027" in page and "orchestra--admin" in page, "administrators see the projects in wp-admin")
+_, page = organizer.get(f"{DASHBOARD}&orchestra_project={spring}&orchestra_edit=1")
+form_nonce, form_redirect = field(page, "_wpnonce"), field(page, "redirect_to")
+organizer.post("/wp-admin/admin-post.php", {
+    "action": "orchestra_projects", "op": "save", "project": str(spring), "_wpnonce": form_nonce or "x",
+    "redirect_to": form_redirect or DASHBOARD, "orchestra_projects_title": "Spring Concert 2027",
+    "orchestra_projects_description": "Description of Spring Concert 2027", "orchestra_projects_start_date": "2027-03-01",
+    "orchestra_projects_end_date": "2027-05-10", "orchestra_projects_concert_date": "2027-05-09",
+    "orchestra_projects_staff[conductor][]": [str(ids["conductor"])],
+    "orchestra_projects_staff[organizer][]": [str(ids["organizer"])],
+})
+check(projects_api(f'echo json_encode($p->project({spring})->description);') == "Description of Spring Concert 2027",
+      "organizers edit projects on the projects page")
 
 _, page = mia.get(DASHBOARD)
 check("Spring Concert 2027" not in page, "draft projects are hidden from members")
@@ -297,7 +327,7 @@ _, page = organizer.get(DASHBOARD)
 respond(organizer, participation_of(spring, "organizer")["id"], "accepted", page)
 check(participation_of(spring, "organizer")["status"] == "accepted", "organizers respond for themselves")
 _, page = mia.get(DASHBOARD)
-check("Accepted" in page and "Your decision is final" not in page, "no response buttons after responding")
+check("Accepted" in page and response_nonce(page, mia_participation) is None, "no response buttons after responding")
 
 _, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}")
 plain = text(page)
@@ -341,7 +371,7 @@ check("Horn 1" in page and "Mia" in page and "data-current" not in page.split("H
 # --- Sheet music download -------------------------------------------------------------------
 _, page = mia.get(DASHBOARD)
 plain = text(page)
-check("Your parts" in plain and "Pirates of the Caribbean: Horn 1" in plain and "Lord of the Dance: Violin 1" in plain,
+check("Your parts" in plain and "Pirates of the Caribbean Horn 1" in plain and "Lord of the Dance Violin 1" in plain,
       "members see their parts on the dashboard")
 match = re.search(r'href="([^"]*orchestra_library_download_bundle[^"]*)"', page)
 check(match is not None, "the dashboard offers the sheet music download")
@@ -369,7 +399,7 @@ act(organizer, spring, "participation", participation=participation_of(spring, "
 wp("user", "create", "nia", "nia@example.com", "--role=orchestra_member", "--user_pass=pass", "--display_name=Nia")
 check(participation_of(spring, "nia") is not None, "new members are asked to respond to open projects")
 wp_eval(f'update_user_meta({ids["ina"]}, "orchestra_members_inactive", "1");')
-_, members_page = organizer.get(f"/wp-admin/admin.php?page=orchestra-members&member={ids['ina']}")
+_, members_page = organizer.get(f"{PAGES['orchestra_members']}&orchestra_member={ids['ina']}")
 organizer.post("/wp-admin/admin-post.php", {
     "action": "orchestra_members_set_status", "member": str(ids["ina"]), "status": "active",
     "_wpnonce": field(members_page, "_wpnonce") or "missing",
@@ -381,7 +411,7 @@ wp("user", "create", "cleo", "cleo@example.com", "--role=orchestra_conductor", "
 check(participation_of(spring, "cleo") is None, "new conductors are not asked")
 
 # --- Email to project and assignment groups ------------------------------------------------
-COMPOSE = "/wp-admin/admin.php?page=orchestra-email"
+COMPOSE = EMAIL
 
 
 def mails():
@@ -389,10 +419,19 @@ def mails():
 
 
 def send_email(session, groups, subject, op="send"):
-    _, page = session.get(COMPOSE)
-    data = {"_wpnonce": field(page, "_wpnonce") or "missing", "op": op, "subject": subject, "body": "Hello",
+    """Reviews an email on the email page and, for op "send", sends it."""
+    _, page = session.get(EMAIL)
+    data = {"_wpnonce": field(page, "_wpnonce") or "missing", "op": "review", "subject": subject, "body": "Hello",
             "groups[]": groups}
-    return session.post(COMPOSE, data)
+    status, page = session.post(EMAIL, data)
+    if op == "review":
+        return status, page
+    send = next((f for f in re.findall(r"<form.*?</form>", page, flags=re.S) if "orchestra_core_email_send" in f), "")
+    return session.post("/wp-admin/admin-post.php", {
+        "action": "orchestra_core_email_send", "_wpnonce": field(send, "_wpnonce") or "missing",
+        "subject": subject, "body": "Hello", "groups[]": groups,
+        "orchestra_log_url": field(send, "orchestra_log_url") or EMAIL, "redirect_to": EMAIL,
+    })
 
 
 _, page = conductor.get(COMPOSE)
@@ -402,8 +441,8 @@ check("Spring Concert 2027" in plain and "Accepted participants" in plain
       "conductors can email the project, piece and part groups")
 check("Lord of the Dance: Violin 1" not in plain, "parts without assignments have no group")
 check("Broken dates" not in plain, "draft projects have no groups")
-status, _ = mo.get(COMPOSE)
-check(status == 403, "members cannot email project groups")
+_, page = mo.get(COMPOSE)
+check("not allowed to send emails" in page, "members cannot email project groups")
 
 accepted_group = f"orchestra_projects_{spring}_accepted"
 _, page = organizer.get(manage_url(spring))
@@ -438,8 +477,8 @@ check("Mia — played last time" in horn1_row and "Olga — never played" in hor
       "conductors see who played the part last time")
 horn2_row = page.split("orchestra-projects-part-" + str(HORN2), 1)[1].split("</select>", 1)[0]
 check("Olga — played last time" in horn2_row, "history is per part")
-_, page = admin.get(manage_url(summer, "assignments"))
-check("played last time" in page, "administrators see the history")
+_, page = admin.get(admin_url(summer, "assignments"))
+check("played last time" in page and "orchestra--admin" in page, "administrators see the history in wp-admin")
 
 # --- Removing pieces and status rules -------------------------------------------------------
 act(conductor, summer, "assign", part=HORN1, **{"users[]": [str(ids["mia"])]})

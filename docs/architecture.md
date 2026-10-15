@@ -61,18 +61,22 @@ The marks are shown to users with `orchestra_projects_assignment_history_read` (
 
 ## Screens
 
-| Screen | Who | Content |
-|--------|-----|---------|
-| **Projects** (wp-admin) | conductors, organizers | project list |
-| Project → Overview | conductors, organizers | details, staff; status changes for organizers |
+Everything happens on the projects page `[orchestra_projects]`; administrators can use the same
+views in **Projects** in wp-admin (views in `src/Ui`, shared by both).
+
+| View | Who | Content |
+|------|-----|---------|
+| Project list | everyone | members: current projects with response, parts and download; staff: all projects; organizers: "New project" |
+| Project → Overview | everyone who may see the project | details, staff, description, own response and parts, program; email buttons and status changes for staff |
 | Project → Program | conductors, organizers | add, order and remove pieces |
 | Project → Participation | conductors (read), organizers | accepted, pending, declined; organizers change decisions |
 | Project → Assignments | conductors, organizers (read) | parts with assigned members; conductors assign |
-| Project editor (post.php) | organizers | name, description, dates, staff |
-| `[orchestra_projects]` | everyone with an orchestra role | current projects, responses, own parts, sheet music download; `?orchestra_project=ID` shows one project |
+| Project form | organizers | name, description, dates, staff (in wp-admin: the WordPress editor with the same fields) |
 
-All forms post to `admin-post.php` with a nonce per project (or per participation for
-responses) and check the capability of the operation.
+URLs on the projects page: `?orchestra_project=ID&orchestra_tab=program`, `&orchestra_edit=1`,
+`?orchestra_project=new`. All forms post to `admin-post.php` with a nonce per project (or per
+participation for responses), check the capability of the operation and return to the page they
+were sent from.
 
 ## Email groups
 

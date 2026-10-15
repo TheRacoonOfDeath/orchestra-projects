@@ -2,7 +2,7 @@
 
 /**
  * Test data for e2e.py, run with `wp eval-file`: an inactive member, pieces with parts and sheet
- * music in orchestra-library, and a page with the member dashboard. Prints the IDs as JSON.
+ * music in orchestra-library. Prints the IDs as JSON.
  */
 
 declare(strict_types=1);
@@ -49,13 +49,5 @@ foreach ($pieces as $key => [$title, $composer, $partNames]) {
     }
 }
 $pieceRepository->setArchived($ids['march'], true);
-
-$ids['page'] = wp_insert_post([
-    'post_type' => 'page',
-    'post_status' => 'publish',
-    'post_title' => 'Projects',
-    'post_name' => 'projects',
-    'post_content' => '[orchestra_projects]',
-]);
 
 echo json_encode($ids);

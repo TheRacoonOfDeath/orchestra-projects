@@ -8,15 +8,14 @@ use LogicException;
 use Orchestra\Core\Authorization\CapabilityRegistry;
 use Orchestra\Core\Email\EmailService;
 use Orchestra\Core\Plugin as CorePlugin;
+use Orchestra\Core\Ui\Html;
+use Orchestra\Core\Ui\Menu;
+use Orchestra\Core\Ui\MenuItem;
 use Orchestra\Library\Plugin as LibraryPlugin;
 use Orchestra\Members\MembersService;
 use Orchestra\Members\Plugin as MembersPlugin;
-use Orchestra\Projects\Admin\AssignmentsTab;
 use Orchestra\Projects\Admin\EmailLinks;
 use Orchestra\Projects\Admin\Names;
-use Orchestra\Projects\Admin\Notices;
-use Orchestra\Projects\Admin\ParticipationTab;
-use Orchestra\Projects\Admin\ProgramTab;
 use Orchestra\Projects\Admin\ProjectActions;
 use Orchestra\Projects\Admin\ProjectEditor;
 use Orchestra\Projects\Admin\ProjectsPage;
@@ -24,7 +23,6 @@ use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Database\Schema;
 use Orchestra\Projects\Email\ProjectEmailGroups;
-use Orchestra\Projects\Frontend\ProjectsShortcode;
 use Orchestra\Projects\Frontend\ResponseController;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationService;
@@ -32,10 +30,19 @@ use Orchestra\Projects\Privacy\PersonalData;
 use Orchestra\Projects\Program\ProgramRepository;
 use Orchestra\Projects\Program\ProgramService;
 use Orchestra\Projects\Project\ProjectCleanup;
+use Orchestra\Projects\Project\ProjectFormHandler;
 use Orchestra\Projects\Project\ProjectPostType;
 use Orchestra\Projects\Project\ProjectRepository;
 use Orchestra\Projects\Project\ProjectStatusService;
 use Orchestra\Projects\Project\StaffRepository;
+use Orchestra\Projects\Ui\AssignmentsView;
+use Orchestra\Projects\Ui\MemberProjectView;
+use Orchestra\Projects\Ui\ParticipationView;
+use Orchestra\Projects\Ui\ProgramView;
+use Orchestra\Projects\Ui\ProjectFormView;
+use Orchestra\Projects\Ui\ProjectListView;
+use Orchestra\Projects\Ui\ProjectsShortcode;
+use Orchestra\Projects\Ui\ProjectView;
 use wpdb;
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
@@ -114,8 +121,10 @@ final class Plugin
      */
     public function registerFeatures(): void
     {
+        // The shared UI exists since orchestra-core 0.4.
         if (
             !\class_exists(CapabilityRegistry::class)
+            || !\class_exists(Html::class)
             || !\class_exists(LibraryPlugin::class)
             || !\class_exists(MembersPlugin::class)
         ) {
@@ -142,8 +151,8 @@ final class Plugin
             $library
         );
         $statusService = new ProjectStatusService($this->projectRepository, $participation);
+        $formHandler = new ProjectFormHandler($this->projectRepository, $this->staff, $members);
         $names = new Names($members);
-        $notices = new Notices();
 
         // The email service exists since orchestra-core 0.3.
         $email = \class_exists(EmailService::class) ? CorePlugin::instance()->email() : null;
@@ -175,49 +184,62 @@ final class Plugin
         ))->register();
         $this->registerParticipationTriggers($participation);
         (new PersonalData($this->projectRepository, $this->participations, $this->assignments, $library))->register();
-        (new ResponseController($this->participations, $participation, $notices))->register();
-        (new ProjectsShortcode(
-            $this->projectRepository,
+
+        // The views are shared by the projects page and the wp-admin screens.
+        $memberView = new MemberProjectView($this->participations, $this->assignments, $this->program, $library);
+        $participationView = new ParticipationView($this->participations, $this->assignments, $names);
+        $listView = new ProjectListView($this->projectRepository, $memberView, $participationView);
+        $formView = new ProjectFormView($this->staff, $members);
+        $projectView = new ProjectView(
             $this->staff,
-            $this->program,
-            $this->participations,
-            $this->assignments,
-            $library,
             $names,
-            $notices
+            $memberView,
+            new ProgramView($this->program, $programService, $library),
+            $participationView,
+            new AssignmentsView(
+                $this->program,
+                $this->assignments,
+                $assignmentService,
+                $this->participations,
+                $library,
+                $names,
+                $emailLinks
+            ),
+            $emailLinks
+        );
+
+        (new ResponseController($this->participations, $participation))->register();
+        (new ProjectActions(
+            $this->projectRepository,
+            $statusService,
+            $programService,
+            $this->participations,
+            $participation,
+            $assignmentService,
+            $formHandler
         ))->register();
+        (new ProjectsShortcode($this->projectRepository, $listView, $projectView, $formView))->register();
+        \add_action(Menu::REGISTER_ACTION, [self::class, 'registerMenuItem']);
 
         if (\is_admin()) {
-            $notices->register();
-            (new ProjectEditor($this->projectRepository, $this->staff, $members, $notices))->register();
-            (new ProjectActions(
-                $this->projectRepository,
-                $statusService,
-                $programService,
-                $this->participations,
-                $participation,
-                $assignmentService,
-                $notices
-            ))->register();
-            (new ProjectsPage(
-                $this->projectRepository,
-                $this->staff,
-                $this->participations,
-                $names,
-                new ProgramTab($this->program, $programService, $library),
-                new ParticipationTab($this->participations, $this->assignments, $names),
-                new AssignmentsTab(
-                    $this->program,
-                    $this->assignments,
-                    $assignmentService,
-                    $this->participations,
-                    $library,
-                    $names,
-                    $emailLinks
-                ),
-                $emailLinks,
-            ))->register();
+            (new ProjectEditor($this->projectRepository, $formView, $formHandler))->register();
+            (new ProjectsPage($this->projectRepository, $listView, $projectView))->register();
         }
+    }
+
+    /**
+     * @internal Hooked to `orchestra_core_register_menu_items`.
+     */
+    public static function registerMenuItem(Menu $menu): void
+    {
+        $menu->add(new MenuItem(
+            ProjectsShortcode::TAG,
+            \__('Projects', 'orchestra-projects'),
+            \__('Respond to projects, see your parts and download your sheet music.', 'orchestra-projects'),
+            static fn (int $userId): bool => \user_can($userId, Capabilities::PROJECT_READ)
+                || \user_can($userId, Capabilities::PROGRAM_MANAGE),
+            20
+        ));
     }
 
     /**
@@ -237,7 +259,7 @@ final class Plugin
     {
         echo '<div class="notice notice-error"><p>'
             . \esc_html__(
-                'Orchestra Projects requires Orchestra Core, Orchestra Library and Orchestra Members to be active.',
+                'Orchestra Projects requires Orchestra Core 0.4, Orchestra Library and Orchestra Members to be active.',
                 'orchestra-projects'
             )
             . '</p></div>';

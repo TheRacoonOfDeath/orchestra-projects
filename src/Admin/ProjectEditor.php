@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Orchestra\Projects\Admin;
 
-use Orchestra\Core\Authorization\Roles;
-use Orchestra\Members\MembersService;
-use Orchestra\Projects\Project\ProjectDates;
+use Orchestra\Core\Ui\Notices;
+use Orchestra\Projects\Project\ProjectFormHandler;
 use Orchestra\Projects\Project\ProjectPostType;
 use Orchestra\Projects\Project\ProjectRepository;
-use Orchestra\Projects\Project\StaffRepository;
+use Orchestra\Projects\Ui\Badges;
+use Orchestra\Projects\Ui\ProjectFormView;
 use WP_Post;
 
 /**
- * The meta boxes for dates and staff on the project edit screen.
+ * The meta boxes for dates and staff on the project edit screen in wp-admin. They show the fields
+ * of {@see ProjectFormView} and are saved by {@see ProjectFormHandler}, like the projects page.
  */
 final class ProjectEditor
 {
@@ -22,9 +23,8 @@ final class ProjectEditor
 
     public function __construct(
         private readonly ProjectRepository $projects,
-        private readonly StaffRepository $staff,
-        private readonly MembersService $members,
-        private readonly Notices $notices,
+        private readonly ProjectFormView $form,
+        private readonly ProjectFormHandler $handler,
     ) {
     }
 
@@ -40,7 +40,7 @@ final class ProjectEditor
      */
     public function addMetaBoxes(): void
     {
-        $dates = \__('Dates', 'orchestra-projects');
+        $dates = \__('Dates and status', 'orchestra-projects');
         $staff = \__('Conductors and organizers', 'orchestra-projects');
         \add_meta_box('orchestra-projects-dates', $dates, [$this, 'renderDates'], null, 'side');
         \add_meta_box('orchestra-projects-staff', $staff, [$this, 'renderStaff']);
@@ -52,31 +52,16 @@ final class ProjectEditor
     public function renderDates(WP_Post $post): void
     {
         \wp_nonce_field(self::NONCE_ACTION, self::NONCE_FIELD);
-        $fields = [
-            ProjectPostType::META_START_DATE => \__('Start date', 'orchestra-projects'),
-            ProjectPostType::META_END_DATE => \__('End date', 'orchestra-projects'),
-            ProjectPostType::META_CONCERT_DATE => \__('Concert date', 'orchestra-projects'),
-        ];
-        foreach ($fields as $key => $label) {
-            $value = \get_post_meta($post->ID, $key, true);
-            \printf(
-                '<p><label for="%1$s">%2$s</label><br><input type="date" id="%1$s" name="%1$s" value="%3$s"></p>',
-                \esc_attr($key),
-                \esc_html($label),
-                \esc_attr(\is_string($value) ? $value : '')
-            );
+        $project = $this->projects->find($post->ID);
+        $html = $this->form->dateFields($project);
+        if ($project !== null) {
+            $html .= '<p>' . Badges::project($project->status)
+                . '</p><p><a class="orchestra-button orchestra-button--small" href="'
+                . \esc_url(ProjectsPage::url($project->id)) . '">' . \esc_html__('Manage project', 'orchestra-projects')
+                . '</a></p>';
         }
 
-        $project = $this->projects->find($post->ID);
-        if ($project !== null) {
-            \printf(
-                '<p>%s: <strong>%s</strong></p><p><a class="button" href="%s">%s</a></p>',
-                \esc_html__('Status', 'orchestra-projects'),
-                \esc_html($project->status->label()),
-                \esc_url(ProjectsPage::url($project->id)),
-                \esc_html__('Manage project', 'orchestra-projects')
-            );
-        }
+        echo '<div class="orchestra orchestra--admin">' . $html . '</div>'; // escaped by the view
     }
 
     /**
@@ -84,36 +69,7 @@ final class ProjectEditor
      */
     public function renderStaff(WP_Post $post): void
     {
-        echo '<p class="description">'
-            . \esc_html__(
-                'Shown on the project page. Every conductor and organizer has their rights in all projects.',
-                'orchestra-projects'
-            )
-            . '</p>';
-
-        $groups = [
-            StaffRepository::CONDUCTOR => [\__('Conductors', 'orchestra-projects'), Roles::CONDUCTOR],
-            StaffRepository::ORGANIZER => [\__('Organizers', 'orchestra-projects'), Roles::ORGANIZER],
-        ];
-        foreach ($groups as $staffRole => [$label, $role]) {
-            $selected = $this->staff->userIds($post->ID, $staffRole);
-            echo '<fieldset><legend><strong>' . \esc_html($label) . '</strong></legend>';
-            $candidates = $this->members->members([$role]);
-            if ($candidates === []) {
-                echo '<p>' . \esc_html__('Nobody has this role yet.', 'orchestra-projects') . '</p>';
-            }
-            foreach ($candidates as $member) {
-                \printf(
-                    '<label style="display:block"><input type="checkbox" name="orchestra_projects_staff[%s][]"'
-                        . ' value="%d"%s> %s</label>',
-                    \esc_attr($staffRole),
-                    $member->id,
-                    \checked(\in_array($member->id, $selected, true), true, false),
-                    \esc_html($member->displayName)
-                );
-            }
-            echo '</fieldset>';
-        }
+        echo '<div class="orchestra orchestra--admin">' . $this->form->staffFields($post->ID) . '</div>'; // escaped
     }
 
     /**
@@ -132,29 +88,9 @@ final class ProjectEditor
             return;
         }
 
-        $dates = ProjectDates::fromInput(
-            \wp_unslash($_POST[ProjectPostType::META_START_DATE] ?? ''),
-            \wp_unslash($_POST[ProjectPostType::META_END_DATE] ?? ''),
-            \wp_unslash($_POST[ProjectPostType::META_CONCERT_DATE] ?? '')
-        );
-        if ($dates->errors === []) {
-            $this->projects->saveDates($postId, $dates);
-        } else {
-            $this->notices->errors($dates->errors);
-        }
-
-        $submitted = $_POST['orchestra_projects_staff'] ?? [];
-        $submitted = \is_array($submitted) ? $submitted : [];
-        $allowed = [
-            StaffRepository::CONDUCTOR => Roles::CONDUCTOR,
-            StaffRepository::ORGANIZER => Roles::ORGANIZER,
-        ];
-        foreach ($allowed as $staffRole => $role) {
-            $candidates = \array_map(static fn ($member): int => $member->id, $this->members->members([$role]));
-            $ids = \is_array($submitted[$staffRole] ?? null) ? $submitted[$staffRole] : [];
-            $ids = \array_map('absint', \array_filter($ids, \is_scalar(...)));
-            $this->staff->replace($postId, $staffRole, \array_values(\array_intersect($ids, $candidates)));
-        }
+        /** @var array<mixed> $input */
+        $input = \wp_unslash($_POST);
+        Notices::errors($this->handler->save($postId, $input));
     }
 
     /**

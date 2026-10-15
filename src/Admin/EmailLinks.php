@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Orchestra\Projects\Admin;
 
 use Orchestra\Core\Email\EmailService;
+use Orchestra\Core\Ui\Form;
 use Orchestra\Projects\Capabilities;
 use Orchestra\Projects\Project\Project;
 
 /**
- * Buttons that open the email screen of orchestra-core with a project's groups selected.
+ * Buttons that open the email page of orchestra-core with a project's groups selected.
  * Shows nothing without the email service (orchestra-core before 0.3).
  */
 final class EmailLinks
@@ -33,8 +34,7 @@ final class EmailLinks
 
         $html = '';
         foreach ($groups as $groupId => $label) {
-            $html .= '<a class="button" href="' . \esc_url($this->email->composeUrl([$groupId])) . '">'
-                . \esc_html($label) . '</a> ';
+            $html .= Form::link($this->email->composeUrl([$groupId]), $label, 'small');
         }
 
         return $html;

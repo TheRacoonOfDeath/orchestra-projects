@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Orchestra\Projects\Frontend;
 
-use Orchestra\Projects\Admin\Notices;
+use Orchestra\Core\Ui\Notices;
+use Orchestra\Core\Ui\Redirect;
 use Orchestra\Projects\Capabilities;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationService;
@@ -20,7 +21,6 @@ final class ResponseController
     public function __construct(
         private readonly ParticipationRepository $participations,
         private readonly ParticipationService $participation,
-        private readonly Notices $notices,
     ) {
     }
 
@@ -55,14 +55,13 @@ final class ResponseController
 
         $error = $this->participation->respond($participation, \get_current_user_id(), $response);
         if ($error === null) {
-            $this->notices->success($response === ParticipationStatus::Accepted
+            Notices::success($response === ParticipationStatus::Accepted
                 ? \__('Thank you! You have accepted to participate.', 'orchestra-projects')
                 : \__('Thank you! You have declined to participate.', 'orchestra-projects'));
         } else {
-            $this->notices->error($error);
+            Notices::error($error);
         }
 
-        \wp_safe_redirect((string) (\wp_get_referer() ?: \home_url('/')));
-        exit;
+        Redirect::back();
     }
 }

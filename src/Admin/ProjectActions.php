@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Orchestra\Projects\Admin;
 
+use Orchestra\Core\Ui\Notices;
+use Orchestra\Core\Ui\Redirect;
 use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Capabilities;
 use Orchestra\Projects\Participation\ParticipationRepository;
@@ -13,10 +15,15 @@ use Orchestra\Projects\Program\ProgramService;
 use Orchestra\Projects\Project\Project;
 use Orchestra\Projects\Project\ProjectRepository;
 use Orchestra\Projects\Project\ProjectStatus;
+use Orchestra\Projects\Project\ProjectFormHandler;
+use Orchestra\Projects\Project\ProjectPostType;
 use Orchestra\Projects\Project\ProjectStatusService;
+use Orchestra\Projects\Ui\ProjectFormView;
+use Orchestra\Projects\Ui\ProjectsShortcode;
 
 /**
- * Handles the forms of the project screens (admin-post.php?action=orchestra_projects).
+ * Handles the project forms of the projects page and the wp-admin screens
+ * (admin-post.php?action=orchestra_projects). Every form returns to the page it was sent from.
  */
 final class ProjectActions
 {
@@ -29,7 +36,7 @@ final class ProjectActions
         private readonly ParticipationRepository $participations,
         private readonly ParticipationService $participation,
         private readonly AssignmentService $assignments,
-        private readonly Notices $notices,
+        private readonly ProjectFormHandler $formHandler,
     ) {
     }
 
@@ -50,18 +57,22 @@ final class ProjectActions
     {
         $projectId = self::int('project');
         \check_admin_referer(self::nonceAction($projectId));
+        $operation = self::string('op');
+        if ($operation === 'save') {
+            $this->save($projectId);
+        }
+
         $project = $this->projects->find($projectId);
         if ($project === null) {
             \wp_die(\esc_html__('The project does not exist.', 'orchestra-projects'), 404);
         }
 
-        $operation = self::string('op');
-        [$capability, $tab] = match ($operation) {
-            'status' => [Capabilities::PROJECT_MANAGE, 'overview'],
-            'program_add', 'program_remove', 'program_up', 'program_down' => [Capabilities::PROGRAM_MANAGE, 'program'],
-            'participation' => [Capabilities::PARTICIPATION_MANAGE, 'participation'],
-            'assign', 'unassign' => [Capabilities::ASSIGNMENT_MANAGE, 'assignments'],
-            default => [null, 'overview'],
+        $capability = match ($operation) {
+            'status' => Capabilities::PROJECT_MANAGE,
+            'program_add', 'program_remove', 'program_up', 'program_down' => Capabilities::PROGRAM_MANAGE,
+            'participation' => Capabilities::PARTICIPATION_MANAGE,
+            'assign', 'unassign' => Capabilities::ASSIGNMENT_MANAGE,
+            default => null,
         };
         if ($capability === null || !\current_user_can($capability)) {
             \wp_die(\esc_html__('You are not allowed to do this.', 'orchestra-projects'), 403);
@@ -69,13 +80,57 @@ final class ProjectActions
 
         $errors = $this->execute($project, $operation);
         if ($errors === []) {
-            $this->notices->success(\__('Saved.', 'orchestra-projects'));
+            Notices::success(\__('Saved.', 'orchestra-projects'));
         } else {
-            $this->notices->errors($errors);
+            Notices::errors($errors);
         }
 
-        \wp_safe_redirect(ProjectsPage::url($project->id, $tab));
-        exit;
+        Redirect::back();
+    }
+
+    /**
+     * Creates (project 0) or edits a project from the form of the projects page.
+     */
+    private function save(int $projectId): never
+    {
+        $post = $projectId > 0 ? $this->projects->find($projectId) : null;
+        $allowed = $projectId === 0
+            ? \current_user_can(Capabilities::PROJECT_MANAGE)
+            : $post !== null && \current_user_can('edit_post', $projectId);
+        if (!$allowed) {
+            \wp_die(\esc_html__('You are not allowed to do this.', 'orchestra-projects'), 403);
+        }
+
+        /** @var array<mixed> $input */
+        $input = \wp_unslash($_POST);
+        $title = \is_string($input[ProjectFormView::FIELD_TITLE] ?? null)
+            ? \sanitize_text_field($input[ProjectFormView::FIELD_TITLE])
+            : '';
+        if ($title === '') {
+            Notices::error(\__('Please enter a name.', 'orchestra-projects'));
+            Redirect::back();
+        }
+        $description = \is_string($input[ProjectFormView::FIELD_DESCRIPTION] ?? null)
+            ? \wp_kses_post($input[ProjectFormView::FIELD_DESCRIPTION])
+            : '';
+
+        $data = ['post_title' => $title, 'post_content' => $description];
+        $result = $projectId === 0
+            ? \wp_insert_post($data + ['post_type' => ProjectPostType::NAME, 'post_status' => 'publish'], true)
+            : \wp_update_post($data + ['ID' => $projectId], true);
+        if (\is_wp_error($result)) {
+            Notices::error($result->get_error_message());
+            Redirect::back();
+        }
+
+        $errors = $this->formHandler->save($result, $input);
+        Notices::errors($errors);
+        if ($errors === []) {
+            Notices::success(\__('The project has been saved.', 'orchestra-projects'));
+        }
+
+        // A new project is shown right away.
+        Redirect::back($projectId === 0 ? [ProjectsShortcode::PROJECT_PARAMETER => $result] : []);
     }
 
     /**

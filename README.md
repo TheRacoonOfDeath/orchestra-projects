@@ -14,8 +14,9 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
 - Participation: opening a project asks every active member and organizer to accept or decline;
   the decision is final, organizers can change it
 - Assignments of members to parts, with hints who played the part last time or before
-- A member page: add the shortcode `[orchestra_projects]` to any page. Members see their projects,
-  respond, see their parts and download their sheet music in one zip
+- `[orchestra_projects]`: members see their projects, respond, see their parts and download their
+  sheet music in one zip; organizers and conductors create projects, change their status and manage
+  program, participation and assignments on the same page (or in **Projects** in wp-admin)
 - Email groups for the email service of orchestra-core (0.3 or later): participants by status,
   and the players of each piece and part
 - Pieces and parts used in projects cannot be deleted in the library
@@ -23,13 +24,11 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
   anonymizes its history
 - An API for other plugins
 
-Organizers and conductors work in the **Projects** menu in wp-admin.
-
 ## Installation
 
-1. Install and activate orchestra-core, orchestra-library and orchestra-members.
+1. Install and activate orchestra-core 0.4, orchestra-library 0.2 and orchestra-members 0.3 or later.
 2. Upload `orchestra-projects-{VERSION}.zip` under **Plugins → Add New → Upload Plugin** and activate it.
-3. Create a page with `[orchestra_projects]` for members.
+3. Create the Orchestra pages (**Create Orchestra pages** in wp-admin), or put `[orchestra_projects]` on a page.
 
 Updates are installed from the GitHub releases of this repository. The plugin reads
 `update.json` from the latest release, so the GitHub API and its rate limit are not involved and

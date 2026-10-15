@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace Orchestra\Projects\Admin;
 
+use Orchestra\Core\Ui\Html;
 use Orchestra\Projects\Capabilities;
-use Orchestra\Projects\Email\ProjectEmailGroups;
-use Orchestra\Projects\Participation\ParticipationRepository;
-use Orchestra\Projects\Participation\ParticipationStatus;
-use Orchestra\Projects\Project\Project;
 use Orchestra\Projects\Project\ProjectPostType;
 use Orchestra\Projects\Project\ProjectRepository;
-use Orchestra\Projects\Project\ProjectStatus;
-use Orchestra\Projects\Project\StaffRepository;
+use Orchestra\Projects\Ui\ProjectListView;
+use Orchestra\Projects\Ui\ProjectUrls;
+use Orchestra\Projects\Ui\ProjectView;
 
 /**
- * The "Projects" screen for organizers and conductors: the project list and, per project, the
- * tabs Overview, Program, Participation and Assignments.
+ * The "Projects" screen in wp-admin, showing the same views as `[orchestra_projects]`.
+ * Projects are created and edited with the WordPress editor here.
  */
 final class ProjectsPage
 {
@@ -24,13 +22,8 @@ final class ProjectsPage
 
     public function __construct(
         private readonly ProjectRepository $projects,
-        private readonly StaffRepository $staff,
-        private readonly ParticipationRepository $participations,
-        private readonly Names $names,
-        private readonly ProgramTab $programTab,
-        private readonly ParticipationTab $participationTab,
-        private readonly AssignmentsTab $assignmentsTab,
-        private readonly EmailLinks $emailLinks,
+        private readonly ProjectListView $listView,
+        private readonly ProjectView $projectView,
     ) {
     }
 
@@ -39,7 +32,7 @@ final class ProjectsPage
         \add_action('admin_menu', [$this, 'addMenu']);
     }
 
-    public static function url(?int $projectId = null, string $tab = 'overview'): string
+    public static function url(?int $projectId = null, string $tab = ProjectView::OVERVIEW): string
     {
         $args = ['page' => self::SLUG];
         if ($projectId !== null) {
@@ -48,6 +41,17 @@ final class ProjectsPage
         }
 
         return \add_query_arg($args, \admin_url('admin.php'));
+    }
+
+    public static function urls(): ProjectUrls
+    {
+        return new ProjectUrls(
+            static fn (): string => self::url(),
+            static fn (int $projectId, string $tab): string => self::url($projectId, $tab),
+            static fn (?int $projectId): string => $projectId === null
+                ? \admin_url('post-new.php?post_type=' . ProjectPostType::NAME)
+                : (string) \get_edit_post_link($projectId, 'url')
+        );
     }
 
     /**
@@ -98,7 +102,7 @@ final class ProjectsPage
         if ($this->projects->find($projectId) === null) {
             \wp_die(\esc_html__('The project does not exist.', 'orchestra-projects'), 404);
         }
-        if (!\array_key_exists(self::requestedTab(), $this->tabs())) {
+        if (!\array_key_exists(self::requestedTab(), ProjectView::tabs())) {
             \wp_die(\esc_html__('You are not allowed to view this page.', 'orchestra-projects'), 403);
         }
     }
@@ -110,221 +114,15 @@ final class ProjectsPage
     {
         $project = $this->projects->find(self::requestedProjectId());
         if ($project === null) {
-            $this->renderList();
+            $list = $this->listView->render(self::urls());
+            echo Html::adminPage(\__('Projects', 'orchestra-projects'), $list); // escaped by the view
             return;
         }
 
-        $tab = self::requestedTab();
-        echo '<div class="wrap"><h1>' . \esc_html($project->title) . '</h1>';
-        echo '<p><a href="' . \esc_url(self::url()) . '">&larr; ' . \esc_html__('All projects', 'orchestra-projects')
-            . '</a></p>';
-        echo '<nav class="nav-tab-wrapper">';
-        foreach ($this->tabs() as $key => $label) {
-            \printf(
-                '<a href="%s" class="nav-tab%s">%s</a>',
-                \esc_url(self::url($project->id, $key)),
-                $key === $tab ? ' nav-tab-active' : '',
-                \esc_html($label)
-            );
-        }
-        echo '</nav>';
-
-        match ($tab) {
-            'program' => $this->programTab->render($project),
-            'participation' => $this->participationTab->render($project),
-            'assignments' => $this->assignmentsTab->render($project),
-            default => $this->renderOverview($project),
-        };
-        echo '</div>';
-    }
-
-    /**
-     * @return array<string, string> the tabs the current user may open
-     */
-    private function tabs(): array
-    {
-        $tabs = [
-            'overview' => \__('Overview', 'orchestra-projects'),
-            'program' => \__('Program', 'orchestra-projects'),
-        ];
-        if (\current_user_can(Capabilities::PARTICIPATION_READ_OTHERS)) {
-            $tabs['participation'] = \__('Participation', 'orchestra-projects');
-        }
-        if (\current_user_can(Capabilities::ASSIGNMENT_READ)) {
-            $tabs['assignments'] = \__('Assignments', 'orchestra-projects');
-        }
-
-        return $tabs;
-    }
-
-    private function renderList(): void
-    {
-        echo '<div class="wrap"><h1 class="wp-heading-inline">' . \esc_html__('Projects', 'orchestra-projects')
-            . '</h1>';
-        if (\current_user_can(Capabilities::PROJECT_MANAGE)) {
-            echo ' <a class="page-title-action" href="'
-                . \esc_url(\admin_url('post-new.php?post_type=' . ProjectPostType::NAME)) . '">'
-                . \esc_html__('Add Project', 'orchestra-projects') . '</a>';
-        }
-        echo '<hr class="wp-header-end">';
-
-        echo '<table class="wp-list-table widefat fixed striped"><thead><tr>';
-        foreach (
-            [
-            \__('Project', 'orchestra-projects'),
-            \__('Status', 'orchestra-projects'),
-            \__('Dates', 'orchestra-projects'),
-            \__('Concert', 'orchestra-projects'),
-            \__('Participation', 'orchestra-projects'),
-            ] as $heading
-        ) {
-            echo '<th scope="col">' . \esc_html($heading) . '</th>';
-        }
-        echo '</tr></thead><tbody>';
-
-        $projects = $this->projects->all();
-        if ($projects === []) {
-            echo '<tr><td colspan="5">' . \esc_html__('No projects yet.', 'orchestra-projects') . '</td></tr>';
-        }
-        foreach ($projects as $project) {
-            $actions = '<a href="' . \esc_url(self::url($project->id)) . '">'
-                . \esc_html__('Manage', 'orchestra-projects') . '</a>';
-            if (\current_user_can('edit_post', $project->id)) {
-                $actions .= ' | <a href="' . \esc_url((string) \get_edit_post_link($project->id)) . '">'
-                    . \esc_html__('Edit', 'orchestra-projects') . '</a>';
-            }
-            \printf(
-                '<tr><td><strong><a href="%s">%s</a></strong><div class="row-actions visible">%s</div></td>'
-                . '<td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
-                \esc_url(self::url($project->id)),
-                \esc_html($project->title),
-                $actions, // escaped above
-                \esc_html($project->status->label()),
-                \esc_html(self::dateRange($project)),
-                \esc_html(self::date($project->concertDate)),
-                \esc_html($this->participationSummary($project))
-            );
-        }
-        echo '</tbody></table></div>';
-    }
-
-    private function renderOverview(Project $project): void
-    {
-        $rows = [
-            [\__('Status', 'orchestra-projects'), \esc_html($project->status->label())],
-            [\__('Dates', 'orchestra-projects'), \esc_html(self::dateRange($project))],
-            [\__('Concert', 'orchestra-projects'), \esc_html(self::date($project->concertDate))],
-            [
-                \__('Conductors', 'orchestra-projects'),
-                \esc_html($this->names->list($this->staff->userIds($project->id, StaffRepository::CONDUCTOR))),
-            ],
-            [
-                \__('Organizers', 'orchestra-projects'),
-                \esc_html($this->names->list($this->staff->userIds($project->id, StaffRepository::ORGANIZER))),
-            ],
-            [\__('Participation', 'orchestra-projects'), \esc_html($this->participationSummary($project))],
-            [\__('Description', 'orchestra-projects'), \wp_kses_post(\wpautop($project->description))],
-        ];
-        echo '<table class="form-table" role="presentation">';
-        foreach ($rows as [$label, $value]) {
-            echo '<tr><th scope="row">' . \esc_html($label) . '</th><td>' . $value . '</td></tr>'; // escaped above
-        }
-        echo '</table>';
-
-        if (\current_user_can('edit_post', $project->id)) {
-            echo '<p><a class="button" href="' . \esc_url((string) \get_edit_post_link($project->id)) . '">'
-                . \esc_html__('Edit name, dates and staff', 'orchestra-projects') . '</a></p>';
-        }
-        $emailButtons = $this->emailLinks->buttons($project, [
-            ProjectEmailGroups::participantsGroupId($project->id, ParticipationStatus::Accepted)
-                => \__('Email accepted participants', 'orchestra-projects'),
-            ProjectEmailGroups::participantsGroupId($project->id, ParticipationStatus::Open)
-                => \__('Email pending participants', 'orchestra-projects'),
-            ProjectEmailGroups::participantsGroupId($project->id) => \__('Email everyone asked', 'orchestra-projects'),
-        ]);
-        if ($emailButtons !== '') {
-            echo '<h2>' . \esc_html__('Email', 'orchestra-projects') . '</h2><p>' . $emailButtons . '</p>'; // escaped
-        }
-        if (\current_user_can(Capabilities::PROJECT_MANAGE)) {
-            $this->renderStatusButtons($project);
-        }
-    }
-
-    private function renderStatusButtons(Project $project): void
-    {
-        echo '<h2>' . \esc_html__('Change status', 'orchestra-projects') . '</h2><p>';
-        foreach ([$project->status->next(), $project->status->previous()] as $index => $target) {
-            if ($target === null) {
-                continue;
-            }
-            $confirm = \sprintf(
-                /* translators: %s: project status */
-                \__('Change the status to "%s"?', 'orchestra-projects'),
-                $target->label()
-            );
-            if ($target === ProjectStatus::Open) {
-                $confirm .= ' ' . \__(
-                    'All active members and organizers who have not been asked yet will be asked to respond.',
-                    'orchestra-projects'
-                );
-            }
-            $label = $index === 0
-                /* translators: %s: project status */
-                ? \sprintf(\__('Move to "%s"', 'orchestra-projects'), $target->label())
-                /* translators: %s: project status */
-                : \sprintf(\__('Back to "%s"', 'orchestra-projects'), $target->label());
-            echo Form::button(
-                $project->id,
-                'status',
-                $label,
-                ['target' => $target->value],
-                $confirm,
-                $index === 0 ? 'button button-primary' : 'button'
-            ) . ' ';
-        }
-        echo '</p>';
-    }
-
-    private function participationSummary(Project $project): string
-    {
-        $counts = \array_fill_keys(\array_map(static fn ($s) => $s->value, ParticipationStatus::cases()), 0);
-        foreach ($this->participations->forProject($project->id) as $participation) {
-            $counts[$participation->status->value]++;
-        }
-
-        return \sprintf(
-            /* translators: 1: number accepted, 2: number declined, 3: number pending */
-            \__('%1$d accepted, %2$d declined, %3$d pending', 'orchestra-projects'),
-            $counts[ParticipationStatus::Accepted->value],
-            $counts[ParticipationStatus::Declined->value],
-            $counts[ParticipationStatus::Open->value]
-        );
-    }
-
-    public static function dateRange(Project $project): string
-    {
-        if ($project->startDate === null && $project->endDate === null) {
-            return '—';
-        }
-
-        return self::date($project->startDate) . ' – ' . self::date($project->endDate);
-    }
-
-    public static function date(?string $date): string
-    {
-        if ($date === null) {
-            return '—';
-        }
-        $timestamp = \strtotime($date . ' 12:00:00');
-
-        return $timestamp === false ? $date : \date_i18n(self::dateFormat(), $timestamp);
-    }
-
-    public static function dateFormat(): string
-    {
-        $format = \get_option('date_format');
-
-        return \is_string($format) && $format !== '' ? $format : 'Y-m-d';
+        echo Html::adminPage(
+            $project->title,
+            $this->projectView->render($project, self::requestedTab(), self::urls(), false)
+        ); // escaped by the views
     }
 
     private static function requestedProjectId(): int
@@ -334,6 +132,6 @@ final class ProjectsPage
 
     private static function requestedTab(): string
     {
-        return \is_string($_GET['tab'] ?? null) ? \sanitize_key($_GET['tab']) : 'overview';
+        return \is_string($_GET['tab'] ?? null) ? \sanitize_key($_GET['tab']) : ProjectView::OVERVIEW;
     }
 }
