@@ -1,0 +1,85 @@
+# Architecture
+
+orchestra-projects owns projects, programs, participation and assignments. It uses
+orchestra-library for pieces, parts and sheet music and orchestra-members for members and their
+active status, only through their public services.
+
+## Storage
+
+| Data | Storage |
+|------|---------|
+| Project: name, description | custom post type `orchestra_project` (title, content) |
+| Project status and dates | post meta `orchestra_projects_status`, `_start_date`, `_end_date`, `_concert_date` (Y-m-d) |
+| Conductors and organizers of a project | table `orchestra_projects_staff` |
+| Program | table `orchestra_projects_program` (project, piece, position) |
+| Participation | table `orchestra_projects_participation` (project, user, status, responded at, changed by) |
+| Assignments | table `orchestra_projects_assignments` (project, piece, part, user) |
+
+- The project status replaces the WordPress post status: saved projects are always published.
+- Assignments store the piece of their part. Parts never move between pieces; the column makes
+  "one part per piece and member" a unique key and the history queries simple.
+- When a user is deleted, the user ID in participation and assignments becomes NULL. The history
+  stays complete and shows "Former member". Staff entries of the user are deleted.
+- Deleting a project (administrators only) deletes its rows in all tables.
+
+## Rules
+
+| Status | Visible to members | On the member page | Members respond | Assignments | Program |
+|--------|:--:|:--:|:--:|:--:|:--:|
+| Draft | | | | | ✓ |
+| Open for Participation | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Preparation | ✓ | ✓ | | ✓ | ✓ |
+| Completed | ✓ | ✓ | | | |
+| Archived | ✓ (by link) | | | | |
+
+- Projects move one step forward or back, e.g. back to Open for late responses.
+- Opening a project creates Open participation records for all active users with the role
+  member or organizer who have none yet. New accounts, reactivated members and users who get one
+  of these roles while a project is open receive one as well.
+- Members respond once; the decision is final. Organizers change any decision at any time. Leaving
+  Accepted removes the member's assignments in the project, after a confirmation.
+- Assignments need an accepted participation and a part of a piece in the program. A member plays
+  at most one part per piece; assigning another part of the same piece moves them, after a
+  confirmation.
+- Removing a piece from the program removes its assignments, after a confirmation.
+- Archived and unpublished pieces cannot be added to programs.
+- orchestra-library refuses to delete pieces in a program and parts with assignments
+  (`orchestra_library_piece_delete_blockers`, `orchestra_library_part_delete_blockers`).
+
+## Assignment history
+
+Not stored, derived from the assignments when a conductor assigns a part. Projects are ordered by
+their concert date, or end or start date if there is none. Drafts and projects without dates are
+ignored.
+
+- **played last time**: assigned to the part in the most recent earlier project whose program
+  contained the piece
+- **played before**: assigned to the part in any earlier project
+- **never played**
+
+The marks are shown to users with `orchestra_projects_assignment_history_read` (conductors).
+
+## Screens
+
+| Screen | Who | Content |
+|--------|-----|---------|
+| **Projects** (wp-admin) | conductors, organizers | project list |
+| Project → Overview | conductors, organizers | details, staff; status changes for organizers |
+| Project → Program | conductors, organizers | add, order and remove pieces |
+| Project → Participation | conductors (read), organizers | accepted, pending, declined; organizers change decisions |
+| Project → Assignments | conductors, organizers (read) | parts with assigned members; conductors assign |
+| Project editor (post.php) | organizers | name, description, dates, staff |
+| `[orchestra_projects]` | everyone with an orchestra role | current projects, responses, own parts, sheet music download; `?orchestra_project=ID` shows one project |
+
+All forms post to `admin-post.php` with a nonce per project (or per participation for
+responses) and check the capability of the operation.
+
+## Capabilities
+
+See the catalogue in orchestra-core's `docs/capabilities.md`. All are implemented except
+`orchestra_projects_email_send`.
+
+## Not yet implemented
+
+- The project and assignment email groups and `orchestra_projects_email_send`. They need the email
+  service of orchestra-core, which does not exist yet.
