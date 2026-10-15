@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3fbaac738f8cbac35f2835cebee3eae6",
+    "content-hash": "33246b5fa2c08eda9ab2a1546a9cc677",
     "packages": [
         {
             "name": "yahnis-elsts/plugin-update-checker",
@@ -177,16 +177,16 @@
         },
         {
             "name": "orchestra/core",
-            "version": "v0.3.0",
+            "version": "v0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TheRacoonOfDeath/orchestra-core.git",
-                "reference": "9adeeda6760014f8743330d274660a97816adf07"
+                "reference": "b52ef690d90bf1faf9c728f719c25982007cac03"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-core/zipball/9adeeda6760014f8743330d274660a97816adf07",
-                "reference": "9adeeda6760014f8743330d274660a97816adf07",
+                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-core/zipball/b52ef690d90bf1faf9c728f719c25982007cac03",
+                "reference": "b52ef690d90bf1faf9c728f719c25982007cac03",
                 "shasum": ""
             },
             "require": {
@@ -234,23 +234,23 @@
             ],
             "description": "Core plugin providing shared infrastructure for the Orchestra plugin suite.",
             "support": {
-                "source": "https://github.com/TheRacoonOfDeath/orchestra-core/tree/v0.3.0",
+                "source": "https://github.com/TheRacoonOfDeath/orchestra-core/tree/v0.4.0",
                 "issues": "https://github.com/TheRacoonOfDeath/orchestra-core/issues"
             },
-            "time": "2026-10-15T10:49:41+00:00"
+            "time": "2026-10-15T12:37:18+00:00"
         },
         {
             "name": "orchestra/library",
-            "version": "v0.1.0",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TheRacoonOfDeath/orchestra-library.git",
-                "reference": "220d9ed135220b39494384bc4dc53202e2304921"
+                "reference": "88ab30b0528e419aa34c1fe566d60256160a758e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-library/zipball/220d9ed135220b39494384bc4dc53202e2304921",
-                "reference": "220d9ed135220b39494384bc4dc53202e2304921",
+                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-library/zipball/88ab30b0528e419aa34c1fe566d60256160a758e",
+                "reference": "88ab30b0528e419aa34c1fe566d60256160a758e",
                 "shasum": ""
             },
             "require": {
@@ -259,7 +259,7 @@
                 "yahnis-elsts/plugin-update-checker": "^5.7"
             },
             "require-dev": {
-                "orchestra/core": "^0.2",
+                "orchestra/core": "^0.4",
                 "phpstan/phpstan": "^2.2",
                 "phpunit/phpunit": "^12.0",
                 "squizlabs/php_codesniffer": "^3.13",
@@ -304,23 +304,23 @@
             ],
             "description": "Pieces, parts and sheet music for the Orchestra plugin suite.",
             "support": {
-                "source": "https://github.com/TheRacoonOfDeath/orchestra-library/tree/v0.1.0",
+                "source": "https://github.com/TheRacoonOfDeath/orchestra-library/tree/v0.2.0",
                 "issues": "https://github.com/TheRacoonOfDeath/orchestra-library/issues"
             },
-            "time": "2026-10-14T20:51:09+00:00"
+            "time": "2026-10-15T12:40:37+00:00"
         },
         {
             "name": "orchestra/members",
-            "version": "v0.2.0",
+            "version": "v0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TheRacoonOfDeath/orchestra-members.git",
-                "reference": "f07e609fde8d34a9c98f8645e62b967033dcfc60"
+                "reference": "cfaa5347bdd4949855f56fca12d57bf83914c6b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-members/zipball/f07e609fde8d34a9c98f8645e62b967033dcfc60",
-                "reference": "f07e609fde8d34a9c98f8645e62b967033dcfc60",
+                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-members/zipball/cfaa5347bdd4949855f56fca12d57bf83914c6b9",
+                "reference": "cfaa5347bdd4949855f56fca12d57bf83914c6b9",
                 "shasum": ""
             },
             "require": {
@@ -328,7 +328,7 @@
                 "yahnis-elsts/plugin-update-checker": "^5.7"
             },
             "require-dev": {
-                "orchestra/core": "^0.3",
+                "orchestra/core": "^0.4",
                 "phpstan/phpstan": "^2.2",
                 "phpunit/phpunit": "^12.0",
                 "squizlabs/php_codesniffer": "^3.13",
@@ -373,10 +373,10 @@
             ],
             "description": "Member profiles and active status for the Orchestra plugin suite.",
             "support": {
-                "source": "https://github.com/TheRacoonOfDeath/orchestra-members/tree/v0.2.0",
+                "source": "https://github.com/TheRacoonOfDeath/orchestra-members/tree/v0.3.0",
                 "issues": "https://github.com/TheRacoonOfDeath/orchestra-members/issues"
             },
-            "time": "2026-10-15T10:52:32+00:00"
+            "time": "2026-10-15T12:40:44+00:00"
         },
         {
             "name": "phar-io/manifest",
