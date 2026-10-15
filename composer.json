@@ -22,9 +22,9 @@
         "yahnis-elsts/plugin-update-checker": "^5.7"
     },
     "require-dev": {
-        "orchestra/core": "^0.2",
+        "orchestra/core": "^0.3",
         "orchestra/library": "^0.1",
-        "orchestra/members": "^0.1",
+        "orchestra/members": "^0.2",
         "phpstan/phpstan": "^2.2",
         "phpunit/phpunit": "^12.0",
         "squizlabs/php_codesniffer": "^3.13",
