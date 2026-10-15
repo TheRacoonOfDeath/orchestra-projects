@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Orchestra\Projects\Admin;
 
 use Orchestra\Projects\Capabilities;
+use Orchestra\Projects\Email\ProjectEmailGroups;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationStatus;
 use Orchestra\Projects\Project\Project;
@@ -29,6 +30,7 @@ final class ProjectsPage
         private readonly ProgramTab $programTab,
         private readonly ParticipationTab $participationTab,
         private readonly AssignmentsTab $assignmentsTab,
+        private readonly EmailLinks $emailLinks,
     ) {
     }
 
@@ -232,6 +234,16 @@ final class ProjectsPage
         if (\current_user_can('edit_post', $project->id)) {
             echo '<p><a class="button" href="' . \esc_url((string) \get_edit_post_link($project->id)) . '">'
                 . \esc_html__('Edit name, dates and staff', 'orchestra-projects') . '</a></p>';
+        }
+        $emailButtons = $this->emailLinks->buttons($project, [
+            ProjectEmailGroups::participantsGroupId($project->id, ParticipationStatus::Accepted)
+                => \__('Email accepted participants', 'orchestra-projects'),
+            ProjectEmailGroups::participantsGroupId($project->id, ParticipationStatus::Open)
+                => \__('Email pending participants', 'orchestra-projects'),
+            ProjectEmailGroups::participantsGroupId($project->id) => \__('Email everyone asked', 'orchestra-projects'),
+        ]);
+        if ($emailButtons !== '') {
+            echo '<h2>' . \esc_html__('Email', 'orchestra-projects') . '</h2><p>' . $emailButtons . '</p>'; // escaped
         }
         if (\current_user_can(Capabilities::PROJECT_MANAGE)) {
             $this->renderStatusButtons($project);

@@ -6,9 +6,9 @@
 # Usage: tests/e2e/run.sh
 #   E2E_DIR          working directory (default: a new temporary directory, deleted afterwards)
 #   E2E_PORT         port for the web server (default: 8765)
-#   E2E_CORE_ZIP     orchestra-core zip (default: the latest GitHub release)
+#   E2E_CORE_ZIP     orchestra-core zip (default: the latest GitHub release); needs 0.3 or later
 #   E2E_LIBRARY_ZIP  orchestra-library zip (default: the latest GitHub release)
-#   E2E_MEMBERS_ZIP  orchestra-members zip (default: the latest GitHub release)
+#   E2E_MEMBERS_ZIP  orchestra-members zip (default: the latest GitHub release); needs 0.2 or later
 #   GITHUB_TOKEN     optional, avoids the rate limit of the GitHub API
 #
 # Requirements: php 8.3+ with pdo_sqlite, zip and fileinfo; python3; curl; unzip; composer.
@@ -84,6 +84,18 @@ install_release orchestra-members "${E2E_MEMBERS_ZIP:-}"
 "$ROOT/build-plugin.sh" > /dev/null
 PROJECTS_ZIP=$(ls -t "$ROOT"/build/orchestra-projects-*.zip | head -n 1)
 unzip -q -o "$PROJECTS_ZIP" -d "$WP_PATH/wp-content/plugins"
+
+# Captures emails instead of sending them
+mkdir -p "$WP_PATH/wp-content/mu-plugins"
+cat > "$WP_PATH/wp-content/mu-plugins/e2e-mail.php" <<'MU'
+<?php
+add_filter('pre_wp_mail', static function ($result, array $mail) {
+    $log = get_option('e2e_mails', []);
+    $log[] = $mail;
+    update_option('e2e_mails', $log, false);
+    return true;
+}, 10, 2);
+MU
 
 "$WP" plugin activate orchestra-core orchestra-library orchestra-members orchestra-projects
 for user in "organizer Olga orchestra_organizer" "conductor Carl orchestra_conductor" "mia Mia orchestra_member" \

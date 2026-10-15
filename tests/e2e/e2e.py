@@ -380,6 +380,51 @@ check(participation_of(spring, "sam") is not None, "users promoted to member are
 wp("user", "create", "cleo", "cleo@example.com", "--role=orchestra_conductor", "--user_pass=pass")
 check(participation_of(spring, "cleo") is None, "new conductors are not asked")
 
+# --- Email to project and assignment groups ------------------------------------------------
+COMPOSE = "/wp-admin/admin.php?page=orchestra-email"
+
+
+def mails():
+    return json.loads(wp_eval('echo json_encode(get_option("e2e_mails", []));'))
+
+
+def send_email(session, groups, subject, op="send"):
+    _, page = session.get(COMPOSE)
+    data = {"_wpnonce": field(page, "_wpnonce") or "missing", "op": op, "subject": subject, "body": "Hello",
+            "groups[]": groups}
+    return session.post(COMPOSE, data)
+
+
+_, page = conductor.get(COMPOSE)
+plain = text(page)
+check("Spring Concert 2027" in plain and "Accepted participants" in plain
+      and "Pirates of the Caribbean: Horn 1" in plain and "Everyone playing Pirates of the Caribbean" in plain,
+      "conductors can email the project, piece and part groups")
+check("Lord of the Dance: Violin 1" not in plain, "parts without assignments have no group")
+check("Broken dates" not in plain, "draft projects have no groups")
+status, _ = mo.get(COMPOSE)
+check(status == 403, "members cannot email project groups")
+
+accepted_group = f"orchestra_projects_{spring}_accepted"
+_, page = organizer.get(manage_url(spring))
+check(f"groups%5B%5D={accepted_group}" in page, "the project overview links to an email to the accepted participants")
+_, page = conductor.get(manage_url(spring, "assignments"))
+check(f"orchestra_projects_{spring}_piece_{PIRATES}" in page, "the assignments link to an email to the players of a piece")
+
+before = len(mails())
+send_email(organizer, [accepted_group], "Rehearsal plan")
+recipients = sorted(m["to"] for m in mails()[before:])
+check(recipients == ["mia@example.com", "organizer@example.com"], "email to the accepted participants")
+before = len(mails())
+send_email(conductor, [f"orchestra_projects_{spring}_part_{HORN1}", f"orchestra_projects_{spring}_piece_{PIRATES}"], "Horns")
+recipients = sorted(m["to"] for m in mails()[before:])
+check(recipients == ["mia@example.com", "organizer@example.com"], "overlapping groups send one email per person")
+wp_eval(f'update_user_meta({ids["mo"]}, "orchestra_members_inactive", "1");')
+_, page = send_email(organizer, [f"orchestra_projects_{spring}_open"], "Please respond", "review")
+check("Mo" not in text(page).split("Recipients", 1)[1].split("Subject", 1)[0] and "Nia" in page,
+      "inactive members are left out of project groups")
+wp_eval(f'delete_user_meta({ids["mo"]}, "orchestra_members_inactive");')
+
 # --- Assignment history ---------------------------------------------------------------------
 summer, _ = create_project(organizer, "Summer 2028", "2028-06-01", "2028-07-01", "2028-07-01")
 act(conductor, summer, "program_add", piece=PIRATES)
@@ -428,6 +473,8 @@ _, page = mia.get(DASHBOARD)
 check("Spring Concert 2027" not in page, "archived projects leave the dashboard")
 _, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}")
 check("Spring Concert 2027" in page and "Horn 1" in page, "archived projects can still be opened")
+_, page = organizer.get(COMPOSE)
+check("Spring Concert 2027" not in page and "Summer 2028" in page, "archived projects have no email groups")
 
 # --- Privacy and deleted users --------------------------------------------------------------
 export = wp_json(
@@ -466,6 +513,12 @@ wp("plugin", "uninstall", "orchestra-projects")
 tables = wp_eval('global $wpdb; echo json_encode($wpdb->get_col("SHOW TABLES LIKE \'%orchestra_projects%\'"));')
 check(tables == "[]" and wp_eval(f'echo (int) (get_post({spring}) !== null);') == "0",
       "uninstall removes the tables and projects")
+
+wp("plugin", "deactivate", "orchestra-members", "orchestra-library", "orchestra-core")
+wp("plugin", "uninstall", "orchestra-core")
+tables = wp_eval('global $wpdb; echo json_encode($wpdb->get_col("SHOW TABLES LIKE \'%orchestra_core%\'"));')
+check(tables == "[]" and wp("cron", "event", "list", "--hook=orchestra_core_email_purge", "--format=count") == "0",
+      "uninstalling orchestra-core removes the email log and its cron events")
 
 print()
 if failures:

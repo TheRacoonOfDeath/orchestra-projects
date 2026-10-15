@@ -16,6 +16,8 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
 - Assignments of members to parts, with hints who played the part last time or before
 - A member page: add the shortcode `[orchestra_projects]` to any page. Members see their projects,
   respond, see their parts and download their sheet music in one zip
+- Email groups for the email service of orchestra-core (0.3 or later): participants by status,
+  and the players of each piece and part
 - Pieces and parts used in projects cannot be deleted in the library
 - Export of participation and assignments with the WordPress privacy tools; deleting an account
   anonymizes its history

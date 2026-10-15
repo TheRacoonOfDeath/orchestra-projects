@@ -74,12 +74,23 @@ The marks are shown to users with `orchestra_projects_assignment_history_read` (
 All forms post to `admin-post.php` with a nonce per project (or per participation for
 responses) and check the capability of the operation.
 
+## Email groups
+
+With orchestra-core 0.3 or later, orchestra-projects registers groups for every project that is
+open, in preparation or completed, listed under the project's name. Emailing them requires
+`orchestra_projects_email_send`, checked with the project ID.
+
+| Group ID | Recipients |
+|----------|------------|
+| `orchestra_projects_{project}_all` | everyone asked to respond |
+| `orchestra_projects_{project}_accepted` / `_open` / `_declined` | by participation status |
+| `orchestra_projects_{project}_piece_{piece}` | everyone assigned to a part of the piece |
+| `orchestra_projects_{project}_part_{part}` | everyone assigned to the part |
+
+Piece and part groups exist only when they have assignments. orchestra-members removes inactive
+members from all groups. The Overview tab links to emails to the accepted, pending and all
+participants, the Assignments tab to the players of each piece.
+
 ## Capabilities
 
-See the catalogue in orchestra-core's `docs/capabilities.md`. All are implemented except
-`orchestra_projects_email_send`.
-
-## Not yet implemented
-
-- The project and assignment email groups and `orchestra_projects_email_send`. They need the email
-  service of orchestra-core, which does not exist yet.
+See the catalogue in orchestra-core's `docs/capabilities.md`. All are implemented.

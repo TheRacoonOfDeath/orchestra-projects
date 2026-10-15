@@ -23,6 +23,11 @@ meta of orchestra-projects directly.
 `concertDate` (Y-m-d or null). Deleted users are left out of the user ID lists; their
 `Assignment::$userId` is null.
 
+## Email groups
+
+`Email\ProjectEmailGroups::participantsGroupId()`, `pieceGroupId()` and `partGroupId()` return the
+IDs of the email groups, e.g. for `EmailService::composeUrl()`.
+
 ## Actions
 
 | Action | Arguments | Fired |

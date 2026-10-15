@@ -6,10 +6,13 @@ namespace Orchestra\Projects;
 
 use LogicException;
 use Orchestra\Core\Authorization\CapabilityRegistry;
+use Orchestra\Core\Email\EmailService;
+use Orchestra\Core\Plugin as CorePlugin;
 use Orchestra\Library\Plugin as LibraryPlugin;
 use Orchestra\Members\MembersService;
 use Orchestra\Members\Plugin as MembersPlugin;
 use Orchestra\Projects\Admin\AssignmentsTab;
+use Orchestra\Projects\Admin\EmailLinks;
 use Orchestra\Projects\Admin\Names;
 use Orchestra\Projects\Admin\Notices;
 use Orchestra\Projects\Admin\ParticipationTab;
@@ -20,6 +23,7 @@ use Orchestra\Projects\Admin\ProjectsPage;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Database\Schema;
+use Orchestra\Projects\Email\ProjectEmailGroups;
 use Orchestra\Projects\Frontend\ProjectsShortcode;
 use Orchestra\Projects\Frontend\ResponseController;
 use Orchestra\Projects\Participation\ParticipationRepository;
@@ -135,6 +139,19 @@ final class Plugin
         $names = new Names($members);
         $notices = new Notices();
 
+        // The email service exists since orchestra-core 0.3.
+        $email = \class_exists(EmailService::class) ? CorePlugin::instance()->email() : null;
+        if ($email !== null) {
+            (new ProjectEmailGroups(
+                $this->projectRepository,
+                $this->program,
+                $this->participations,
+                $this->assignments,
+                $library
+            ))->register();
+        }
+        $emailLinks = new EmailLinks($email);
+
         \add_action(
             'orchestra_core_register_capabilities',
             fn (CapabilityRegistry $registry) => Capabilities::register(
@@ -189,8 +206,10 @@ final class Plugin
                     $assignmentService,
                     $this->participations,
                     $library,
-                    $names
+                    $names,
+                    $emailLinks
                 ),
+                $emailLinks,
             ))->register();
         }
     }

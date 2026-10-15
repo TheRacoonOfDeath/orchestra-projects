@@ -10,6 +10,7 @@ use Orchestra\Projects\Assignment\Assignment;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Capabilities;
+use Orchestra\Projects\Email\ProjectEmailGroups;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationStatus;
 use Orchestra\Projects\Program\ProgramRepository;
@@ -24,6 +25,7 @@ final class AssignmentsTab
         private readonly ParticipationRepository $participations,
         private readonly LibraryService $library,
         private readonly Names $names,
+        private readonly EmailLinks $emailLinks,
     ) {
     }
 
@@ -91,6 +93,15 @@ final class AssignmentsTab
                 echo '</tr>';
             }
             echo '</tbody></table>';
+
+            $assignedParts = \array_filter($parts, static fn (Part $part): bool => isset($byPart[$part->id]));
+            $pieceHasAssignments = $assignedParts !== [];
+            if ($pieceHasAssignments) {
+                echo '<p>' . $this->emailLinks->buttons($project, [
+                    ProjectEmailGroups::pieceGroupId($project->id, $pieceId)
+                        => \__('Email everyone playing this piece', 'orchestra-projects'),
+                ]) . '</p>'; // escaped
+            }
         }
     }
 

@@ -50,6 +50,9 @@ final class Capabilities
     /** See who played a part before, when assigning. */
     public const ASSIGNMENT_HISTORY_READ = 'orchestra_projects_assignment_history_read';
 
+    /** Email the project and assignment groups. Checked with the project ID. */
+    public const EMAIL_SEND = 'orchestra_projects_email_send';
+
     /**
      * @internal Hooked to `orchestra_core_register_capabilities`.
      * @param Closure(int $participationId): ?int $participationOwner Returns the user ID of a participation
@@ -71,6 +74,7 @@ final class Capabilities
             ->register(self::ASSIGNMENT_READ, $everyone)
             ->register(self::ASSIGNMENT_MANAGE, [Roles::CONDUCTOR])
             ->register(self::ASSIGNMENT_HISTORY_READ, [Roles::CONDUCTOR])
+            ->register(self::EMAIL_SEND, [Roles::CONDUCTOR, Roles::ORGANIZER])
             ->registerMetaCapability(
                 self::PARTICIPATION_READ,
                 new OwnershipMapper(self::PARTICIPATION_READ_OWN, self::PARTICIPATION_READ_OTHERS, $participationOwner)
