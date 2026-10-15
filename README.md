@@ -31,7 +31,9 @@ Organizers and conductors work in the **Projects** menu in wp-admin.
 2. Upload `orchestra-projects-{VERSION}.zip` under **Plugins → Add New → Upload Plugin** and activate it.
 3. Create a page with `[orchestra_projects]` for members.
 
-Updates are installed from the GitHub releases of this repository.
+Updates are installed from the GitHub releases of this repository. The plugin reads
+`update.json` from the latest release, so the GitHub API and its rate limit are not involved and
+no token is needed.
 
 ## Documentation
 
@@ -58,5 +60,5 @@ HTTP as each role. They need PHP with `pdo_sqlite`, Python 3, curl, unzip and ne
 1. Run `composer check` and `composer e2e`.
 2. Bump `Version:` in `orchestra-projects.php`.
 3. Run `./build-plugin.sh`; it creates `build/orchestra-projects-{VERSION}.zip` with production
-   dependencies only.
-4. Create a GitHub release for the version and attach the zip.
+   dependencies only, and `build/update.json`.
+4. Create a GitHub release `v{VERSION}` and attach the zip **and `update.json`**.

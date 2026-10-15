@@ -57,6 +57,31 @@ rm "$DIST_DIR/composer.json" "$DIST_DIR/composer.lock"
 echo "Creating zip file..."
 (cd "$BUILD_DIR" && zip -r -q "$ZIP_NAME" "$PLUGIN_NAME" -x "*.DS_Store")
 
+# Update metadata for the update checker, attached to the release next to the zip
+plugin_header() {
+    grep -m 1 "^ \* $1:" "$PLUGIN_FILE" | sed -E "s/^ \* $1:[[:space:]]*//"
+}
+REPOSITORY_URL="https://github.com/TheRacoonOfDeath/${PLUGIN_NAME}"
+php -r '
+[, $name, $slug, $version, $repository, $zip, $requires, $requiresPhp, $description] = $argv;
+echo json_encode([
+    "name" => $name,
+    "slug" => $slug,
+    "version" => $version,
+    "download_url" => "$repository/releases/download/v$version/$zip",
+    "homepage" => $repository,
+    "requires" => $requires,
+    "requires_php" => $requiresPhp,
+    "last_updated" => gmdate("Y-m-d H:i:s"),
+    "sections" => [
+        "description" => htmlspecialchars($description),
+        "changelog" => "<a href=\"$repository/releases/tag/v$version\">Release notes</a>",
+    ],
+], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), "\n";
+' "$(plugin_header 'Plugin Name')" "$PLUGIN_NAME" "$VERSION" "$REPOSITORY_URL" "$ZIP_NAME" \
+    "$(plugin_header 'Requires at least')" "$(plugin_header 'Requires PHP')" "$(plugin_header 'Description')" \
+    > "$BUILD_DIR/update.json"
+
 ZIP_SIZE=$(du -h "$BUILD_DIR/$ZIP_NAME" | cut -f1)
 
 echo ""
@@ -64,5 +89,5 @@ echo -e "${GREEN}✓ Build successful!${NC}"
 echo ""
 echo -e "Plugin: ${YELLOW}${PLUGIN_NAME}${NC}"
 echo -e "Version: ${YELLOW}${VERSION}${NC}"
-echo -e "Location: ${YELLOW}${BUILD_DIR}/${ZIP_NAME}${NC}"
+echo -e "Location: ${YELLOW}${BUILD_DIR}/${ZIP_NAME}${NC} and ${YELLOW}${BUILD_DIR}/update.json${NC}"
 echo -e "Size: ${YELLOW}${ZIP_SIZE}${NC}"

@@ -41,7 +41,13 @@ use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 final class Plugin
 {
-    private const GITHUB_REPOSITORY = 'https://github.com/TheRacoonOfDeath/orchestra-projects/';
+    /**
+     * Update metadata, attached to every GitHub release by build-plugin.sh. This download link
+     * always points to the latest release and, unlike the GitHub API, has no rate limit for
+     * requests without a token.
+     */
+    private const UPDATE_METADATA_URL =
+        'https://github.com/TheRacoonOfDeath/orchestra-projects/releases/latest/download/update.json';
 
     private static ?self $instance = null;
 
@@ -239,23 +245,6 @@ final class Plugin
 
     private function registerUpdateChecker(): void
     {
-        $updateChecker = PucFactory::buildUpdateChecker(
-            self::GITHUB_REPOSITORY,
-            $this->pluginFile,
-            'orchestra-projects'
-        );
-
-        // The factory is typed to return any kind of update checker; branches and release
-        // assets are only supported by the GitHub-based one.
-        if (!\method_exists($updateChecker, 'setBranch') || !\method_exists($updateChecker, 'getVcsApi')) {
-            return;
-        }
-
-        $updateChecker->setBranch('main');
-
-        $vcsApi = $updateChecker->getVcsApi();
-        if (\is_object($vcsApi) && \method_exists($vcsApi, 'enableReleaseAssets')) {
-            $vcsApi->enableReleaseAssets();
-        }
+        PucFactory::buildUpdateChecker(self::UPDATE_METADATA_URL, $this->pluginFile, 'orchestra-projects');
     }
 }
