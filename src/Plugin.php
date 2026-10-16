@@ -6,11 +6,10 @@ namespace Orchestra\Projects;
 
 use LogicException;
 use Orchestra\Core\Authorization\CapabilityRegistry;
-use Orchestra\Core\Email\EmailService;
-use Orchestra\Core\Plugin as CorePlugin;
 use Orchestra\Core\Ui\Html;
 use Orchestra\Core\Ui\Menu;
 use Orchestra\Core\Ui\MenuItem;
+use Orchestra\Email\Plugin as EmailPlugin;
 use Orchestra\Library\Plugin as LibraryPlugin;
 use Orchestra\Members\MembersService;
 use Orchestra\Members\Plugin as MembersPlugin;
@@ -166,8 +165,10 @@ final class Plugin
         $formHandler = new ProjectFormHandler($this->projectRepository, $this->staff, $members);
         $names = new Names($members);
 
-        // The email service exists since orchestra-core 0.3.
-        $email = \class_exists(EmailService::class) ? CorePlugin::instance()->email() : null;
+        // orchestra-email is optional.
+        $email = \class_exists(EmailPlugin::class) && EmailPlugin::running()
+            ? EmailPlugin::instance()->email()
+            : null;
         if ($email !== null) {
             (new ProjectEmailGroups(
                 $this->projectRepository,

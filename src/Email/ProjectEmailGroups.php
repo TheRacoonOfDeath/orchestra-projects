@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Orchestra\Projects\Email;
 
-use Orchestra\Core\Email\EmailGroupRegistry;
-use Orchestra\Core\Email\EmailService;
-use Orchestra\Core\Email\RecipientGroup;
+use Orchestra\Email\EmailGroupRegistry;
+use Orchestra\Email\EmailService;
+use Orchestra\Email\RecipientGroup;
 use Orchestra\Library\LibraryService;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Capabilities;
@@ -54,7 +54,7 @@ final class ProjectEmailGroups
     }
 
     /**
-     * @internal Hooked to `orchestra_core_register_email_groups`.
+     * @internal Hooked to `orchestra_email_register_groups`.
      */
     public function registerGroups(EmailGroupRegistry $registry): void
     {

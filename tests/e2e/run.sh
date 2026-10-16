@@ -6,7 +6,8 @@
 # Usage: tests/e2e/run.sh
 #   E2E_DIR          working directory (default: a new temporary directory, deleted afterwards)
 #   E2E_PORT         port for the web server (default: 8765)
-#   E2E_CORE_ZIP     orchestra-core zip (default: the latest GitHub release); needs 0.4 or later
+#   E2E_CORE_ZIP     orchestra-core zip (default: the latest GitHub release); needs 0.7 or later
+#   E2E_EMAIL_ZIP    orchestra-email zip (default: the latest GitHub release)
 #   E2E_LIBRARY_ZIP  orchestra-library zip (default: the latest GitHub release)
 #   E2E_MEMBERS_ZIP  orchestra-members zip (default: the latest GitHub release); needs 0.3 or later
 #   GITHUB_TOKEN     optional, avoids the rate limit of the GitHub API
@@ -78,6 +79,7 @@ install_release() {
     unzip -q -o "$zip" -d "$WP_PATH/wp-content/plugins"
 }
 install_release orchestra-core "${E2E_CORE_ZIP:-}"
+install_release orchestra-email "${E2E_EMAIL_ZIP:-}"
 install_release orchestra-library "${E2E_LIBRARY_ZIP:-}"
 install_release orchestra-members "${E2E_MEMBERS_ZIP:-}"
 
@@ -89,7 +91,7 @@ unzip -q -o "$PROJECTS_ZIP" -d "$WP_PATH/wp-content/plugins"
 mkdir -p "$WP_PATH/wp-content/mu-plugins"
 cat > "$WP_PATH/wp-content/mu-plugins/e2e-offline.php" <<'MU'
 <?php
-foreach (['orchestra-core', 'orchestra-library', 'orchestra-members', 'orchestra-projects'] as $slug) {
+foreach (['orchestra-core', 'orchestra-email', 'orchestra-library', 'orchestra-members', 'orchestra-projects'] as $slug) {
     add_filter("puc_check_now-$slug", '__return_false');
 }
 MU
@@ -106,7 +108,7 @@ add_filter('pre_wp_mail', static function ($result, array $mail) {
 }, 10, 2);
 MU
 
-"$WP" plugin activate orchestra-core orchestra-library orchestra-members orchestra-projects
+"$WP" plugin activate orchestra-core orchestra-email orchestra-library orchestra-members orchestra-projects
 for user in "organizer Olga orchestra_organizer" "conductor Carl orchestra_conductor" "mia Mia orchestra_member" \
     "max Max orchestra_member" "mo Mo orchestra_member" "ina Ina orchestra_member" "sam Sam subscriber"; do
     set -- $user

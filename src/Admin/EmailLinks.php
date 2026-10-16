@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Orchestra\Projects\Admin;
 
-use Orchestra\Core\Email\EmailService;
+use Orchestra\Email\EmailService;
 use Orchestra\Core\Ui\Form;
 use Orchestra\Projects\Capabilities;
 use Orchestra\Projects\Project\Project;

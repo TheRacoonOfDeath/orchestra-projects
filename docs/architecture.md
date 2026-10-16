@@ -86,8 +86,8 @@ were sent from.
 
 ## Email groups
 
-With orchestra-core 0.3 or later, orchestra-projects registers groups for every project that is
-open, in preparation or completed, listed under the project's name. Emailing them requires
+When orchestra-email is active, orchestra-projects registers groups for every project that is
+open or in preparation, listed under the project's name. Emailing them requires
 `orchestra_projects_email_send`, checked with the project ID.
 
 | Group ID | Recipients |

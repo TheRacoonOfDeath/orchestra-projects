@@ -434,9 +434,9 @@ def send_email(session, groups, subject, op="send"):
     status, page = session.post(EMAIL, data)
     if op == "review":
         return status, page
-    send = next((f for f in re.findall(r"<form.*?</form>", page, flags=re.S) if "orchestra_core_email_send" in f), "")
+    send = next((f for f in re.findall(r"<form.*?</form>", page, flags=re.S) if "orchestra_email_send" in f), "")
     return session.post("/wp-admin/admin-post.php", {
-        "action": "orchestra_core_email_send", "_wpnonce": field(send, "_wpnonce") or "missing",
+        "action": "orchestra_email_send", "_wpnonce": field(send, "_wpnonce") or "missing",
         "subject": subject, "body": "Hello", "groups[]": groups,
         "orchestra_log_url": field(send, "orchestra_log_url") or EMAIL, "redirect_to": EMAIL,
     })
@@ -591,11 +591,14 @@ tables = wp_eval('global $wpdb; echo json_encode($wpdb->get_col("SHOW TABLES LIK
 check(tables == "[]" and wp_eval(f'echo (int) (get_post({spring}) !== null);') == "0",
       "uninstall removes the tables and projects")
 
-wp("plugin", "deactivate", "orchestra-members", "orchestra-library", "orchestra-core")
+wp("plugin", "deactivate", "orchestra-members", "orchestra-library", "orchestra-email", "orchestra-core")
 wp("plugin", "uninstall", "orchestra-core")
+tables = wp_eval('global $wpdb; echo json_encode($wpdb->get_col("SHOW TABLES LIKE \'%orchestra_core_email%\'"));')
+check(len(json.loads(tables)) == 2, "uninstalling orchestra-core keeps the email log of orchestra-email")
+wp("plugin", "uninstall", "orchestra-email")
 tables = wp_eval('global $wpdb; echo json_encode($wpdb->get_col("SHOW TABLES LIKE \'%orchestra_core%\'"));')
 check(tables == "[]" and wp("cron", "event", "list", "--hook=orchestra_core_email_purge", "--format=count") == "0",
-      "uninstalling orchestra-core removes the email log and its cron events")
+      "uninstalling orchestra-email removes the email log and its cron events")
 
 print()
 if failures:

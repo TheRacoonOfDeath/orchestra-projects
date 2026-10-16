@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "33246b5fa2c08eda9ab2a1546a9cc677",
+    "content-hash": "85af597304172e5e1215a7990902004d",
     "packages": [
         {
             "name": "yahnis-elsts/plugin-update-checker",
@@ -238,6 +238,71 @@
                 "issues": "https://github.com/TheRacoonOfDeath/orchestra-core/issues"
             },
             "time": "2026-10-15T12:37:18+00:00"
+        },
+        {
+            "name": "orchestra/email",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TheRacoonOfDeath/orchestra-email.git",
+                "reference": "bcd8dc594802af81a345cbd5c4d51994b9b7469f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-email/zipball/bcd8dc594802af81a345cbd5c4d51994b9b7469f",
+                "reference": "bcd8dc594802af81a345cbd5c4d51994b9b7469f",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.3",
+                "yahnis-elsts/plugin-update-checker": "^5.7"
+            },
+            "require-dev": {
+                "orchestra/core": "^0.6",
+                "phpstan/phpstan": "^2.2",
+                "phpunit/phpunit": "^12.0",
+                "squizlabs/php_codesniffer": "^3.13",
+                "szepeviktor/phpstan-wordpress": "^2.0"
+            },
+            "type": "wordpress-plugin",
+            "autoload": {
+                "psr-4": {
+                    "Orchestra\\Email\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Orchestra\\Email\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "phpunit"
+                ],
+                "analyse": [
+                    "phpstan analyse --memory-limit=1G"
+                ],
+                "lint": [
+                    "phpcs"
+                ],
+                "fix": [
+                    "phpcbf"
+                ],
+                "check": [
+                    "@lint",
+                    "@analyse",
+                    "@test"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Emails to members, sections and project participants for the Orchestra plugin suite.",
+            "support": {
+                "source": "https://github.com/TheRacoonOfDeath/orchestra-email/tree/v0.1.0",
+                "issues": "https://github.com/TheRacoonOfDeath/orchestra-email/issues"
+            },
+            "time": "2026-10-16T15:30:52+00:00"
         },
         {
             "name": "orchestra/library",
