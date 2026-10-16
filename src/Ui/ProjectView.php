@@ -71,7 +71,7 @@ final class ProjectView
         $tab = isset($tabs[$tab]) ? $tab : self::OVERVIEW;
 
         $completed = $project->status === ProjectStatus::Completed;
-        $html = '<p><a href="' . \esc_url(ProjectListView::url($urls, $completed)) . '">&larr; '
+        $html = '<p class="orchestra-back"><a href="' . \esc_url(ProjectListView::url($urls, $completed)) . '">&larr; '
             . ($completed
                 ? \esc_html__('Completed projects', 'orchestra-projects')
                 : \esc_html__('All projects', 'orchestra-projects'))
@@ -92,14 +92,18 @@ final class ProjectView
             self::PROGRAM => $this->programView->manage($project),
             self::PARTICIPATION => $this->participationView->render($project),
             self::ASSIGNMENTS => $this->assignmentsView->render($project),
-            default => $this->overview($project),
+            default => $this->overview($project, !$withHeading),
         };
     }
 
-    private function overview(Project $project): string
+    /**
+     * @param bool $showStatus Whether to list the status, which is otherwise shown next to the title
+     */
+    private function overview(Project $project, bool $showStatus): string
     {
+        $facts = $showStatus ? [[\__('Status', 'orchestra-projects'), Badges::project($project->status)]] : [];
         $facts = [
-            [\__('Status', 'orchestra-projects'), Badges::project($project->status)],
+            ...$facts,
             [\__('Dates', 'orchestra-projects'), \esc_html(Dates::range($project))],
             [\__('Concert', 'orchestra-projects'), \esc_html(Dates::format($project->concertDate))],
             [

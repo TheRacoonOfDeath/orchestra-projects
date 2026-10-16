@@ -37,7 +37,7 @@ final class ProjectFormView
         // Saving an existing project returns to it; a new one is opened by the handler.
         $fields = $project === null ? [] : ['redirect_to' => $back];
 
-        return '<p><a href="' . \esc_url($back) . '">&larr; '
+        return '<p class="orchestra-back"><a href="' . \esc_url($back) . '">&larr; '
             . \esc_html($project === null ? \__('All projects', 'orchestra-projects') : $project->title) . '</a></p>'
             . '<h2>' . \esc_html($heading)
             . '</h2>'

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 16:51+0200\n"
+"POT-Creation-Date: 2026-10-16 18:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -85,7 +85,7 @@ msgstr ""
 
 #: src/Admin/ProjectsPage.php:63 src/Admin/ProjectsPage.php:64
 #: src/Admin/ProjectsPage.php:77 src/Admin/ProjectsPage.php:118
-#: src/Plugin.php:249 src/Project/ProjectPostType.php:38
+#: src/Plugin.php:250 src/Project/ProjectPostType.php:38
 msgid "Projects"
 msgstr ""
 
@@ -215,11 +215,11 @@ msgstr ""
 msgid "Declined"
 msgstr ""
 
-#: src/Plugin.php:250
+#: src/Plugin.php:251
 msgid "Respond to projects, see your parts and download your sheet music."
 msgstr ""
 
-#: src/Plugin.php:274
+#: src/Plugin.php:275
 msgid ""
 "Orchestra Projects requires Orchestra Core 0.4, Orchestra Library and "
 "Orchestra Members to be active."
@@ -239,7 +239,7 @@ msgid "Project"
 msgstr ""
 
 #: src/Privacy/PersonalData.php:89 src/Ui/ProjectView.php:59
-#: src/Ui/ProjectView.php:116
+#: src/Ui/ProjectView.php:120
 msgid "Participation"
 msgstr ""
 
@@ -255,7 +255,7 @@ msgstr ""
 msgid "Piece"
 msgstr ""
 
-#: src/Privacy/PersonalData.php:109 src/Ui/AssignmentsView.php:129
+#: src/Privacy/PersonalData.php:109 src/Ui/AssignmentsView.php:132
 msgid "Part"
 msgstr ""
 
@@ -400,40 +400,49 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Ui/AssignmentsView.php:114
+#: src/Ui/AssignmentsView.php:117
 msgid "Email the players"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:119
+#: src/Ui/AssignmentsView.php:122
 msgid "The piece has no parts."
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:129
+#: src/Ui/AssignmentsView.php:132
 msgid "Assigned"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:131 src/Ui/AssignmentsView.php:224
+#: src/Ui/AssignmentsView.php:134 src/Ui/AssignmentsView.php:230
 msgid "Assign"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:162 src/Ui/ProgramView.php:93
+#: src/Ui/AssignmentsView.php:165 src/Ui/ProgramView.php:93
 msgid "Remove"
 msgstr ""
 
 #. translators: %s: part name
-#: src/Ui/AssignmentsView.php:202
+#: src/Ui/AssignmentsView.php:204
 #, php-format
 msgid "currently %s"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:216
+#: src/Ui/AssignmentsView.php:219
+msgid "Assign members"
+msgstr ""
+
+#: src/Ui/AssignmentsView.php:224
 msgid ""
 "Some selected members already play another part of this piece. Move them to "
 "this part?"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:221
+#: src/Ui/AssignmentsView.php:229
 msgid "Members"
+msgstr ""
+
+#. translators: date format, see https://www.php.net/manual/datetime.format.php; German: j. F Y
+#: src/Ui/Dates.php:61
+msgid "F j, Y"
 msgstr ""
 
 #: src/Ui/MemberProjectView.php:39
@@ -490,6 +499,10 @@ msgstr ""
 msgid "Nobody has been asked to respond."
 msgstr ""
 
+#: src/Ui/ParticipationView.php:77
+msgid "Nobody"
+msgstr ""
+
 #: src/Ui/ParticipationView.php:82
 msgid "Member"
 msgstr ""
@@ -499,17 +512,17 @@ msgstr ""
 msgid "Assignments"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:87 src/Ui/ParticipationView.php:135
+#: src/Ui/ParticipationView.php:87 src/Ui/ParticipationView.php:133
 msgid "Change"
 msgstr ""
 
 #. translators: %d: number of assignments
-#: src/Ui/ParticipationView.php:118
+#: src/Ui/ParticipationView.php:116
 #, php-format
 msgid "The member's %d assignments in this project will be removed. Continue?"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:133
+#: src/Ui/ParticipationView.php:131
 msgid "New status"
 msgstr ""
 
@@ -592,11 +605,11 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:91 src/Ui/ProjectView.php:106
+#: src/Ui/ProjectFormView.php:91 src/Ui/ProjectView.php:110
 msgid "Conductors"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:92 src/Ui/ProjectView.php:110
+#: src/Ui/ProjectFormView.php:92 src/Ui/ProjectView.php:114
 msgid "Organizers"
 msgstr ""
 
@@ -622,7 +635,7 @@ msgstr ""
 msgid "There are no current projects."
 msgstr ""
 
-#: src/Ui/ProjectListView.php:67 src/Ui/ProjectView.php:104
+#: src/Ui/ProjectListView.php:67 src/Ui/ProjectView.php:108
 msgid "Concert"
 msgstr ""
 
@@ -634,7 +647,7 @@ msgstr ""
 msgid "Overview"
 msgstr ""
 
-#: src/Ui/ProjectView.php:56 src/Ui/ProjectView.php:130
+#: src/Ui/ProjectView.php:56 src/Ui/ProjectView.php:134
 msgid "Program"
 msgstr ""
 
@@ -646,50 +659,50 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: src/Ui/ProjectView.php:102 src/Ui/ProjectView.php:186
+#: src/Ui/ProjectView.php:104 src/Ui/ProjectView.php:190
 msgid "Status"
 msgstr ""
 
-#: src/Ui/ProjectView.php:103
+#: src/Ui/ProjectView.php:107
 msgid "Dates"
 msgstr ""
 
-#: src/Ui/ProjectView.php:135
+#: src/Ui/ProjectView.php:139
 msgid "Email accepted participants"
 msgstr ""
 
-#: src/Ui/ProjectView.php:137
+#: src/Ui/ProjectView.php:141
 msgid "Email pending participants"
 msgstr ""
 
-#: src/Ui/ProjectView.php:138
+#: src/Ui/ProjectView.php:142
 msgid "Email everyone asked"
 msgstr ""
 
-#: src/Ui/ProjectView.php:141
+#: src/Ui/ProjectView.php:145
 msgid "Email"
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:160
+#: src/Ui/ProjectView.php:164
 #, php-format
 msgid "Change the status to \"%s\"?"
 msgstr ""
 
-#: src/Ui/ProjectView.php:165
+#: src/Ui/ProjectView.php:169
 msgid ""
 "All active members and organizers who have not been asked yet will be asked "
 "to respond."
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:171
+#: src/Ui/ProjectView.php:175
 #, php-format
 msgid "Move to \"%s\""
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:173
+#: src/Ui/ProjectView.php:177
 #, php-format
 msgid "Back to \"%s\""
 msgstr ""

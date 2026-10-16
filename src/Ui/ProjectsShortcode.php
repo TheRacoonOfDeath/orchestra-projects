@@ -80,7 +80,7 @@ final class ProjectsShortcode
 
         $project = $this->projects->find(\absint($requested));
         if ($project === null || !ProjectView::canSee($project)) {
-            return Html::page('<p><a href="' . \esc_url($base) . '">&larr; '
+            return Html::page('<p class="orchestra-back"><a href="' . \esc_url($base) . '">&larr; '
                 . \esc_html__('All projects', 'orchestra-projects')
                 . '</a></p>' . Html::empty(\__('The project does not exist.', 'orchestra-projects')));
         }

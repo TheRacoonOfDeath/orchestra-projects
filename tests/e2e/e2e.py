@@ -480,11 +480,21 @@ for session, login in [(mia, "mia"), (organizer, "organizer"), (mo, "mo")]:
     _, page = session.get(DASHBOARD)
     respond(session, participation_of(summer, login)["id"], "accepted", page)
 _, page = conductor.get(manage_url(summer, "assignments"))
-horn1_row = page.split("orchestra-projects-part-" + str(HORN1), 1)[1].split("</select>", 1)[0]
+horn1_row = text(page.split("orchestra-projects-part-" + str(HORN1), 1)[1].split("</details>", 1)[0])
 check("Mia — played last time" in horn1_row and "Olga — never played" in horn1_row and "Mo — never played" in horn1_row,
       "conductors see who played the part last time")
-horn2_row = page.split("orchestra-projects-part-" + str(HORN2), 1)[1].split("</select>", 1)[0]
+horn2_row = text(page.split("orchestra-projects-part-" + str(HORN2), 1)[1].split("</details>", 1)[0])
 check("Olga — played last time" in horn2_row, "history is per part")
+check('type="checkbox" name="users[]"' in page and "<select multiple" not in page,
+      "members are assigned with checkboxes, not a multiple selection")
+wp("option", "update", "orchestra_core_language", "de_DE")
+_, page = conductor.get(manage_url(summer, "overview"))
+check(re.search(r"1\. \w+ 2028", text(page)) is not None,
+      "dates follow the order of the language when the site keeps the English default format")
+check("<dt>Status</dt>" not in page, "the overview shows the status only next to the title")
+_, page = conductor.get(manage_url(summer, "participation"))
+check("Niemand" in text(page) and "orchestra-aligned-tables" in page, "empty participation groups say so")
+wp("option", "delete", "orchestra_core_language")
 _, page = admin.get(admin_url(summer, "assignments"))
 check("played last time" in page and "orchestra--admin" in page, "administrators see the history in wp-admin")
 
@@ -530,7 +540,7 @@ _, page = act(conductor, spring, "program_add", piece=DANCE)
 check("cannot be changed" in text(page), "programs are locked in completed projects")
 act(conductor, summer, "program_add", piece=PIRATES)
 _, page = conductor.get(manage_url(summer, "assignments"))
-horn1_row = page.split("orchestra-projects-part-" + str(HORN1), 1)[1].split("</select>", 1)[0]
+horn1_row = text(page.split("orchestra-projects-part-" + str(HORN1), 1)[1].split("</details>", 1)[0])
 check("Mia — played last time, played in a completed project" in horn1_row,
       "conductors see who played the part in a completed project")
 act(conductor, summer, "program_remove", piece=PIRATES)

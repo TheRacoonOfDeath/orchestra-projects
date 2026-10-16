@@ -92,9 +92,12 @@ final class AssignmentsView
             )) . '</span></div>';
         }
 
+        // The columns of all pieces line up.
+        $html .= '<div class="orchestra-aligned-tables orchestra-stack">';
         foreach ($pieceIds as $pieceId) {
             $html .= $this->piece($project, $pieceId, $byPart, $players, $editable);
         }
+        $html .= '</div>';
 
         return $html;
     }
@@ -141,7 +144,7 @@ final class AssignmentsView
             $rows[] = $row;
         }
 
-        return $html . Html::table($headings, $rows, '', true) . '</section>';
+        return $html . Html::table($headings, $rows) . '</section>';
     }
 
     /**
@@ -191,9 +194,8 @@ final class AssignmentsView
         $marks = \current_user_can(Capabilities::ASSIGNMENT_HISTORY_READ)
             ? $this->assignmentService->historyMarks($project, $part, \array_keys($candidates))
             : [];
-        $selectId = 'orchestra-projects-part-' . $part->id;
 
-        $options = '';
+        $boxes = '';
         foreach ($candidates as $userId => $name) {
             $history = $marks[$userId] ?? [];
             $notes = \array_map(static fn (HistoryMark $mark): string => $mark->label(), $history);
@@ -201,26 +203,30 @@ final class AssignmentsView
                 /* translators: %s: part name */
                 $notes[] = \sprintf(\__('currently %s', 'orchestra-projects'), $partOf[$userId]);
             }
-            $options .= '<option value="' . $userId . '"'
+            $boxes .= '<label class="orchestra-checkbox"><input type="checkbox" name="users[]" value="' . $userId . '"'
                 . ($history === [] ? '' : ' data-history="' . \esc_attr(\implode(' ', \array_map(
                     static fn (HistoryMark $mark): string => $mark->value,
                     $history
                 ))) . '"')
                 . (isset($partOf[$userId]) ? ' data-current="' . \esc_attr($partOf[$userId]) . '"' : '')
-                . '>' . \esc_html($name . ($notes === [] ? '' : ' — ' . \implode(', ', $notes))) . '</option>';
+                . '> <span>' . \esc_html($name)
+                . ($notes === []
+                    ? ''
+                    : ' <span class="orchestra-muted">— ' . \esc_html(\implode(', ', $notes)) . '</span>')
+                . '</span></label>';
         }
 
-        return ProjectForms::open($project->id, 'assign', ['part' => $part->id, 'move' => 0], [
-            'class' => 'orchestra-stack',
-            'data-orchestra-move-confirm' => \__(
-                'Some selected members already play another part of this piece. Move them to this part?',
-                'orchestra-projects'
-            ),
-        ])
-            . '<label class="screen-reader-text" for="' . $selectId . '">'
-            . \esc_html__('Members', 'orchestra-projects')
-            . '</label><select multiple id="' . $selectId . '" name="users[]" size="' . \min(6, \count($candidates))
-            . '">'
-            . $options . '</select>' . Form::submit(\__('Assign', 'orchestra-projects'), 'small') . '</form>';
+        return '<details class="orchestra-disclosure"><summary>' . \esc_html__('Assign members', 'orchestra-projects')
+            . ' <span class="orchestra-muted">(' . \count($candidates) . ')</span></summary>'
+            . ProjectForms::open($project->id, 'assign', ['part' => $part->id, 'move' => 0], [
+                'class' => 'orchestra-stack',
+                'data-orchestra-move-confirm' => \__(
+                    'Some selected members already play another part of this piece. Move them to this part?',
+                    'orchestra-projects'
+                ),
+            ])
+            . '<div class="orchestra-checklist" id="orchestra-projects-part-' . $part->id . '" role="group"'
+            . ' aria-label="' . \esc_attr__('Members', 'orchestra-projects') . '">' . $boxes . '</div>'
+            . Form::submit(\__('Assign', 'orchestra-projects'), 'primary small') . '</form></details>';
     }
 }

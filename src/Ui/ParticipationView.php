@@ -61,10 +61,9 @@ final class ParticipationView
             $assignmentCounts[$key] = ($assignmentCounts[$key] ?? 0) + 1;
         }
         $canManage = \current_user_can(Capabilities::PARTICIPATION_MANAGE);
-        $format = \get_option('date_format');
-        $format = \is_string($format) && $format !== '' ? $format : 'Y-m-d';
 
-        $html = '<p class="orchestra-muted">' . \esc_html($this->summary($project)) . '</p>';
+        $html = '<p class="orchestra-muted">' . \esc_html($this->summary($project)) . '</p>'
+            . '<div class="orchestra-aligned-tables orchestra-stack">';
         foreach ([ParticipationStatus::Accepted, ParticipationStatus::Open, ParticipationStatus::Declined] as $status) {
             $group = \array_values(\array_filter($all, static fn (Participation $p): bool => $p->status === $status));
             \usort($group, fn (Participation $a, Participation $b): int => \strcasecmp(
@@ -75,6 +74,7 @@ final class ParticipationView
             $html .= '<h3>' . \esc_html($status->label()) . ' <span class="orchestra-muted">(' . \count($group)
                 . ')</span></h3>';
             if ($group === []) {
+                $html .= '<p class="orchestra-muted">' . \esc_html__('Nobody', 'orchestra-projects') . '</p>';
                 continue;
             }
 
@@ -91,9 +91,7 @@ final class ParticipationView
                 $count = $participation->userId === null ? 0 : ($assignmentCounts[$participation->userId] ?? 0);
                 $row = [
                     \esc_html($this->names->of($participation->userId)),
-                    \esc_html($participation->respondedAt === null
-                        ? '—'
-                        : \get_date_from_gmt($participation->respondedAt, $format)),
+                    \esc_html($participation->respondedAt === null ? '—' : Dates::fromGmt($participation->respondedAt)),
                     (string) $count,
                 ];
                 if ($canManage) {
@@ -104,7 +102,7 @@ final class ParticipationView
             $html .= Html::table($headings, $rows);
         }
 
-        return $html;
+        return $html . '</div>';
     }
 
     private function changeForm(Project $project, Participation $participation, int $assignmentCount): string
