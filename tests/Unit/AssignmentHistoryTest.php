@@ -80,4 +80,20 @@ final class AssignmentHistoryTest extends TestCase
 
         $this->assertSame([10 => [HistoryMark::LastTime, HistoryMark::Completed]], $marks);
     }
+
+    public function testLastPartsIsThePartOfEachMembersLatestAssignmentInAnotherProject(): void
+    {
+        $assignments = [
+            new Assignment(1, 1, self::PIECE, self::PART, 10),
+            new Assignment(2, 2, self::PIECE, self::OTHER_PART, 10),
+            new Assignment(3, 1, self::PIECE, self::OTHER_PART, 11),
+            new Assignment(4, self::CURRENT, self::PIECE, self::PART, 11), // the current project: ignored
+            new Assignment(5, 1, self::PIECE, self::PART, null),
+        ];
+
+        $this->assertSame(
+            [10 => self::OTHER_PART, 11 => self::OTHER_PART],
+            AssignmentHistory::lastParts(self::CURRENT, $assignments)
+        );
+    }
 }

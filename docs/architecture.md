@@ -57,6 +57,10 @@ assigns a part. The order in which the assignments were made counts, not the pro
   (shown together with "played last time" when both apply)
 - **never played**: never assigned to this part in another project
 
+**Assign the parts played last time** on the assignments tab gives every accepted member who has
+no part in a piece yet the part of their latest assignment of that piece. Members who never played
+the piece stay unassigned; existing assignments are not changed.
+
 The marks are shown to users with `orchestra_projects_assignment_history_read` (conductors).
 
 ## Screens

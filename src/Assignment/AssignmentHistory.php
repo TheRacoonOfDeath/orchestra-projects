@@ -28,19 +28,12 @@ final class AssignmentHistory
         array $pieceAssignments,
         array $userIds,
     ): array {
-        /** @var array<int, Assignment> $latest user ID => their latest assignment of the piece */
-        $latest = [];
+        $latest = self::lastParts($currentProjectId, $pieceAssignments);
         $played = [];
         $completed = [];
         foreach ($pieceAssignments as $assignment) {
             $userId = $assignment->userId;
-            if ($userId === null || $assignment->projectId === $currentProjectId) {
-                continue;
-            }
-            if (!isset($latest[$userId]) || $assignment->id > $latest[$userId]->id) {
-                $latest[$userId] = $assignment;
-            }
-            if ($assignment->partId !== $partId) {
+            if ($userId === null || $assignment->projectId === $currentProjectId || $assignment->partId !== $partId) {
                 continue;
             }
             $played[$userId] = true;
@@ -53,7 +46,7 @@ final class AssignmentHistory
         $marks = [];
         foreach ($userIds as $userId) {
             $userMarks = [];
-            if (isset($latest[$userId]) && $latest[$userId]->partId === $partId) {
+            if (($latest[$userId] ?? null) === $partId) {
                 $userMarks[] = HistoryMark::LastTime;
             }
             if (isset($completed[$userId])) {
@@ -66,5 +59,27 @@ final class AssignmentHistory
         }
 
         return $marks;
+    }
+
+    /**
+     * The part of each member's latest assignment of the piece in another project.
+     *
+     * @param list<Assignment> $pieceAssignments All assignments of one piece, in any project
+     * @return array<int, int> user ID => part ID
+     */
+    public static function lastParts(int $currentProjectId, array $pieceAssignments): array
+    {
+        $latest = [];
+        foreach ($pieceAssignments as $assignment) {
+            $userId = $assignment->userId;
+            if ($userId === null || $assignment->projectId === $currentProjectId) {
+                continue;
+            }
+            if (!isset($latest[$userId]) || $assignment->id > $latest[$userId]->id) {
+                $latest[$userId] = $assignment;
+            }
+        }
+
+        return \array_map(static fn (Assignment $assignment): int => $assignment->partId, $latest);
     }
 }

@@ -71,11 +71,15 @@ final class ProjectActions
             'status' => Capabilities::PROJECT_MANAGE,
             'program_add', 'program_remove', 'program_up', 'program_down' => Capabilities::PROGRAM_MANAGE,
             'participation' => Capabilities::PARTICIPATION_MANAGE,
-            'assign', 'unassign' => Capabilities::ASSIGNMENT_MANAGE,
+            'assign', 'assign_last', 'unassign' => Capabilities::ASSIGNMENT_MANAGE,
             default => null,
         };
         if ($capability === null || !\current_user_can($capability)) {
             \wp_die(\esc_html__('You are not allowed to do this.', 'orchestra-projects'), 403);
+        }
+
+        if ($operation === 'assign_last') {
+            $this->assignLastParts($project);
         }
 
         $errors = $this->execute($project, $operation);
@@ -156,6 +160,32 @@ final class ProjectActions
         }
 
         return $error === null ? [] : [$error];
+    }
+
+    private function assignLastParts(Project $project): never
+    {
+        $result = $this->assignments->assignLastParts($project, \get_current_user_id());
+        if (\is_string($result)) {
+            Notices::error($result);
+        } elseif ($result === 0) {
+            Notices::success(\__(
+                'Nobody was assigned: no member without a part has played one of these pieces before.',
+                'orchestra-projects'
+            ));
+        } else {
+            Notices::success(\sprintf(
+                /* translators: %d: number of assigned parts */
+                \_n(
+                    '%d part was assigned to the member who played it last time.',
+                    '%d parts were assigned to the members who played them last time.',
+                    $result,
+                    'orchestra-projects'
+                ),
+                $result
+            ));
+        }
+
+        Redirect::back();
     }
 
     private function changeStatus(Project $project): ?string

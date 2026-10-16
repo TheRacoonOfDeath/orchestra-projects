@@ -83,6 +83,62 @@ final class AssignmentService
     }
 
     /**
+     * The assignments that give every accepted member the part they played last time, in each piece
+     * of the program in which they have no part yet. Members who never played the piece are left out.
+     *
+     * @return list<array{pieceId: int, partId: int, userId: int}>
+     */
+    public function lastPartAssignments(Project $project): array
+    {
+        $accepted = [];
+        foreach ($this->participations->forProject($project->id, ParticipationStatus::Accepted) as $participation) {
+            if ($participation->userId !== null) {
+                $accepted[$participation->userId] = true;
+            }
+        }
+        $assigned = [];
+        foreach ($this->assignments->forProject($project->id) as $assignment) {
+            $assigned[$assignment->pieceId][$assignment->userId ?? 0] = true;
+        }
+
+        $result = [];
+        foreach ($this->program->pieceIds($project->id) as $pieceId) {
+            $partIds = \array_map(static fn (Part $part): int => $part->id, $this->library->parts($pieceId));
+            $lastParts = AssignmentHistory::lastParts($project->id, $this->assignments->forPiece($pieceId));
+            foreach ($lastParts as $userId => $partId) {
+                if (
+                    isset($accepted[$userId])
+                    && !isset($assigned[$pieceId][$userId])
+                    && \in_array($partId, $partIds, true)
+                ) {
+                    $result[] = ['pieceId' => $pieceId, 'partId' => $partId, 'userId' => $userId];
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Makes the assignments of {@see lastPartAssignments()}.
+     *
+     * @return int|string The number of assignments made, or an error message
+     */
+    public function assignLastParts(Project $project, int $actorId): int|string
+    {
+        if (!$project->status->assignmentsEditable()) {
+            return self::lockedMessage();
+        }
+
+        $assignments = $this->lastPartAssignments($project);
+        foreach ($assignments as ['pieceId' => $pieceId, 'partId' => $partId, 'userId' => $userId]) {
+            $this->assignments->insert($project->id, $pieceId, $partId, $userId, $actorId);
+        }
+
+        return \count($assignments);
+    }
+
+    /**
      * @return string|null An error message, or null on success
      */
     public function unassign(Project $project, int $assignmentId): ?string

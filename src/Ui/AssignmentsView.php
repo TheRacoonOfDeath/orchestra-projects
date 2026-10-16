@@ -69,6 +69,29 @@ final class AssignmentsView
                 . \esc_html__('Nobody has accepted to participate yet.', 'orchestra-projects') . '</p></div>';
         }
 
+        $lastParts = $editable ? \count($this->assignmentService->lastPartAssignments($project)) : 0;
+        if ($lastParts > 0) {
+            $html .= '<div class="orchestra-actions">' . ProjectForms::button(
+                $project->id,
+                'assign_last',
+                \__('Assign the parts played last time', 'orchestra-projects'),
+                [],
+                null,
+                'primary small'
+            ) . '<span class="orchestra-muted">' . \esc_html(\sprintf(
+                /* translators: %d: number of parts */
+                \_n(
+                    'Assigns %d part: members who are not assigned in a piece yet get the part they played last'
+                        . ' time. Members who never played the piece are not assigned.',
+                    'Assigns %d parts: members who are not assigned in a piece yet get the part they played last'
+                        . ' time. Members who never played the piece are not assigned.',
+                    $lastParts,
+                    'orchestra-projects'
+                ),
+                $lastParts
+            )) . '</span></div>';
+        }
+
         foreach ($pieceIds as $pieceId) {
             $html .= $this->piece($project, $pieceId, $byPart, $players, $editable);
         }

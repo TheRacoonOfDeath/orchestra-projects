@@ -112,7 +112,8 @@ def admin_url(project, tab="overview"):
     return f"/wp-admin/admin.php?page=orchestra-projects&project={project}&tab={tab}"
 
 
-TAB_OF = {"status": "overview", "participation": "participation", "assign": "assignments", "unassign": "assignments"}
+TAB_OF = {"status": "overview", "participation": "participation", "assign": "assignments", "unassign": "assignments",
+          "assign_last": "assignments"}
 nonces = {}
 
 
@@ -485,6 +486,20 @@ horn2_row = page.split("orchestra-projects-part-" + str(HORN2), 1)[1].split("</s
 check("Olga — played last time" in horn2_row, "history is per part")
 _, page = admin.get(admin_url(summer, "assignments"))
 check("played last time" in page and "orchestra--admin" in page, "administrators see the history in wp-admin")
+
+_, page = conductor.get(manage_url(summer, "assignments"))
+check("Assign the parts played last time" in page, "the assignments tab offers to assign the parts played last time")
+spring_parts = assignments_of(spring)
+accepted = [login for login in spring_parts if login and participation_of(summer, login)["status"] == "accepted"]
+_, page = act(conductor, summer, "assign_last")
+summer_parts = assignments_of(summer)
+check(summer_parts == {login: spring_parts[login] for login in accepted} and "mo" not in summer_parts
+      and "assigned to the member" in text(page),
+      f"members get the part they played last time, others stay unassigned: {summer_parts}")
+_, page = conductor.get(manage_url(summer, "assignments"))
+check("Assign the parts played last time" not in page, "the button is gone once there is nothing left to assign")
+status, _ = act(organizer, summer, "assign_last")
+check(status == 403, "organizers cannot assign the parts played last time")
 
 # --- Removing pieces and status rules -------------------------------------------------------
 act(conductor, summer, "assign", part=HORN1, **{"users[]": [str(ids["mia"])]})
