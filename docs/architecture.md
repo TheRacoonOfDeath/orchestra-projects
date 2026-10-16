@@ -48,14 +48,14 @@ active status, only through their public services.
 
 ## Assignment history
 
-Not stored, derived from the assignments when a conductor assigns a part. Projects are ordered by
-their concert date, or end or start date if there is none. Drafts and projects without dates are
-ignored.
+Not stored, derived from the assignments of the piece in all other projects when a conductor
+assigns a part. The order in which the assignments were made counts, not the project dates.
 
-- **played last time**: assigned to the part in the most recent earlier project whose program
-  contained the piece
-- **played before**: assigned to the part in any earlier project
-- **never played**
+- **played last time**: the member's latest assignment of this piece, in any other project, was
+  to this part
+- **played in a completed project**: assigned to this part in a completed or archived project
+  (shown together with "played last time" when both apply)
+- **never played**: never assigned to this part in another project
 
 The marks are shown to users with `orchestra_projects_assignment_history_read` (conductors).
 

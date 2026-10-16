@@ -13,6 +13,7 @@ use Orchestra\Projects\Admin\Names;
 use Orchestra\Projects\Assignment\Assignment;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\AssignmentService;
+use Orchestra\Projects\Assignment\HistoryMark;
 use Orchestra\Projects\Capabilities;
 use Orchestra\Projects\Email\ProjectEmailGroups;
 use Orchestra\Projects\Participation\ParticipationRepository;
@@ -171,16 +172,17 @@ final class AssignmentsView
 
         $options = '';
         foreach ($candidates as $userId => $name) {
-            $notes = [];
-            if (isset($marks[$userId])) {
-                $notes[] = $marks[$userId]->label();
-            }
+            $history = $marks[$userId] ?? [];
+            $notes = \array_map(static fn (HistoryMark $mark): string => $mark->label(), $history);
             if (isset($partOf[$userId])) {
                 /* translators: %s: part name */
                 $notes[] = \sprintf(\__('currently %s', 'orchestra-projects'), $partOf[$userId]);
             }
             $options .= '<option value="' . $userId . '"'
-                . (isset($marks[$userId]) ? ' data-history="' . \esc_attr($marks[$userId]->value) . '"' : '')
+                . ($history === [] ? '' : ' data-history="' . \esc_attr(\implode(' ', \array_map(
+                    static fn (HistoryMark $mark): string => $mark->value,
+                    $history
+                ))) . '"')
                 . (isset($partOf[$userId]) ? ' data-current="' . \esc_attr($partOf[$userId]) . '"' : '')
                 . '>' . \esc_html($name . ($notes === [] ? '' : ' — ' . \implode(', ', $notes))) . '</option>';
         }

@@ -33,6 +33,14 @@ final class AssignmentRepository
     }
 
     /**
+     * @return list<Assignment> in all projects, in the order they were made
+     */
+    public function forPiece(int $pieceId): array
+    {
+        return $this->where('piece_id', $pieceId);
+    }
+
+    /**
      * @return list<Assignment> in all projects
      */
     public function forPart(int $partId): array
@@ -108,7 +116,7 @@ final class AssignmentRepository
      */
     private function where(string $column, int $value): array
     {
-        $column = \in_array($column, ['project_id', 'part_id', 'user_id'], true) ? $column : 'id';
+        $column = \in_array($column, ['project_id', 'piece_id', 'part_id', 'user_id'], true) ? $column : 'id';
         $rows = Row::all($this->wpdb->get_results(
             $this->wpdb->prepare(
                 'SELECT * FROM %i WHERE %i = %d ORDER BY id',

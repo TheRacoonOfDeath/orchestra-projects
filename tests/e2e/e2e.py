@@ -511,6 +511,12 @@ _, page = act(conductor, spring, "assign", part=VIOLIN1, **{"users[]": [str(ids[
 check("can only be changed while" in text(page), "assignments are locked in completed projects")
 _, page = act(conductor, spring, "program_add", piece=DANCE)
 check("cannot be changed" in text(page), "programs are locked in completed projects")
+act(conductor, summer, "program_add", piece=PIRATES)
+_, page = conductor.get(manage_url(summer, "assignments"))
+horn1_row = page.split("orchestra-projects-part-" + str(HORN1), 1)[1].split("</select>", 1)[0]
+check("Mia — played last time, played in a completed project" in horn1_row,
+      "conductors see who played the part in a completed project")
+act(conductor, summer, "program_remove", piece=PIRATES)
 _, page = mia.get(DASHBOARD)
 check("Spring Concert 2027" in page, "completed projects stay on the dashboard")
 act(organizer, spring, "status", target="archived")

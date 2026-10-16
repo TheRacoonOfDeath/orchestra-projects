@@ -19,7 +19,7 @@ final class Project
     }
 
     /**
-     * The date that orders projects in time, e.g. for the assignment history: the concert date,
+     * The date that orders projects in time, e.g. in project lists: the concert date,
      * or the end or start date if there is none.
      */
     public function sortDate(): ?string

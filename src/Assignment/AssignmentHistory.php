@@ -4,58 +4,65 @@ declare(strict_types=1);
 
 namespace Orchestra\Projects\Assignment;
 
-use Orchestra\Projects\Project\Project;
 use Orchestra\Projects\Project\ProjectStatus;
 
 /**
- * Derives from the assignments of earlier projects whether members played a part before.
+ * Derives from the assignments of the other projects what members played of a piece before.
  *
- * Earlier projects are those with an earlier date ({@see Project::sortDate()}) than the current
- * one. Drafts and projects without any date are ignored.
+ * Only the order in which the assignments were made counts, not the dates of the projects: the
+ * latest assignment of the piece to a member is the one with the highest ID (moving a member to
+ * another part creates a new assignment).
  */
 final class AssignmentHistory
 {
     /**
-     * @param list<Project> $projectsWithPiece All projects whose program contains the part's piece
-     * @param list<Assignment> $partAssignments All assignments of the part, in any project
+     * @param array<int, ProjectStatus> $statuses project ID => status, for the projects of the assignments
+     * @param list<Assignment> $pieceAssignments All assignments of the part's piece, in any project
      * @param list<int> $userIds
-     * @return array<int, HistoryMark> user ID => mark
+     * @return array<int, list<HistoryMark>> user ID => marks
      */
     public static function marks(
-        Project $current,
-        array $projectsWithPiece,
-        array $partAssignments,
+        int $currentProjectId,
+        int $partId,
+        array $statuses,
+        array $pieceAssignments,
         array $userIds,
     ): array {
-        $earlier = [];
-        foreach ($projectsWithPiece as $project) {
-            $date = $project->sortDate();
-            if (
-                $project->id !== $current->id
-                && $project->status !== ProjectStatus::Draft
-                && $date !== null
-                && ($current->sortDate() === null || $date < $current->sortDate())
-            ) {
-                $earlier[$project->id] = $date;
+        /** @var array<int, Assignment> $latest user ID => their latest assignment of the piece */
+        $latest = [];
+        $played = [];
+        $completed = [];
+        foreach ($pieceAssignments as $assignment) {
+            $userId = $assignment->userId;
+            if ($userId === null || $assignment->projectId === $currentProjectId) {
+                continue;
             }
-        }
-        \arsort($earlier);
-        $lastProjectId = \array_key_first($earlier);
-
-        $playedIn = [];
-        foreach ($partAssignments as $assignment) {
-            if ($assignment->userId !== null && isset($earlier[$assignment->projectId])) {
-                $playedIn[$assignment->userId][$assignment->projectId] = true;
+            if (!isset($latest[$userId]) || $assignment->id > $latest[$userId]->id) {
+                $latest[$userId] = $assignment;
+            }
+            if ($assignment->partId !== $partId) {
+                continue;
+            }
+            $played[$userId] = true;
+            $status = $statuses[$assignment->projectId] ?? null;
+            if ($status === ProjectStatus::Completed || $status === ProjectStatus::Archived) {
+                $completed[$userId] = true;
             }
         }
 
         $marks = [];
         foreach ($userIds as $userId) {
-            $marks[$userId] = match (true) {
-                $lastProjectId !== null && isset($playedIn[$userId][$lastProjectId]) => HistoryMark::LastTime,
-                isset($playedIn[$userId]) => HistoryMark::Before,
-                default => HistoryMark::Never,
-            };
+            $userMarks = [];
+            if (isset($latest[$userId]) && $latest[$userId]->partId === $partId) {
+                $userMarks[] = HistoryMark::LastTime;
+            }
+            if (isset($completed[$userId])) {
+                $userMarks[] = HistoryMark::Completed;
+            }
+            if (!isset($played[$userId])) {
+                $userMarks[] = HistoryMark::Never;
+            }
+            $marks[$userId] = $userMarks;
         }
 
         return $marks;

@@ -104,19 +104,22 @@ final class AssignmentService
      * History marks for assigning members to the part, see {@see AssignmentHistory}.
      *
      * @param list<int> $userIds
-     * @return array<int, HistoryMark>
+     * @return array<int, list<HistoryMark>>
      */
     public function historyMarks(Project $project, Part $part, array $userIds): array
     {
-        $projects = [];
-        foreach ($this->program->projectIdsWithPiece($part->pieceId) as $projectId) {
-            $other = $this->projects->find($projectId);
-            if ($other !== null) {
-                $projects[] = $other;
+        $assignments = $this->assignments->forPiece($part->pieceId);
+        $statuses = [];
+        foreach ($assignments as $assignment) {
+            if (!isset($statuses[$assignment->projectId])) {
+                $other = $this->projects->find($assignment->projectId);
+                if ($other !== null) {
+                    $statuses[$assignment->projectId] = $other->status;
+                }
             }
         }
 
-        return AssignmentHistory::marks($project, $projects, $this->assignments->forPart($part->id), $userIds);
+        return AssignmentHistory::marks($project->id, $part->id, $statuses, $assignments, $userIds);
     }
 
     private function refusal(Project $project, ?Part $part): ?string
