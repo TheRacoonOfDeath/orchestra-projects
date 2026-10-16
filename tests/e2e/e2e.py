@@ -218,8 +218,8 @@ check("orchestra_projects_participation_respond_own" in caps[0]
 check("orchestra_projects_assignment_manage" in caps[1]
       and "orchestra_projects_participation_respond_own" not in caps[1], "conductors assign but do not play")
 check({"orchestra_projects_project_manage", "orchestra_projects_participation_manage",
-       "orchestra_projects_participation_respond_own"} <= set(caps[2])
-      and "orchestra_projects_assignment_manage" not in caps[2], "organizers manage projects and play")
+       "orchestra_projects_participation_respond_own", "orchestra_projects_assignment_manage"} <= set(caps[2]),
+      "organizers manage projects, assign and play")
 
 # --- Creating projects ----------------------------------------------------------------------
 _, page = conductor.get(f"{DASHBOARD}&orchestra_project=new")
@@ -356,8 +356,9 @@ check(assignments_of(spring)["mia"] == [HORN2], "moving a member replaces the as
 act(conductor, spring, "assign", part=HORN1, **{"users[]": [str(ids["mia"])]}, move="1")
 act(conductor, spring, "assign", part=VIOLIN1, **{"users[]": [str(ids["mia"])]})
 check(sorted(assignments_of(spring)["mia"]) == sorted([HORN1, VIOLIN1]), "members play one part in each piece")
-status, _ = act(organizer, spring, "assign", part=HORN1, **{"users[]": [str(ids["organizer"])]})
-check(status == 403, "organizers cannot assign")
+_, page = act(organizer, spring, "assign", part=HORN1, **{"users[]": [str(ids["organizer"])]})
+check("already assigned to Horn 2" in text(page) and assignments_of(spring)["organizer"] == [HORN2],
+      "organizers assign too, with the same rules")
 _, page = act(conductor, spring, "assign", part=SEED["march:Drum"], **{"users[]": [str(ids["mia"])]})
 check("does not belong to a piece of the program" in text(page), "only parts of the program can be assigned")
 blockers = wp_json(f'echo json_encode(apply_filters("orchestra_library_part_delete_blockers", [], {HORN1}));')
@@ -491,6 +492,9 @@ _, page = conductor.get(manage_url(summer, "assignments"))
 check("Assign the parts played last time" in page, "the assignments tab offers to assign the parts played last time")
 spring_parts = assignments_of(spring)
 accepted = [login for login in spring_parts if login and participation_of(summer, login)["status"] == "accepted"]
+_, page = organizer.get(manage_url(summer, "assignments"))
+check("played last time" in page and "Assign the parts played last time" in page,
+      "organizers see the assignment history and can assign the parts played last time")
 _, page = act(conductor, summer, "assign_last")
 summer_parts = assignments_of(summer)
 check(summer_parts == {login: spring_parts[login] for login in accepted} and "mo" not in summer_parts
@@ -498,8 +502,6 @@ check(summer_parts == {login: spring_parts[login] for login in accepted} and "mo
       f"members get the part they played last time, others stay unassigned: {summer_parts}")
 _, page = conductor.get(manage_url(summer, "assignments"))
 check("Assign the parts played last time" not in page, "the button is gone once there is nothing left to assign")
-status, _ = act(organizer, summer, "assign_last")
-check(status == 403, "organizers cannot assign the parts played last time")
 
 # --- Removing pieces and status rules -------------------------------------------------------
 act(conductor, summer, "assign", part=HORN1, **{"users[]": [str(ids["mia"])]})

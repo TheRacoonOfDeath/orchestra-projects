@@ -72,8 +72,8 @@ final class Capabilities
             ->register(self::PARTICIPATION_RESPOND_OWN, $players)
             ->register(self::PARTICIPATION_MANAGE, [Roles::ORGANIZER])
             ->register(self::ASSIGNMENT_READ, $everyone)
-            ->register(self::ASSIGNMENT_MANAGE, [Roles::CONDUCTOR])
-            ->register(self::ASSIGNMENT_HISTORY_READ, [Roles::CONDUCTOR])
+            ->register(self::ASSIGNMENT_MANAGE, [Roles::CONDUCTOR, Roles::ORGANIZER])
+            ->register(self::ASSIGNMENT_HISTORY_READ, [Roles::CONDUCTOR, Roles::ORGANIZER])
             ->register(self::EMAIL_SEND, [Roles::CONDUCTOR, Roles::ORGANIZER])
             ->registerMetaCapability(
                 self::PARTICIPATION_READ,

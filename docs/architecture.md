@@ -63,7 +63,7 @@ assigns a part. The order in which the assignments were made counts, not the pro
 no part in a piece yet the part of their latest assignment of that piece. Members who never played
 the piece stay unassigned; existing assignments are not changed.
 
-The marks are shown to users with `orchestra_projects_assignment_history_read` (conductors).
+The marks are shown to users with `orchestra_projects_assignment_history_read` (conductors and organizers).
 
 ## Screens
 
@@ -76,7 +76,7 @@ views in **Projects** in wp-admin (views in `src/Ui`, shared by both).
 | Project → Overview | everyone who may see the project | details, staff, description, own response and parts, program; email buttons and status changes for staff |
 | Project → Program | conductors, organizers | add, order and remove pieces |
 | Project → Participation | conductors (read), organizers | accepted, pending, declined; organizers change decisions |
-| Project → Assignments | conductors, organizers (read) | parts with assigned members; conductors assign |
+| Project → Assignments | conductors, organizers (read) | parts with assigned members; conductors and organizers assign |
 | Project form | organizers | name, description, dates, staff (in wp-admin: the WordPress editor with the same fields) |
 
 URLs on the projects page: `?orchestra_project=ID&orchestra_tab=program`, `&orchestra_edit=1`,
