@@ -380,8 +380,14 @@ if match:
     names = zipfile.ZipFile(io.BytesIO(body)).namelist() if status == 200 else []
     check(status == 200 and len(names) == 2 and "Spring-Concert-2027.zip" in headers.get("content-disposition", ""),
           "members download the sheet music of their parts as one zip")
+files = re.findall(r'href="([^"]*orchestra_library_download(?:&|&#038;|&amp;)file=[^"]*)"', page)
+check(len(files) == 2, "the dashboard offers each part's sheet music on its own")
+if files:
+    status, headers, body = mia.request(html.unescape(files[0]))
+    check(status == 200 and "attachment" in headers.get("content-disposition", "") and len(body) > 0,
+          "members download the sheet music of a single part")
 _, page = mo.get(DASHBOARD)
-check("Download my sheet music" not in page, "members without assignments have no download")
+check("orchestra_library_download" not in page, "members without assignments have no download")
 
 # --- Organizers change participation --------------------------------------------------------
 _, page = act(organizer, spring, "participation", participation=mia_participation, status="declined")

@@ -71,7 +71,7 @@ install_release() {
         if [ -n "${GITHUB_TOKEN:-}" ]; then
             auth=(-H "Authorization: Bearer $GITHUB_TOKEN")
         fi
-        url=$(curl -sS "${auth[@]}" "https://api.github.com/repos/TheRacoonOfDeath/$repository/releases/latest" \
+        url=$(curl -sS ${auth[@]+"${auth[@]}"} "https://api.github.com/repos/TheRacoonOfDeath/$repository/releases/latest" \
             | grep -o '"browser_download_url": *"[^"]*\.zip"' | head -n 1 | sed 's/.*"\(http[^"]*\)"/\1/')
         curl -sSLo "$zip" "$url"
     fi

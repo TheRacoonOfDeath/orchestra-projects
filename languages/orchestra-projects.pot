@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 08:31+0200\n"
+"POT-Creation-Date: 2026-10-16 16:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -419,27 +419,35 @@ msgstr ""
 msgid "Your decision is final. To change it later, contact an organizer."
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:87
+#: src/Ui/MemberProjectView.php:84
+msgid "No sheet music yet"
+msgstr ""
+
+#: src/Ui/MemberProjectView.php:88
+msgid "Download"
+msgstr ""
+
+#: src/Ui/MemberProjectView.php:97
 msgid "Your parts"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:89
-msgid "Download my sheet music"
+#: src/Ui/MemberProjectView.php:102
+msgid "Download all as a zip file"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:109
+#: src/Ui/MemberProjectView.php:127
 msgid "Accept"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:109
+#: src/Ui/MemberProjectView.php:127
 msgid "Decline"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:112
+#: src/Ui/MemberProjectView.php:130
 msgid "Accept to participate? Your decision is final."
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:113
+#: src/Ui/MemberProjectView.php:131
 msgid "Decline to participate? Your decision is final."
 msgstr ""
 

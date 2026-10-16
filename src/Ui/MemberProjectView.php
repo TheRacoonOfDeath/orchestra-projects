@@ -74,19 +74,37 @@ final class MemberProjectView
             if ($part === null || $piece === null) {
                 continue;
             }
-            $partIds[] = $part->id;
-            $items .= '<li><span>' . \esc_html($piece->title) . '</span><strong>' . \esc_html($part->name)
-                . '</strong></li>';
+            $file = $this->library->sheetMusic($part->id);
+            if ($file !== null) {
+                $partIds[] = $part->id;
+            }
+            $items .= '<li><span>' . \esc_html($piece->title) . ' <strong>' . \esc_html($part->name)
+                . '</strong></span>'
+                . ($file === null
+                    ? '<span class="orchestra-muted">' . \esc_html__('No sheet music yet', 'orchestra-projects')
+                        . '</span>'
+                    : Form::link(
+                        $this->library->downloadUrl($file),
+                        \__('Download', 'orchestra-projects'),
+                        'small'
+                    ))
+                . '</li>';
         }
-        if ($partIds === []) {
+        if ($items === '') {
             return '';
         }
 
-        $url = $this->library->bundleDownloadUrl($partIds, $project->title);
+        $html = '<h4>' . \esc_html__('Your parts', 'orchestra-projects') . '</h4><ul class="orchestra-list">' . $items
+            . '</ul>';
+        if (\count($partIds) > 1) {
+            $html .= '<div class="orchestra-actions">' . Form::link(
+                $this->library->bundleDownloadUrl($partIds, $project->title),
+                \__('Download all as a zip file', 'orchestra-projects'),
+                'primary'
+            ) . '</div>';
+        }
 
-        return '<h4>' . \esc_html__('Your parts', 'orchestra-projects') . '</h4><ul class="orchestra-list">' . $items
-            . '</ul><div class="orchestra-actions">'
-            . Form::link($url, \__('Download my sheet music', 'orchestra-projects'), 'primary') . '</div>';
+        return $html;
     }
 
     private function canRespond(Project $project, Participation $participation): bool
