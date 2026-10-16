@@ -1,0 +1,658 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the orchestra-projects package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: orchestra-projects\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 08:31+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/Admin/Names.php:21 src/Admin/Names.php:25
+msgid "Former member"
+msgstr ""
+
+#. translators: %s: member name
+#: src/Admin/Names.php:31
+#, php-format
+msgid "%s (inactive)"
+msgstr ""
+
+#: src/Admin/ProjectActions.php:67 src/Admin/ProjectsPage.php:103
+#: src/Ui/ProjectsShortcode.php:85
+msgid "The project does not exist."
+msgstr ""
+
+#: src/Admin/ProjectActions.php:78 src/Admin/ProjectActions.php:101
+#: src/Frontend/ResponseController.php:53
+msgid "You are not allowed to do this."
+msgstr ""
+
+#: src/Admin/ProjectActions.php:83
+msgid "Saved."
+msgstr ""
+
+#: src/Admin/ProjectActions.php:110
+msgid "Please enter a name."
+msgstr ""
+
+#: src/Admin/ProjectActions.php:129
+msgid "The project has been saved."
+msgstr ""
+
+#: src/Admin/ProjectActions.php:166
+msgid "Unknown status."
+msgstr ""
+
+#: src/Admin/ProjectActions.php:175
+msgid "The participation does not exist."
+msgstr ""
+
+#: src/Admin/ProjectEditor.php:43
+msgid "Dates and status"
+msgstr ""
+
+#: src/Admin/ProjectEditor.php:44
+msgid "Conductors and organizers"
+msgstr ""
+
+#: src/Admin/ProjectEditor.php:60
+msgid "Manage project"
+msgstr ""
+
+#: src/Admin/ProjectsPage.php:63 src/Admin/ProjectsPage.php:64
+#: src/Admin/ProjectsPage.php:77 src/Admin/ProjectsPage.php:118
+#: src/Plugin.php:249 src/Project/ProjectPostType.php:38
+msgid "Projects"
+msgstr ""
+
+#: src/Admin/ProjectsPage.php:78
+msgid "All Projects"
+msgstr ""
+
+#: src/Admin/ProjectsPage.php:84 src/Admin/ProjectsPage.php:85
+#: src/Project/ProjectPostType.php:40
+msgid "Add Project"
+msgstr ""
+
+#: src/Admin/ProjectsPage.php:106
+msgid "You are not allowed to view this page."
+msgstr ""
+
+#: src/Assignment/AssignmentService.php:41
+msgid "Select at least one member."
+msgstr ""
+
+#. translators: %s: member name
+#: src/Assignment/AssignmentService.php:60
+#, php-format
+msgid "%s has not accepted to participate."
+msgstr ""
+
+#. translators: 1: member name, 2: part name
+#: src/Assignment/AssignmentService.php:70
+#, php-format
+msgid "%1$s is already assigned to %2$s in this piece."
+msgstr ""
+
+#: src/Assignment/AssignmentService.php:92
+msgid "The assignment does not exist."
+msgstr ""
+
+#: src/Assignment/AssignmentService.php:128
+msgid "The part does not belong to a piece of the program."
+msgstr ""
+
+#: src/Assignment/AssignmentService.php:144 src/Ui/AssignmentsView.php:50
+msgid ""
+"Assignments can only be changed while the project is open for participation "
+"or in preparation."
+msgstr ""
+
+#: src/Assignment/HistoryMark.php:16
+msgid "played last time"
+msgstr ""
+
+#: src/Assignment/HistoryMark.php:17
+msgid "played before"
+msgstr ""
+
+#: src/Assignment/HistoryMark.php:18
+msgid "never played"
+msgstr ""
+
+#: src/Email/ProjectEmailGroups.php:71
+msgid "All participants (everyone asked)"
+msgstr ""
+
+#: src/Email/ProjectEmailGroups.php:72
+msgid "Accepted participants"
+msgstr ""
+
+#: src/Email/ProjectEmailGroups.php:73
+msgid "Pending participants (no response yet)"
+msgstr ""
+
+#: src/Email/ProjectEmailGroups.php:74
+msgid "Declined participants"
+msgstr ""
+
+#. translators: %s: piece title
+#: src/Email/ProjectEmailGroups.php:102
+#, php-format
+msgid "Everyone playing %s"
+msgstr ""
+
+#. translators: 1: piece title, 2: part name
+#: src/Email/ProjectEmailGroups.php:109
+#, php-format
+msgid "%1$s: %2$s"
+msgstr ""
+
+#: src/Frontend/ResponseController.php:59
+msgid "Thank you! You have accepted to participate."
+msgstr ""
+
+#: src/Frontend/ResponseController.php:60
+msgid "Thank you! You have declined to participate."
+msgstr ""
+
+#: src/Participation/ParticipationRules.php:23
+msgid "Please accept or decline."
+msgstr ""
+
+#: src/Participation/ParticipationRules.php:26
+msgid "This project is not open for responses."
+msgstr ""
+
+#: src/Participation/ParticipationRules.php:30
+msgid ""
+"You have already responded. Please contact an organizer to change your "
+"decision."
+msgstr ""
+
+#: src/Participation/ParticipationService.php:67
+msgid "This response is not possible."
+msgstr ""
+
+#: src/Participation/ParticipationService.php:101
+msgid ""
+"The member has assignments in this project. Confirm that they are removed."
+msgstr ""
+
+#: src/Participation/ParticipationStatus.php:17
+msgid "Pending"
+msgstr ""
+
+#: src/Participation/ParticipationStatus.php:18
+msgid "Accepted"
+msgstr ""
+
+#: src/Participation/ParticipationStatus.php:19
+msgid "Declined"
+msgstr ""
+
+#: src/Plugin.php:250
+msgid "Respond to projects, see your parts and download your sheet music."
+msgstr ""
+
+#: src/Plugin.php:274
+msgid ""
+"Orchestra Projects requires Orchestra Core 0.4, Orchestra Library and "
+"Orchestra Members to be active."
+msgstr ""
+
+#: src/Privacy/PersonalData.php:46 src/Privacy/PersonalData.php:61
+msgid "Orchestra projects"
+msgstr ""
+
+#: src/Privacy/PersonalData.php:82
+msgid "Project participation"
+msgstr ""
+
+#: src/Privacy/PersonalData.php:86 src/Privacy/PersonalData.php:101
+#: src/Project/ProjectPostType.php:39
+msgid "Project"
+msgstr ""
+
+#: src/Privacy/PersonalData.php:89 src/Ui/ProjectView.php:59
+#: src/Ui/ProjectView.php:113
+msgid "Participation"
+msgstr ""
+
+#: src/Privacy/PersonalData.php:90 src/Ui/ParticipationView.php:83
+msgid "Responded"
+msgstr ""
+
+#: src/Privacy/PersonalData.php:97
+msgid "Assigned parts"
+msgstr ""
+
+#: src/Privacy/PersonalData.php:105 src/Ui/ProgramView.php:105
+msgid "Piece"
+msgstr ""
+
+#: src/Privacy/PersonalData.php:109 src/Ui/AssignmentsView.php:105
+msgid "Part"
+msgstr ""
+
+#: src/Privacy/PersonalData.php:133
+msgid ""
+"Participation and assigned parts are kept as history and anonymized when the "
+"account is deleted."
+msgstr ""
+
+#: src/Privacy/PersonalData.php:151
+msgid "For each project, we store whether members accepted or declined."
+msgstr ""
+
+#: src/Privacy/PersonalData.php:152
+msgid ""
+"We store which parts members play in each project, to plan future projects."
+msgstr ""
+
+#: src/Privacy/PersonalData.php:153
+msgid ""
+"It is kept after members leave and anonymized when accounts are deleted."
+msgstr ""
+
+#: src/Privacy/PersonalData.php:156
+msgid "Orchestra Projects"
+msgstr ""
+
+#: src/Program/ProgramService.php:30
+msgid "The piece does not exist."
+msgstr ""
+
+#: src/Program/ProgramService.php:33
+msgid "Archived pieces cannot be added to a program."
+msgstr ""
+
+#: src/Program/ProgramService.php:36
+msgid "The piece is already in the program."
+msgstr ""
+
+#: src/Program/ProgramService.php:55
+msgid "The piece has assignments. Confirm that they are removed."
+msgstr ""
+
+#: src/Program/ProgramService.php:98 src/Ui/ProgramView.php:57
+msgid "The program of a completed or archived project cannot be changed."
+msgstr ""
+
+#. translators: %s: project name
+#: src/Project/ProjectCleanup.php:70
+#, php-format
+msgid "The piece is in the program of the project \"%s\"."
+msgstr ""
+
+#. translators: %s: project name
+#: src/Project/ProjectCleanup.php:90
+#, php-format
+msgid "The part is assigned in the project \"%s\"."
+msgstr ""
+
+#. translators: %s: name of the date field, e.g. "Start date"
+#: src/Project/ProjectDates.php:34
+#, php-format
+msgid "%s is not a valid date."
+msgstr ""
+
+#: src/Project/ProjectDates.php:41 src/Ui/ProjectFormView.php:71
+msgid "Start date"
+msgstr ""
+
+#: src/Project/ProjectDates.php:42 src/Ui/ProjectFormView.php:72
+msgid "End date"
+msgstr ""
+
+#: src/Project/ProjectDates.php:43 src/Ui/ProjectFormView.php:73
+msgid "Concert date"
+msgstr ""
+
+#: src/Project/ProjectDates.php:46
+msgid "The end date must not be before the start date."
+msgstr ""
+
+#: src/Project/ProjectPostType.php:41
+msgid "Add New Project"
+msgstr ""
+
+#: src/Project/ProjectPostType.php:42
+msgid "Edit Project"
+msgstr ""
+
+#: src/Project/ProjectPostType.php:43
+msgid "New Project"
+msgstr ""
+
+#: src/Project/ProjectPostType.php:44
+msgid "No projects found."
+msgstr ""
+
+#: src/Project/ProjectPostType.php:45
+msgid "No projects found in Trash."
+msgstr ""
+
+#: src/Project/ProjectStatus.php:21
+msgid "Draft"
+msgstr ""
+
+#: src/Project/ProjectStatus.php:22
+msgid "Open for Participation"
+msgstr ""
+
+#: src/Project/ProjectStatus.php:23
+msgid "Preparation"
+msgstr ""
+
+#: src/Project/ProjectStatus.php:24
+msgid "Completed"
+msgstr ""
+
+#: src/Project/ProjectStatus.php:25
+msgid "Archived"
+msgstr ""
+
+#: src/Project/ProjectStatusService.php:26
+msgid "The project cannot be moved to this status."
+msgstr ""
+
+#: src/Ui/AssignmentsView.php:43
+msgid "Add pieces to the program first."
+msgstr ""
+
+#: src/Ui/AssignmentsView.php:68
+msgid "Nobody has accepted to participate yet."
+msgstr ""
+
+#: src/Ui/AssignmentsView.php:90
+msgid "Email the players"
+msgstr ""
+
+#: src/Ui/AssignmentsView.php:95
+msgid "The piece has no parts."
+msgstr ""
+
+#: src/Ui/AssignmentsView.php:105
+msgid "Assigned"
+msgstr ""
+
+#: src/Ui/AssignmentsView.php:107 src/Ui/AssignmentsView.php:199
+msgid "Assign"
+msgstr ""
+
+#: src/Ui/AssignmentsView.php:138 src/Ui/ProgramView.php:93
+msgid "Remove"
+msgstr ""
+
+#. translators: %s: part name
+#: src/Ui/AssignmentsView.php:180
+#, php-format
+msgid "currently %s"
+msgstr ""
+
+#: src/Ui/AssignmentsView.php:191
+msgid ""
+"Some selected members already play another part of this piece. Move them to "
+"this part?"
+msgstr ""
+
+#: src/Ui/AssignmentsView.php:196
+msgid "Members"
+msgstr ""
+
+#: src/Ui/MemberProjectView.php:39
+msgid "Your participation:"
+msgstr ""
+
+#: src/Ui/MemberProjectView.php:47
+msgid "Your decision is final. To change it later, contact an organizer."
+msgstr ""
+
+#: src/Ui/MemberProjectView.php:87
+msgid "Your parts"
+msgstr ""
+
+#: src/Ui/MemberProjectView.php:89
+msgid "Download my sheet music"
+msgstr ""
+
+#: src/Ui/MemberProjectView.php:109
+msgid "Accept"
+msgstr ""
+
+#: src/Ui/MemberProjectView.php:109
+msgid "Decline"
+msgstr ""
+
+#: src/Ui/MemberProjectView.php:112
+msgid "Accept to participate? Your decision is final."
+msgstr ""
+
+#: src/Ui/MemberProjectView.php:113
+msgid "Decline to participate? Your decision is final."
+msgstr ""
+
+#. translators: 1: number accepted, 2: number declined, 3: number pending
+#: src/Ui/ParticipationView.php:42
+#, php-format
+msgid "%1$d accepted, %2$d declined, %3$d pending"
+msgstr ""
+
+#: src/Ui/ParticipationView.php:54
+msgid "Members are asked to respond when the project is opened."
+msgstr ""
+
+#: src/Ui/ParticipationView.php:55
+msgid "Nobody has been asked to respond."
+msgstr ""
+
+#: src/Ui/ParticipationView.php:82
+msgid "Member"
+msgstr ""
+
+#: src/Ui/ParticipationView.php:84 src/Ui/ProgramView.php:108
+#: src/Ui/ProjectView.php:62
+msgid "Assignments"
+msgstr ""
+
+#: src/Ui/ParticipationView.php:87 src/Ui/ParticipationView.php:135
+msgid "Change"
+msgstr ""
+
+#. translators: %d: number of assignments
+#: src/Ui/ParticipationView.php:118
+#, php-format
+msgid "The member's %d assignments in this project will be removed. Continue?"
+msgstr ""
+
+#: src/Ui/ParticipationView.php:133
+msgid "New status"
+msgstr ""
+
+#: src/Ui/ProgramView.php:46
+msgid "The program has not been published yet."
+msgstr ""
+
+#: src/Ui/ProgramView.php:70
+msgid "archived"
+msgstr ""
+
+#: src/Ui/ProgramView.php:84
+msgid "Remove the piece from the program?"
+msgstr ""
+
+#. translators: %d: number of assignments
+#: src/Ui/ProgramView.php:87
+#, php-format
+msgid "Remove the piece? Its %d assignments will be removed."
+msgstr ""
+
+#: src/Ui/ProgramView.php:106
+msgid "Composer"
+msgstr ""
+
+#: src/Ui/ProgramView.php:107
+msgid "Parts"
+msgstr ""
+
+#: src/Ui/ProgramView.php:113
+msgid "The program is empty."
+msgstr ""
+
+#: src/Ui/ProgramView.php:129
+msgid "All pieces of the library are in the program."
+msgstr ""
+
+#: src/Ui/ProgramView.php:142
+msgid "Add a piece"
+msgstr ""
+
+#: src/Ui/ProgramView.php:145
+msgid "Add to program"
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:35 src/Ui/ProjectListView.php:38
+msgid "New project"
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:36
+msgid "Edit project"
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:41 src/Ui/ProjectView.php:74
+#: src/Ui/ProjectsShortcode.php:84
+msgid "All projects"
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:48
+msgid "Name"
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:51
+msgid "e.g. Spring Concert 2027"
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:56
+msgid "Description"
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:59
+msgid "Shown to all members, e.g. rehearsal times and places."
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:64
+msgid "Save"
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:65
+msgid "Cancel"
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:91 src/Ui/ProjectView.php:103
+msgid "Conductors"
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:92 src/Ui/ProjectView.php:107
+msgid "Organizers"
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:102
+msgid "Nobody has this role yet."
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:115
+msgid ""
+"Shown on the project page. Every conductor and organizer has their rights in "
+"all projects."
+msgstr ""
+
+#: src/Ui/ProjectListView.php:41
+msgid "There are no current projects."
+msgstr ""
+
+#: src/Ui/ProjectListView.php:52 src/Ui/ProjectView.php:101
+msgid "Concert"
+msgstr ""
+
+#: src/Ui/ProjectListView.php:64
+msgid "Open"
+msgstr ""
+
+#: src/Ui/ProjectView.php:54
+msgid "Overview"
+msgstr ""
+
+#: src/Ui/ProjectView.php:56 src/Ui/ProjectView.php:127
+msgid "Program"
+msgstr ""
+
+#: src/Ui/ProjectView.php:78
+msgid "Edit"
+msgstr ""
+
+#: src/Ui/ProjectView.php:99 src/Ui/ProjectView.php:183
+msgid "Status"
+msgstr ""
+
+#: src/Ui/ProjectView.php:100
+msgid "Dates"
+msgstr ""
+
+#: src/Ui/ProjectView.php:132
+msgid "Email accepted participants"
+msgstr ""
+
+#: src/Ui/ProjectView.php:134
+msgid "Email pending participants"
+msgstr ""
+
+#: src/Ui/ProjectView.php:135
+msgid "Email everyone asked"
+msgstr ""
+
+#: src/Ui/ProjectView.php:138
+msgid "Email"
+msgstr ""
+
+#. translators: %s: project status
+#: src/Ui/ProjectView.php:157
+#, php-format
+msgid "Change the status to \"%s\"?"
+msgstr ""
+
+#: src/Ui/ProjectView.php:162
+msgid ""
+"All active members and organizers who have not been asked yet will be asked "
+"to respond."
+msgstr ""
+
+#. translators: %s: project status
+#: src/Ui/ProjectView.php:168
+#, php-format
+msgid "Move to \"%s\""
+msgstr ""
+
+#. translators: %s: project status
+#: src/Ui/ProjectView.php:170
+#, php-format
+msgid "Back to \"%s\""
+msgstr ""
+
+#: src/Ui/ProjectsShortcode.php:61
+msgid "Please log in to see the projects."
+msgstr ""
+
+#: src/Ui/ProjectsShortcode.php:64
+msgid "You are not allowed to see the projects."
+msgstr ""

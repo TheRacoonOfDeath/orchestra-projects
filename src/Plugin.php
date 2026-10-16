@@ -113,7 +113,19 @@ final class Plugin
     private function register(): void
     {
         $this->registerUpdateChecker();
+        \add_action('init', [$this, 'loadTextDomain'], 0);
         \add_action('plugins_loaded', [$this, 'registerFeatures']);
+    }
+
+    /**
+     * The language is chosen in orchestra-core (`Orchestra\Core\Ui\Language`).
+     *
+     * @internal Hooked to `init`, before anything is translated.
+     */
+    public function loadTextDomain(): void
+    {
+        $directory = \dirname(\plugin_basename($this->pluginFile)) . '/languages';
+        \load_plugin_textdomain('orchestra-projects', false, $directory);
     }
 
     /**
