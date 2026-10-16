@@ -65,7 +65,7 @@ final class ProjectsShortcode
         }
 
         $base = \remove_query_arg(
-            [self::PROJECT_PARAMETER, self::TAB_PARAMETER, self::EDIT_PARAMETER],
+            [self::PROJECT_PARAMETER, self::TAB_PARAMETER, self::EDIT_PARAMETER, ProjectListView::COMPLETED_PARAMETER],
             Redirect::currentUrl()
         );
         $urls = self::urls($base);

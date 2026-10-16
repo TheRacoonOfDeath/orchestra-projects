@@ -36,9 +36,9 @@ final class AssignmentHistoryTest extends TestCase
         ], $marks);
     }
 
-    public function testCompletedAndArchivedProjectsCountAsCompleted(): void
+    public function testOnlyCompletedProjectsCountAsCompleted(): void
     {
-        $statuses = [1 => ProjectStatus::Archived, 2 => ProjectStatus::Completed, 3 => ProjectStatus::Open];
+        $statuses = [1 => ProjectStatus::Completed, 2 => ProjectStatus::Completed, 3 => ProjectStatus::Open];
         $assignments = [
             new Assignment(1, 1, self::PIECE, self::PART, 10),
             new Assignment(2, 2, self::PIECE, self::PART, 11),

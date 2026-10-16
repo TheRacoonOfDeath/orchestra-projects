@@ -12,11 +12,13 @@ use Orchestra\Projects\Project\ProjectRepository;
 use Orchestra\Projects\Project\ProjectStatus;
 
 /**
- * The projects as cards: members see the current ones with their response and parts; conductors
- * and organizers see all projects.
+ * The projects as cards, in two tabs: the active projects and the completed ones (`?orchestra_completed=1`).
+ * Members see their response and parts; conductors and organizers also see drafts.
  */
 final class ProjectListView
 {
+    public const COMPLETED_PARAMETER = 'orchestra_completed';
+
     public function __construct(
         private readonly ProjectRepository $projects,
         private readonly MemberProjectView $memberView,
@@ -27,9 +29,12 @@ final class ProjectListView
     public function render(ProjectUrls $urls): string
     {
         $staff = \current_user_can(Capabilities::PROGRAM_MANAGE);
+        $completed = ($_GET[self::COMPLETED_PARAMETER] ?? null) === '1';
         $projects = \array_values(\array_filter(
             $this->projects->all(),
-            static fn (Project $project): bool => $staff ? true : $project->status->current()
+            static fn (Project $project): bool => $completed
+                ? $project->status === ProjectStatus::Completed
+                : ($staff ? $project->status->active() : $project->status->current())
         ));
 
         $html = '';
@@ -37,13 +42,23 @@ final class ProjectListView
             $html .= '<div class="orchestra-toolbar"><span></span>'
                 . Form::link($urls->edit(null), \__('New project', 'orchestra-projects'), 'primary') . '</div>';
         }
+        $html .= Html::tabs(
+            ['active' => \__('Active', 'orchestra-projects'), 'completed' => \__('Completed', 'orchestra-projects')],
+            $completed ? 'completed' : 'active',
+            static fn (string $tab): string => self::url($urls, $tab === 'completed')
+        );
         if ($projects === []) {
-            return $html . Html::empty(\__('There are no current projects.', 'orchestra-projects'));
+            return $html . Html::empty($completed
+                ? \__('There are no completed projects yet.', 'orchestra-projects')
+                : \__('There are no current projects.', 'orchestra-projects'));
         }
 
-        // Current projects first, the next concert on top; past and draft projects after them.
-        \usort($projects, static fn (Project $a, Project $b): int => [self::group($a), $a->sortDate() ?? '9999']
-            <=> [self::group($b), $b->sortDate() ?? '9999']);
+        // Completed projects stay newest first, as the repository sorts them. Active ones show the
+        // next concert on top, drafts after the running projects.
+        if (!$completed) {
+            \usort($projects, static fn (Project $a, Project $b): int => [self::group($a), $a->sortDate() ?? '9999']
+                <=> [self::group($b), $b->sortDate() ?? '9999']);
+        }
 
         $html .= '<div class="orchestra-cards">';
         foreach ($projects as $project) {
@@ -68,13 +83,18 @@ final class ProjectListView
         return $html . '</div>';
     }
 
+    /**
+     * The list of active or completed projects.
+     */
+    public static function url(ProjectUrls $urls, bool $completed): string
+    {
+        return $completed
+            ? \add_query_arg(self::COMPLETED_PARAMETER, '1', $urls->list())
+            : \remove_query_arg(self::COMPLETED_PARAMETER, $urls->list());
+    }
+
     private static function group(Project $project): int
     {
-        return match ($project->status) {
-            ProjectStatus::Open, ProjectStatus::Preparation => 0,
-            ProjectStatus::Draft => 1,
-            ProjectStatus::Completed => 2,
-            ProjectStatus::Archived => 3,
-        };
+        return $project->status === ProjectStatus::Draft ? 1 : 0;
     }
 }

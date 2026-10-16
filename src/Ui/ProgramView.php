@@ -54,7 +54,7 @@ final class ProgramView
         $html = '';
         if (!$project->status->programEditable()) {
             $html .= '<div class="orchestra-notice"><p>'
-                . \esc_html__('The program of a completed or archived project cannot be changed.', 'orchestra-projects')
+                . \esc_html__('The program of a completed project cannot be changed.', 'orchestra-projects')
                 . '</p></div>';
         }
 

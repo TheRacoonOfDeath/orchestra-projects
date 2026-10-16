@@ -24,13 +24,15 @@ active status, only through their public services.
 
 ## Rules
 
-| Status | Visible to members | On the member page | Members respond | Assignments | Program |
-|--------|:--:|:--:|:--:|:--:|:--:|
-| Draft | | | | | ✓ |
-| Open for Participation | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Preparation | ✓ | ✓ | | ✓ | ✓ |
-| Completed | ✓ | ✓ | | | |
-| Archived | ✓ (by link) | | | | |
+| Status | Visible to members | Listed under | Members respond | Assignments | Program | Email groups |
+|--------|:--:|:--:|:--:|:--:|:--:|:--:|
+| Draft | | Active (staff only) | | | ✓ | |
+| Open for Participation | ✓ | Active | ✓ | ✓ | ✓ | ✓ |
+| Preparation | ✓ | Active | | ✓ | ✓ | ✓ |
+| Completed | ✓ | Completed | | | | |
+
+- The project list has two tabs, **Active** and **Completed** (`?orchestra_completed=1`).
+- Versions before 0.8 had an Archived status after Completed; such projects count as completed.
 
 - Projects move one step forward or back, e.g. back to Open for late responses.
 - Opening a project creates Open participation records for all active users with the role
@@ -53,7 +55,7 @@ assigns a part. The order in which the assignments were made counts, not the pro
 
 - **played last time**: the member's latest assignment of this piece, in any other project, was
   to this part
-- **played in a completed project**: assigned to this part in a completed or archived project
+- **played in a completed project**: assigned to this part in a completed project
   (shown together with "played last time" when both apply)
 - **never played**: never assigned to this part in another project
 

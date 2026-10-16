@@ -23,7 +23,7 @@ final class Capabilities
     /** Create and edit projects, change their status and staff. */
     public const PROJECT_MANAGE = 'orchestra_projects_project_manage';
 
-    /** Delete projects. Projects are normally archived instead. */
+    /** Delete projects. Projects are normally completed instead. */
     public const PROJECT_DELETE = 'orchestra_projects_project_delete';
 
     /** Add, remove and reorder the pieces of a program. Also opens the project screens in wp-admin. */

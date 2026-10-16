@@ -79,7 +79,7 @@ final class ProjectRepository
             $post->ID,
             $post->post_title,
             $post->post_content,
-            ProjectStatus::tryFrom(self::meta($post->ID, ProjectPostType::META_STATUS) ?? '') ?? ProjectStatus::Draft,
+            ProjectStatus::fromStored(self::meta($post->ID, ProjectPostType::META_STATUS)),
             self::meta($post->ID, ProjectPostType::META_START_DATE),
             self::meta($post->ID, ProjectPostType::META_END_DATE),
             self::meta($post->ID, ProjectPostType::META_CONCERT_DATE),

@@ -38,7 +38,7 @@ final class AssignmentHistory
             }
             $played[$userId] = true;
             $status = $statuses[$assignment->projectId] ?? null;
-            if ($status === ProjectStatus::Completed || $status === ProjectStatus::Archived) {
+            if ($status === ProjectStatus::Completed) {
                 $completed[$userId] = true;
             }
         }

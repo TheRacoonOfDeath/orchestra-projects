@@ -15,7 +15,7 @@ final class ProjectStatusTest extends TestCase
         $this->assertTrue(ProjectStatus::Preparation->canMoveTo(ProjectStatus::Open));
         $this->assertFalse(ProjectStatus::Draft->canMoveTo(ProjectStatus::Preparation));
         $this->assertFalse(ProjectStatus::Open->canMoveTo(ProjectStatus::Open));
-        $this->assertNull(ProjectStatus::Archived->next());
+        $this->assertNull(ProjectStatus::Completed->next());
         $this->assertNull(ProjectStatus::Draft->previous());
     }
 
@@ -27,7 +27,6 @@ final class ProjectStatusTest extends TestCase
             'open' => [true, true, true],
             'preparation' => [true, false, true],
             'completed' => [true, false, false],
-            'archived' => [true, false, false],
         ];
 
         foreach ($table as $value => [$visible, $respond, $assignments]) {
@@ -38,13 +37,23 @@ final class ProjectStatusTest extends TestCase
         }
     }
 
-    public function testDashboardShowsNeitherDraftsNorArchivedProjects(): void
+    public function testMembersSeeOnlyRunningProjectsAsActive(): void
     {
         $current = \array_filter(ProjectStatus::cases(), static fn (ProjectStatus $s): bool => $s->current());
+        $active = \array_filter(ProjectStatus::cases(), static fn (ProjectStatus $s): bool => $s->active());
 
+        $this->assertSame([ProjectStatus::Open, ProjectStatus::Preparation], \array_values($current));
         $this->assertSame(
-            [ProjectStatus::Open, ProjectStatus::Preparation, ProjectStatus::Completed],
-            \array_values($current)
+            [ProjectStatus::Draft, ProjectStatus::Open, ProjectStatus::Preparation],
+            \array_values($active)
         );
+    }
+
+    public function testProjectsArchivedByEarlierVersionsAreCompleted(): void
+    {
+        $this->assertSame(ProjectStatus::Completed, ProjectStatus::fromStored('archived'));
+        $this->assertSame(ProjectStatus::Open, ProjectStatus::fromStored('open'));
+        $this->assertSame(ProjectStatus::Draft, ProjectStatus::fromStored(null));
+        $this->assertSame(ProjectStatus::Draft, ProjectStatus::fromStored('unknown'));
     }
 }

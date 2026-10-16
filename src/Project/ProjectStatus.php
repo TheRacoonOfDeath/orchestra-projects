@@ -13,7 +13,14 @@ enum ProjectStatus: string
     case Open = 'open';
     case Preparation = 'preparation';
     case Completed = 'completed';
-    case Archived = 'archived';
+
+    /**
+     * The status saved for a project. Projects archived by versions before 0.8 count as completed.
+     */
+    public static function fromStored(?string $value): self
+    {
+        return $value === 'archived' ? self::Completed : (self::tryFrom($value ?? '') ?? self::Draft);
+    }
 
     public function label(): string
     {
@@ -22,7 +29,6 @@ enum ProjectStatus: string
             self::Open => \__('Open for Participation', 'orchestra-projects'),
             self::Preparation => \__('Preparation', 'orchestra-projects'),
             self::Completed => \__('Completed', 'orchestra-projects'),
-            self::Archived => \__('Archived', 'orchestra-projects'),
         };
     }
 
@@ -31,10 +37,19 @@ enum ProjectStatus: string
         return $this !== self::Draft;
     }
 
-    /** Shown on the member dashboard. Archived projects are still visible when opened directly. */
+    /**
+     * Shown to members in the active projects and offered as email groups. Completed projects are
+     * listed separately and can still be opened.
+     */
     public function current(): bool
     {
-        return $this !== self::Draft && $this !== self::Archived;
+        return $this === self::Open || $this === self::Preparation;
+    }
+
+    /** In the list of active projects, including drafts for conductors and organizers. */
+    public function active(): bool
+    {
+        return $this !== self::Completed;
     }
 
     public function membersCanRespond(): bool
@@ -47,7 +62,7 @@ enum ProjectStatus: string
         return $this === self::Open || $this === self::Preparation;
     }
 
-    /** Completed and archived programs are history and stay unchanged. */
+    /** Completed programs are history and stay unchanged. */
     public function programEditable(): bool
     {
         return $this === self::Draft || $this === self::Open || $this === self::Preparation;
@@ -59,8 +74,7 @@ enum ProjectStatus: string
             self::Draft => self::Open,
             self::Open => self::Preparation,
             self::Preparation => self::Completed,
-            self::Completed => self::Archived,
-            self::Archived => null,
+            self::Completed => null,
         };
     }
 
@@ -71,7 +85,6 @@ enum ProjectStatus: string
             self::Open => self::Draft,
             self::Preparation => self::Open,
             self::Completed => self::Preparation,
-            self::Archived => self::Completed,
         };
     }
 

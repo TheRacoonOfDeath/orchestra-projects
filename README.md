@@ -9,7 +9,7 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
 ## Features
 
 - Projects with dates, conductors and organizers, moving through Draft → Open for Participation →
-  Preparation → Completed → Archived
+  Preparation → Completed; the project list has tabs for the active and the completed projects
 - An ordered program of pieces from the library
 - Participation: opening a project asks every active member and organizer to accept or decline;
   the decision is final, organizers can change it

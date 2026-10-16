@@ -95,6 +95,6 @@ final class ProgramService
 
     private static function lockedMessage(): string
     {
-        return \__('The program of a completed or archived project cannot be changed.', 'orchestra-projects');
+        return \__('The program of a completed project cannot be changed.', 'orchestra-projects');
     }
 }

@@ -533,14 +533,23 @@ check("Mia — played last time, played in a completed project" in horn1_row,
       "conductors see who played the part in a completed project")
 act(conductor, summer, "program_remove", piece=PIRATES)
 _, page = mia.get(DASHBOARD)
-check("Spring Concert 2027" in page, "completed projects stay on the dashboard")
-act(organizer, spring, "status", target="archived")
-_, page = mia.get(DASHBOARD)
-check("Spring Concert 2027" not in page, "archived projects leave the dashboard")
+check("Spring Concert 2027" not in page and "Completed" in text(page), "completed projects leave the active projects")
+_, page = mia.get(f"{DASHBOARD}&orchestra_completed=1")
+check("Spring Concert 2027" in page and "Summer 2028" not in page, "completed projects are listed under Completed")
+_, page = conductor.get(DASHBOARD)
+check("Spring Concert 2027" not in page and "Summer 2028" in page, "conductors see only active projects by default")
 _, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}")
-check("Spring Concert 2027" in page and "Horn 1" in page, "archived projects can still be opened")
+check("Spring Concert 2027" in page and "Horn 1" in page and "orchestra_completed=1" in page,
+      "completed projects can still be opened and lead back to the completed projects")
 _, page = organizer.get(COMPOSE)
-check("Spring Concert 2027" not in page and "Summer 2028" in page, "archived projects have no email groups")
+check("Spring Concert 2027" not in page and "Summer 2028" in page, "completed projects have no email groups")
+status, page = act(organizer, spring, "status", target="archived")
+check("Unknown status" in text(page) and projects_api(f"echo json_encode($p->project({spring})->status->value);") == "completed",
+      "there is no archived status any more")
+wp_eval(f'update_post_meta({spring}, "orchestra_projects_status", "archived");')
+check(projects_api(f"echo json_encode($p->project({spring})->status->value);") == "completed",
+      "projects archived by earlier versions count as completed")
+wp_eval(f'update_post_meta({spring}, "orchestra_projects_status", "completed");')
 
 # --- Privacy and deleted users --------------------------------------------------------------
 export = wp_json(

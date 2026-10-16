@@ -70,8 +70,11 @@ final class ProjectView
         $tabs = self::tabs();
         $tab = isset($tabs[$tab]) ? $tab : self::OVERVIEW;
 
-        $html = '<p><a href="' . \esc_url($urls->list()) . '">&larr; '
-            . \esc_html__('All projects', 'orchestra-projects')
+        $completed = $project->status === ProjectStatus::Completed;
+        $html = '<p><a href="' . \esc_url(ProjectListView::url($urls, $completed)) . '">&larr; '
+            . ($completed
+                ? \esc_html__('Completed projects', 'orchestra-projects')
+                : \esc_html__('All projects', 'orchestra-projects'))
             . '</a></p>';
         if ($withHeading) {
             $edit = \current_user_can('edit_post', $project->id)

@@ -16,7 +16,7 @@ final class Badges
             ProjectStatus::Open => 'info',
             ProjectStatus::Preparation => 'warning',
             ProjectStatus::Completed => 'success',
-            ProjectStatus::Draft, ProjectStatus::Archived => '',
+            ProjectStatus::Draft => '',
         });
     }
 
