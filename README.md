@@ -14,7 +14,8 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
 - Participation: opening a project asks every active member and organizer to accept or decline;
   the decision is final, organizers can change it
 - Assignments of members to parts, with hints who played the part last time or in a completed
-  project, and a button that gives everyone the part they played last time
+  project, and a button that gives everyone the part they played last time; the assignments can be
+  downloaded as a PDF (with orchestra-core 0.8 or later)
 - `[orchestra_projects]`: members see their projects, respond, see their parts and download the
   sheet music of each part, or all of it in one zip; organizers and conductors create projects, change their status and manage
   program, participation and assignments on the same page (or in **Projects** in wp-admin)

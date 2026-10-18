@@ -471,15 +471,16 @@ def mails():
 def send_email(session, groups, subject, op="send"):
     """Reviews an email on the email page and, for op "send", sends it."""
     _, page = session.get(EMAIL)
+    # Since orchestra-email 0.3, the reply address is a field, prefilled with the sender's address.
     data = {"_wpnonce": field(page, "_wpnonce") or "missing", "op": "review", "subject": subject, "body": "Hello",
-            "groups[]": groups}
+            "groups[]": groups, "reply_to": field(page, "reply_to") or ""}
     status, page = session.post(EMAIL, data)
     if op == "review":
         return status, page
     send = next((f for f in re.findall(r"<form.*?</form>", page, flags=re.S) if "orchestra_email_send" in f), "")
     return session.post("/wp-admin/admin-post.php", {
         "action": "orchestra_email_send", "_wpnonce": field(send, "_wpnonce") or "missing",
-        "subject": subject, "body": "Hello", "groups[]": groups,
+        "subject": subject, "body": "Hello", "groups[]": groups, "reply_to": field(send, "reply_to") or "",
         "orchestra_log_url": field(send, "orchestra_log_url") or EMAIL, "redirect_to": EMAIL,
     })
 
@@ -554,7 +555,7 @@ check('id="orchestra_email_body"' in page and "tinymce" in page.lower() and 'nam
 body = ('<p><strong>Bold</strong> and <em>italic</em> <span style="color: #c0392b; font-size: 20px; position: fixed">'
         'red</span></p><script>alert(1)</script><ul><li>One</li></ul>')
 review = {"_wpnonce": field(page, "_wpnonce") or "missing", "op": "review", "subject": "Plan & seating",
-          "body": body, "groups[]": [accepted_group]}
+          "body": body, "groups[]": [accepted_group], "reply_to": field(page, "reply_to") or ""}
 _, _, raw = organizer.request(EMAIL, review, files=[("attachments[]", script, "evil.php")])
 check("cannot be attached" in text(raw.decode()) and "orchestra_email_send" not in raw.decode(),
       "files of other types are rejected")
@@ -573,7 +574,7 @@ check(len(uploads) == 3 and all(re.fullmatch(r"[0-9a-f-]{36}", f) for f in uploa
       "attachments wait in the private directory under random names")
 _, page = conductor.get(EMAIL)
 _, page = conductor.post(EMAIL, {"_wpnonce": field(page, "_wpnonce") or "missing", "op": "review", "subject": "Mine",
-                                 "body": "Hi", "groups[]": [accepted_group],
+                                 "body": "Hi", "groups[]": [accepted_group], "reply_to": field(page, "reply_to") or "",
                                  "attachment_ids[]": fields.get("attachment_ids[]", [])})
 check("no longer available" in text(page) and "orchestra_email_send" not in page,
       "nobody can send the attachments of someone else")
@@ -615,6 +616,18 @@ check("Extra content of Spring Concert 2027" in page and "orchestra_tab=extra" i
 status, page = admin.get(admin_url(spring, "extra"))
 check(status == 200 and "Extra content of Spring Concert 2027" in page, "plugin tabs work in wp-admin")
 os.remove(extra_tab)
+
+# --- Assignments as PDF ---------------------------------------------------------------------
+_, page = conductor.get(manage_url(spring, "assignments"))
+check("Download PDF" in page and "orchestra_projects_assignments_pdf" in page, "the assignments tab offers a PDF")
+status, headers, body = conductor.request(f"/wp-admin/admin-post.php?action=orchestra_projects_assignments_pdf&project={spring}")
+check(status == 200 and headers.get("content-type") == "application/pdf" and body.startswith(b"%PDF-")
+      and "Spring%20Concert%202027%20-%20Assignments.pdf" in headers.get("content-disposition", ""),
+      "conductors download the assignments as a PDF")
+with open(os.path.join(WORK, "assignments.pdf"), "wb") as handle:
+    handle.write(body)
+status, _, body = mia.request(f"/wp-admin/admin-post.php?action=orchestra_projects_assignments_pdf&project={spring}")
+check(status == 403 and not body.startswith(b"%PDF"), "members cannot download the assignments")
 
 # --- Assignment history ---------------------------------------------------------------------
 summer, _ = create_project(organizer, "Summer 2028", "2028-06-01", "2028-07-01")

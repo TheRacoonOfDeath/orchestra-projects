@@ -22,6 +22,8 @@ use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Database\Schema;
 use Orchestra\Projects\Email\ProjectEmailGroups;
+use Orchestra\Projects\Export\AssignmentsPdf;
+use Orchestra\Projects\Export\AssignmentsPdfController;
 use Orchestra\Projects\Export\ParticipantsExport;
 use Orchestra\Projects\Export\ParticipantsExportController;
 use Orchestra\Projects\Frontend\ResponseController;
@@ -231,6 +233,10 @@ final class Plugin
                 new ParticipantsExport($this->participations, $members)
             ))->register();
         }
+        (new AssignmentsPdfController(
+            $this->projectRepository,
+            new AssignmentsPdf($this->program, $this->assignments, $library, $names)
+        ))->register();
         (new ProjectActions(
             $this->projectRepository,
             $statusService,

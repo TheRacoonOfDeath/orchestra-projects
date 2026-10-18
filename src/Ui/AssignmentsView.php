@@ -14,6 +14,7 @@ use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Assignment\HistoryMark;
 use Orchestra\Projects\Capabilities;
+use Orchestra\Projects\Export\AssignmentsPdfController;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationStatus;
 use Orchestra\Projects\Program\ProgramRepository;
@@ -41,7 +42,13 @@ final class AssignmentsView
             return Html::empty(\__('Add pieces to the program first.', 'orchestra-projects'));
         }
 
-        $html = '';
+        $html = AssignmentsPdfController::available()
+            ? '<div class="orchestra-actions">' . Form::link(
+                AssignmentsPdfController::url($project->id),
+                \__('Download PDF', 'orchestra-projects'),
+                'small'
+            ) . '</div>'
+            : '';
         $editable = $project->status->assignmentsEditable() && \current_user_can(Capabilities::ASSIGNMENT_MANAGE);
         if (!$project->status->assignmentsEditable()) {
             $html .= '<div class="orchestra-notice"><p>' . \esc_html__(

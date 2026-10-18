@@ -84,6 +84,14 @@ URLs on the projects page: `?orchestra_project=ID&orchestra_tab=program`, `&orch
 participation for responses), check the capability of the operation and return to the page they
 were sent from.
 
+## Assignments as PDF
+
+The assignments tab has a "Download PDF" button
+(`admin-post.php?action=orchestra_projects_assignments_pdf&project=ID`) for everyone who can open
+the tab. The PDF lists every piece of the program with its composer, its parts and the assigned
+players, and the project's dates and concerts. It is created by orchestra-core 0.8
+(`Orchestra\Core\Pdf\Pdf`); with an older core the button is hidden.
+
 ## Participants export
 
 Organizers download the accepted participants of a project as a CSV file from the Participation
