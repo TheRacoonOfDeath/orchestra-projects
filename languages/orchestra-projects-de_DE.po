@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 18:20+0200\n"
+"POT-Creation-Date: 2026-10-18 21:44+0200\n"
 "PO-Revision-Date: 2026-10-16 00:00+0000\n"
 "Last-Translator: Julian Nickerl\n"
 "Language-Team: German\n"
@@ -29,6 +29,7 @@ msgid "The project does not exist."
 msgstr "Das Projekt existiert nicht."
 
 #: src/Admin/ProjectActions.php:78 src/Admin/ProjectActions.php:105
+#: src/Export/ParticipantsExportController.php:84
 #: src/Frontend/ResponseController.php:53
 msgid "You are not allowed to do this."
 msgstr "Du darfst das nicht tun."
@@ -82,7 +83,7 @@ msgstr "Projekt verwalten"
 
 #: src/Admin/ProjectsPage.php:63 src/Admin/ProjectsPage.php:64
 #: src/Admin/ProjectsPage.php:77 src/Admin/ProjectsPage.php:118
-#: src/Plugin.php:250 src/Project/ProjectPostType.php:38
+#: src/Plugin.php:266 src/Project/ProjectPostType.php:38
 msgid "Projects"
 msgstr "Projekte"
 
@@ -171,6 +172,31 @@ msgstr "Alle, die %s spielen"
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"
 
+#. translators: Column separator of exported CSV files. Use the list separator of Excel in
+#. your language, e.g. ";" for German.
+#: src/Export/Csv.php:29
+msgctxt "CSV column separator"
+msgid ","
+msgstr ";"
+
+#: src/Export/ParticipantsExport.php:82
+msgid "Last name"
+msgstr "Nachname"
+
+#: src/Export/ParticipantsExport.php:83
+msgid "First name"
+msgstr "Vorname"
+
+#: src/Export/ParticipantsExport.php:84
+msgid "Email address"
+msgstr "E-Mail-Adresse"
+
+#. translators: %s: project name
+#: src/Export/ParticipantsExportController.php:59
+#, php-format
+msgid "%s - participants.csv"
+msgstr "%s - Teilnehmende.csv"
+
 #: src/Frontend/ResponseController.php:59
 msgid "Thank you! You have accepted to participate."
 msgstr "Danke! Du hast deine Teilnahme zugesagt."
@@ -218,12 +244,12 @@ msgstr "Zugesagt"
 msgid "Declined"
 msgstr "Abgesagt"
 
-#: src/Plugin.php:251
+#: src/Plugin.php:267
 msgid "Respond to projects, see your parts and download your sheet music."
 msgstr ""
 "Auf Projekte antworten, deine Stimmen sehen und deine Noten herunterladen."
 
-#: src/Plugin.php:275
+#: src/Plugin.php:291
 msgid ""
 "Orchestra Projects requires Orchestra Core 0.4, Orchestra Library and "
 "Orchestra Members to be active."
@@ -249,7 +275,7 @@ msgstr "Projekt"
 msgid "Participation"
 msgstr "Teilnahme"
 
-#: src/Privacy/PersonalData.php:90 src/Ui/ParticipationView.php:83
+#: src/Privacy/PersonalData.php:90 src/Ui/ParticipationView.php:86
 msgid "Responded"
 msgstr "Geantwortet"
 
@@ -510,47 +536,51 @@ msgid "Decline to participate? Your decision is final."
 msgstr "Teilnahme absagen? Deine Entscheidung ist endgültig."
 
 #. translators: 1: number accepted, 2: number declined, 3: number pending
-#: src/Ui/ParticipationView.php:42
+#: src/Ui/ParticipationView.php:44
 #, php-format
 msgid "%1$d accepted, %2$d declined, %3$d pending"
 msgstr "%1$d zugesagt, %2$d abgesagt, %3$d ausstehend"
 
-#: src/Ui/ParticipationView.php:54
+#: src/Ui/ParticipationView.php:56
 msgid "Members are asked to respond when the project is opened."
 msgstr ""
 "Die Mitglieder werden um eine Antwort gebeten, sobald das Projekt geöffnet "
 "wird."
 
-#: src/Ui/ParticipationView.php:55
+#: src/Ui/ParticipationView.php:57
 msgid "Nobody has been asked to respond."
 msgstr "Noch niemand wurde um eine Antwort gebeten."
 
-#: src/Ui/ParticipationView.php:77
+#: src/Ui/ParticipationView.php:80
 msgid "Nobody"
 msgstr "Niemand"
 
-#: src/Ui/ParticipationView.php:82
+#: src/Ui/ParticipationView.php:85
 msgid "Member"
 msgstr "Mitglied"
 
-#: src/Ui/ParticipationView.php:84 src/Ui/ProgramView.php:108
+#: src/Ui/ParticipationView.php:87 src/Ui/ProgramView.php:108
 #: src/Ui/ProjectView.php:62
 msgid "Assignments"
 msgstr "Einteilungen"
 
-#: src/Ui/ParticipationView.php:87 src/Ui/ParticipationView.php:133
+#: src/Ui/ParticipationView.php:90 src/Ui/ParticipationView.php:156
 msgid "Change"
 msgstr "Ändern"
 
+#: src/Ui/ParticipationView.php:126
+msgid "Export accepted participants (CSV)"
+msgstr "Zusagende exportieren (CSV)"
+
 #. translators: %d: number of assignments
-#: src/Ui/ParticipationView.php:116
+#: src/Ui/ParticipationView.php:139
 #, php-format
 msgid "The member's %d assignments in this project will be removed. Continue?"
 msgstr ""
 "Die %d Einteilungen des Mitglieds in diesem Projekt werden entfernt. "
 "Fortfahren?"
 
-#: src/Ui/ParticipationView.php:131
+#: src/Ui/ParticipationView.php:154
 msgid "New status"
 msgstr "Neuer Status"
 

@@ -10,3 +10,8 @@ function __(string $text, string $domain = 'default'): string
 {
     return $text;
 }
+
+function _x(string $text, string $context, string $domain = 'default'): string
+{
+    return $text;
+}

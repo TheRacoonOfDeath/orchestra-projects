@@ -9,6 +9,7 @@ use Orchestra\Core\Ui\Html;
 use Orchestra\Projects\Admin\Names;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Capabilities;
+use Orchestra\Projects\Export\ParticipantsExportController;
 use Orchestra\Projects\Participation\Participation;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationStatus;
@@ -24,6 +25,7 @@ final class ParticipationView
         private readonly ParticipationRepository $participations,
         private readonly AssignmentRepository $assignments,
         private readonly Names $names,
+        private readonly bool $exportAvailable,
     ) {
     }
 
@@ -63,6 +65,7 @@ final class ParticipationView
         $canManage = \current_user_can(Capabilities::PARTICIPATION_MANAGE);
 
         $html = '<p class="orchestra-muted">' . \esc_html($this->summary($project)) . '</p>'
+            . $this->exportButton($project, $all)
             . '<div class="orchestra-aligned-tables orchestra-stack">';
         foreach ([ParticipationStatus::Accepted, ParticipationStatus::Open, ParticipationStatus::Declined] as $status) {
             $group = \array_values(\array_filter($all, static fn (Participation $p): bool => $p->status === $status));
@@ -103,6 +106,26 @@ final class ParticipationView
         }
 
         return $html . '</div>';
+    }
+
+    /**
+     * @param list<Participation> $all
+     */
+    private function exportButton(Project $project, array $all): string
+    {
+        $accepted = \array_filter(
+            $all,
+            static fn (Participation $p): bool => $p->status === ParticipationStatus::Accepted
+        );
+        if (!$this->exportAvailable || $accepted === [] || !\current_user_can(Capabilities::PARTICIPATION_EXPORT)) {
+            return '';
+        }
+
+        return '<div class="orchestra-actions">' . Form::link(
+            ParticipantsExportController::url($project->id),
+            \__('Export accepted participants (CSV)', 'orchestra-projects'),
+            'small'
+        ) . '</div>';
     }
 
     private function changeForm(Project $project, Participation $participation, int $assignmentCount): string

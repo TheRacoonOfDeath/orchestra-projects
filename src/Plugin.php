@@ -22,6 +22,8 @@ use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Database\Schema;
 use Orchestra\Projects\Email\ProjectEmailGroups;
+use Orchestra\Projects\Export\ParticipantsExport;
+use Orchestra\Projects\Export\ParticipantsExportController;
 use Orchestra\Projects\Frontend\ResponseController;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationService;
@@ -164,6 +166,9 @@ final class Plugin
         $statusService = new ProjectStatusService($this->projectRepository, $participation);
         $formHandler = new ProjectFormHandler($this->projectRepository, $this->staff, $members);
         $names = new Names($members);
+        // The export needs the names and profile fields of orchestra-members 0.9. Plugins are
+        // updated one by one, so an older version may still be running.
+        $exportAvailable = \in_array('profileFields', \get_class_methods($members), true);
 
         // orchestra-email is optional.
         $email = \class_exists(EmailPlugin::class) && EmailPlugin::running()
@@ -200,7 +205,12 @@ final class Plugin
 
         // The views are shared by the projects page and the wp-admin screens.
         $memberView = new MemberProjectView($this->participations, $this->assignments, $this->program, $library);
-        $participationView = new ParticipationView($this->participations, $this->assignments, $names);
+        $participationView = new ParticipationView(
+            $this->participations,
+            $this->assignments,
+            $names,
+            $exportAvailable
+        );
         $listView = new ProjectListView($this->projectRepository, $memberView, $participationView);
         $formView = new ProjectFormView($this->staff, $members);
         $projectView = new ProjectView(
@@ -222,6 +232,12 @@ final class Plugin
         );
 
         (new ResponseController($this->participations, $participation))->register();
+        if ($exportAvailable) {
+            (new ParticipantsExportController(
+                $this->projectRepository,
+                new ParticipantsExport($this->participations, $members)
+            ))->register();
+        }
         (new ProjectActions(
             $this->projectRepository,
             $statusService,

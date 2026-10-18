@@ -41,6 +41,9 @@ final class Capabilities
     /** Change any participation decision. */
     public const PARTICIPATION_MANAGE = 'orchestra_projects_participation_manage';
 
+    /** Download the accepted participants of a project with their profiles as a CSV file. */
+    public const PARTICIPATION_EXPORT = 'orchestra_projects_participation_export';
+
     /** See the assignments of a project. */
     public const ASSIGNMENT_READ = 'orchestra_projects_assignment_read';
 
@@ -71,6 +74,7 @@ final class Capabilities
             ->register(self::PARTICIPATION_READ_OTHERS, [Roles::CONDUCTOR, Roles::ORGANIZER])
             ->register(self::PARTICIPATION_RESPOND_OWN, $players)
             ->register(self::PARTICIPATION_MANAGE, [Roles::ORGANIZER])
+            ->register(self::PARTICIPATION_EXPORT, [Roles::ORGANIZER])
             ->register(self::ASSIGNMENT_READ, $everyone)
             ->register(self::ASSIGNMENT_MANAGE, [Roles::CONDUCTOR, Roles::ORGANIZER])
             ->register(self::ASSIGNMENT_HISTORY_READ, [Roles::CONDUCTOR, Roles::ORGANIZER])

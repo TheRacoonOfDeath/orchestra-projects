@@ -4,7 +4,7 @@
  * Plugin Name:      Orchestra Projects
  * Plugin URI:       https://github.com/TheRacoonOfDeath/orchestra-projects
  * Description:      Projects, programs, participation and assignments for the Orchestra plugin suite.
- * Version:          0.10.1
+ * Version:          0.11.0
  * Author:           Julian Nickerl
  * License:          MIT
  * Text Domain:      orchestra-projects

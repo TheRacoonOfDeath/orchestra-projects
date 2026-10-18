@@ -75,7 +75,7 @@ views in **Projects** in wp-admin (views in `src/Ui`, shared by both).
 | Project list | everyone | members: current projects with response, parts and download; staff: all projects; organizers: "New project" |
 | Project → Overview | everyone who may see the project | details, staff, description, own response and parts, program; email buttons and status changes for staff |
 | Project → Program | conductors, organizers | add, order and remove pieces |
-| Project → Participation | conductors (read), organizers | accepted, pending, declined; organizers change decisions |
+| Project → Participation | conductors (read), organizers | accepted, pending, declined; organizers change decisions and export the accepted participants |
 | Project → Assignments | conductors, organizers | parts with assigned members; conductors and organizers assign |
 | Project form | organizers | name, description, dates, staff (in wp-admin: the WordPress editor with the same fields) |
 
@@ -83,6 +83,24 @@ URLs on the projects page: `?orchestra_project=ID&orchestra_tab=program`, `&orch
 `?orchestra_project=new`. All forms post to `admin-post.php` with a nonce per project (or per
 participation for responses), check the capability of the operation and return to the page they
 were sent from.
+
+## Participants export
+
+Organizers download the accepted participants of a project as a CSV file from the Participation
+tab (`admin-post.php?action=orchestra_projects_export_participants&project=ID`). It has one column
+each for last name, first name and email address, then one per profile field of orchestra-members
+in their order; checkboxes are exported as "Yes" or "No". Users without first and last name get
+their display name as last name. Rows are ordered by last and first name.
+
+- Requires `orchestra_projects_participation_export` and, for every participant,
+  `orchestra_members_profile_read`, because the profiles are sensitive.
+- The file opens in Excel by double-click: UTF-8 with a byte order mark, every cell quoted, Windows
+  line endings, and the column separator Excel expects in the Orchestra language (`;` in German,
+  `,` in English; translatable with the context "CSV column separator").
+- Values starting with `=`, `+`, `-`, `@` or a tab are prefixed with `'`, so Excel never runs them
+  as formulas.
+- Needs orchestra-members 0.9 for names and profile fields; with an older version the button is
+  hidden.
 
 ## Email groups
 

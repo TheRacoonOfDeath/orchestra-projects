@@ -342,6 +342,34 @@ check("Mia" in page and "Max" in page and 'name="status"' not in page,
 status, _ = act(conductor, spring, "participation", participation=max_participation, status="accepted")
 check(status == 403, "conductors cannot change participation")
 
+# --- Participants export --------------------------------------------------------------------
+wp("user", "update", str(ids["mia"]), "--first_name=Mia", "--last_name=Müller")
+wp("user", "meta", "update", str(ids["mia"]), "orchestra_members_financial_support", "1")
+wp("user", "meta", "update", str(ids["mia"]), "orchestra_members_dietary_restrictions", '=1+1, "vegan"\nno nuts')
+EXPORT = f"/wp-admin/admin-post.php?action=orchestra_projects_export_participants&project={spring}"
+_, page = organizer.get(manage_url(spring, "participation"))
+check("Export accepted participants (CSV)" in page, "organizers see the export on the participation tab")
+_, page = conductor.get(manage_url(spring, "participation"))
+check("Export accepted participants" not in page, "conductors do not see the export")
+status, _, _ = conductor.request(EXPORT)
+check(status == 403, "conductors cannot export participants")
+status, headers, body = organizer.request(EXPORT)
+csv = body.decode("utf-8")
+check(status == 200 and headers.get("content-type") == "text/csv; charset=UTF-8"
+      and "Spring%20Concert%202027%20-%20participants.csv" in headers.get("content-disposition", ""),
+      "organizers download the participants as a CSV file")
+check(body.startswith(b"\xef\xbb\xbf") and csv.endswith("\r\n"), "the export is UTF-8 with BOM and Windows line endings")
+check(csv.lstrip("﻿").split("\r\n")[:3] == [
+    '"Last name","First name","Email address","Financial support","Dietary restrictions"',
+    '"Müller","Mia","mia@example.com","Yes","\'=1+1, ""vegan""\nno nuts"',
+    '"Olga","","organizer@example.com","No",""',
+] and "max@example.com" not in csv, "one column per property and profile field, accepted participants only, no formulas")
+wp("option", "update", "orchestra_core_language", "de_DE")
+_, _, body = organizer.request(EXPORT)
+check(body.decode("utf-8").lstrip("﻿").startswith('"Nachname";"Vorname";"E-Mail-Adresse";'),
+      "the German export uses semicolons, as German Excel expects")
+wp("option", "delete", "orchestra_core_language")
+
 # --- Assignments ----------------------------------------------------------------------------
 _, page = act(conductor, spring, "assign", part=HORN1, **{"users[]": [str(ids["mia"])]})
 act(conductor, spring, "assign", part=HORN2, **{"users[]": [str(ids["organizer"])]})

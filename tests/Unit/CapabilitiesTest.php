@@ -44,6 +44,7 @@ final class CapabilitiesTest extends TestCase
             Capabilities::ASSIGNMENT_MANAGE,
             Capabilities::ASSIGNMENT_READ,
             Capabilities::EMAIL_SEND,
+            Capabilities::PARTICIPATION_EXPORT,
             Capabilities::PARTICIPATION_MANAGE,
             Capabilities::PARTICIPATION_READ_OTHERS,
             Capabilities::PARTICIPATION_READ_OWN,
