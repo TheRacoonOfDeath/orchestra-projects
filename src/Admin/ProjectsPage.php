@@ -99,10 +99,11 @@ final class ProjectsPage
         if ($projectId === 0) {
             return;
         }
-        if ($this->projects->find($projectId) === null) {
+        $project = $this->projects->find($projectId);
+        if ($project === null) {
             \wp_die(\esc_html__('The project does not exist.', 'orchestra-projects'), 404);
         }
-        if (!\array_key_exists(self::requestedTab(), ProjectView::tabs())) {
+        if (!\array_key_exists(self::requestedTab(), ProjectView::tabs($project))) {
             \wp_die(\esc_html__('You are not allowed to view this page.', 'orchestra-projects'), 403);
         }
     }

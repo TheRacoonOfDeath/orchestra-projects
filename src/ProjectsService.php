@@ -23,6 +23,20 @@ use Orchestra\Projects\Project\ProjectStatus;
  */
 final class ProjectsService
 {
+    /**
+     * Filters the tabs of a project: `(array<string, string> $tabs, Project $project)`, tab key =>
+     * label. Other plugins add their own tabs, e.g. orchestra-seating; check the current user's
+     * capabilities there.
+     */
+    public const TABS_FILTER = 'orchestra_projects_tabs';
+
+    /**
+     * Filters the content of a tab added with {@see TABS_FILTER}:
+     * `(string $html, string $tab, Project $project, string $tabUrl)`. `$tabUrl` links to the tab,
+     * on the projects page or in wp-admin; forms return to it.
+     */
+    public const TAB_CONTENT_FILTER = 'orchestra_projects_tab_content';
+
     public function __construct(
         private readonly ProjectRepository $projects,
         private readonly ProgramRepository $program,

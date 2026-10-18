@@ -14,6 +14,7 @@ use Orchestra\Projects\Participation\ParticipationStatus;
 use Orchestra\Projects\Project\Project;
 use Orchestra\Projects\Project\ProjectStatus;
 use Orchestra\Projects\Project\StaffRepository;
+use Orchestra\Projects\ProjectsService;
 
 /**
  * A project with its tabs. Members see the overview; conductors and organizers also the program,
@@ -47,9 +48,10 @@ final class ProjectView
     }
 
     /**
-     * @return array<string, string> the tabs the current user may open
+     * @return array<string, string> the tabs the current user may open, including those of other
+     *         plugins ({@see ProjectsService::TABS_FILTER})
      */
-    public static function tabs(): array
+    public static function tabs(Project $project): array
     {
         $tabs = [self::OVERVIEW => \__('Overview', 'orchestra-projects')];
         if (\current_user_can(Capabilities::PROGRAM_MANAGE)) {
@@ -62,12 +64,21 @@ final class ProjectView
             $tabs[self::ASSIGNMENTS] = \__('Assignments', 'orchestra-projects');
         }
 
+        $filtered = \apply_filters(ProjectsService::TABS_FILTER, $tabs, $project);
+        if (\is_array($filtered)) {
+            foreach ($filtered as $key => $label) {
+                if (\is_string($key) && \is_string($label) && !isset($tabs[$key])) {
+                    $tabs[\sanitize_key($key)] = $label;
+                }
+            }
+        }
+
         return $tabs;
     }
 
     public function render(Project $project, string $tab, ProjectUrls $urls, bool $withHeading = true): string
     {
-        $tabs = self::tabs();
+        $tabs = self::tabs($project);
         $tab = isset($tabs[$tab]) ? $tab : self::OVERVIEW;
 
         $completed = $project->status === ProjectStatus::Completed;
@@ -92,8 +103,21 @@ final class ProjectView
             self::PROGRAM => $this->programView->manage($project),
             self::PARTICIPATION => $this->participationView->render($project),
             self::ASSIGNMENTS => $this->assignmentsView->render($project),
-            default => $this->overview($project, !$withHeading),
+            self::OVERVIEW => $this->overview($project, !$withHeading),
+            default => self::pluginTab($project, $tab, $urls),
         };
+    }
+
+    /**
+     * A tab of another plugin, see {@see ProjectsService::TAB_CONTENT_FILTER}. The plugin escapes
+     * its output.
+     */
+    private static function pluginTab(Project $project, string $tab, ProjectUrls $urls): string
+    {
+        $tabUrl = $urls->project($project->id, $tab);
+        $html = \apply_filters(ProjectsService::TAB_CONTENT_FILTER, '', $tab, $project, $tabUrl);
+
+        return \is_string($html) ? $html : '';
     }
 
     /**

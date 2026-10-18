@@ -599,6 +599,23 @@ check("Mo" not in text(page).split("Recipients", 1)[1].split("Subject", 1)[0] an
       "inactive members are left out of project groups")
 wp_eval(f'delete_user_meta({ids["mo"]}, "orchestra_members_inactive");')
 
+# --- Tabs of other plugins ------------------------------------------------------------------
+extra_tab = os.path.join(os.environ["E2E_WP_PATH"], "wp-content", "mu-plugins", "e2e-extra-tab.php")
+with open(extra_tab, "w") as handle:
+    handle.write("""<?php
+add_filter('orchestra_projects_tabs', static fn (array $tabs, $project) => $tabs + ['extra' => 'Extra tab'], 10, 2);
+add_filter('orchestra_projects_tab_content', static fn (string $html, string $tab, $project, string $url)
+    => $tab === 'extra' ? '<p>Extra content of ' . esc_html($project->title) . ' at ' . esc_url($url) . '</p>' : $html, 10, 4);
+""")
+_, page = mia.get(DASHBOARD + f"&orchestra_project={spring}")
+check("Extra tab" in page, "other plugins add tabs, also for members")
+_, page = mia.get(DASHBOARD + f"&orchestra_project={spring}&orchestra_tab=extra")
+check("Extra content of Spring Concert 2027" in page and "orchestra_tab=extra" in page,
+      "other plugins render their tabs with the tab's URL")
+status, page = admin.get(admin_url(spring, "extra"))
+check(status == 200 and "Extra content of Spring Concert 2027" in page, "plugin tabs work in wp-admin")
+os.remove(extra_tab)
+
 # --- Assignment history ---------------------------------------------------------------------
 summer, _ = create_project(organizer, "Summer 2028", "2028-06-01", "2028-07-01")
 check(projects_api(f'echo json_encode($p->project({summer})->concertDates);') == [],
