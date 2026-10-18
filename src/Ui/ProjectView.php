@@ -155,6 +155,7 @@ final class ProjectView
             $html .= '<div class="orchestra-card orchestra-stack">' . $own . '</div>';
         }
 
+        $html .= $this->participationView->accepted($project);
         $html .= '<section class="orchestra-stack"><h3>' . \esc_html__('Program', 'orchestra-projects') . '</h3>'
             . $this->programView->list($project) . '</section>';
 

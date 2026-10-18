@@ -26,6 +26,7 @@ final class CapabilitiesTest extends TestCase
 
         $this->assertSame([
             Capabilities::ASSIGNMENT_READ,
+            Capabilities::PARTICIPANTS_READ,
             Capabilities::PARTICIPATION_READ_OWN,
             Capabilities::PARTICIPATION_RESPOND_OWN,
             Capabilities::PROJECT_READ,
@@ -35,6 +36,7 @@ final class CapabilitiesTest extends TestCase
             Capabilities::ASSIGNMENT_MANAGE,
             Capabilities::ASSIGNMENT_READ,
             Capabilities::EMAIL_SEND,
+            Capabilities::PARTICIPANTS_READ,
             Capabilities::PARTICIPATION_READ_OTHERS,
             Capabilities::PROGRAM_MANAGE,
             Capabilities::PROJECT_READ,
@@ -44,6 +46,7 @@ final class CapabilitiesTest extends TestCase
             Capabilities::ASSIGNMENT_MANAGE,
             Capabilities::ASSIGNMENT_READ,
             Capabilities::EMAIL_SEND,
+            Capabilities::PARTICIPANTS_READ,
             Capabilities::PARTICIPATION_EXPORT,
             Capabilities::PARTICIPATION_MANAGE,
             Capabilities::PARTICIPATION_READ_OTHERS,

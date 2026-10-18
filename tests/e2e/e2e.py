@@ -343,6 +343,10 @@ respond(organizer, participation_of(spring, "organizer")["id"], "accepted", page
 check(participation_of(spring, "organizer")["status"] == "accepted", "organizers respond for themselves")
 _, page = mia.get(DASHBOARD)
 check("Accepted" in page and response_nonce(page, mia_participation) is None, "no response buttons after responding")
+_, page = mo.get(f"{DASHBOARD}&orchestra_project={spring}")
+accepted = text(page).split("Accepted (", 1)[1].split("Program", 1)[0] if "Accepted (" in text(page) else ""
+check(accepted.startswith("2)") and "Mia" in accepted and "Olga" in accepted and "Max" not in accepted,
+      "members see who accepted, even before responding themselves")
 
 _, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}")
 plain = text(page)

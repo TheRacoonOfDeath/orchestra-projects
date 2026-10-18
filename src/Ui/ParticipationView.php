@@ -48,6 +48,33 @@ final class ParticipationView
         );
     }
 
+    /**
+     * The names of everyone who accepted, for the project overview; "" for users who may not see
+     * them or when nobody has accepted yet.
+     */
+    public function accepted(Project $project): string
+    {
+        if (!\current_user_can(Capabilities::PARTICIPANTS_READ)) {
+            return '';
+        }
+
+        $names = [];
+        foreach ($this->participations->forProject($project->id, ParticipationStatus::Accepted) as $participation) {
+            if ($participation->userId !== null) {
+                $names[] = $this->names->of($participation->userId);
+            }
+        }
+        if ($names === []) {
+            return '';
+        }
+        \natcasesort($names);
+
+        return '<section class="orchestra-stack"><h3>' . \esc_html__('Accepted', 'orchestra-projects')
+            . ' <span class="orchestra-muted">(' . \count($names) . ')</span></h3><div class="orchestra-checklist">'
+            . \implode('', \array_map(static fn (string $n): string => '<span>' . \esc_html($n) . '</span>', $names))
+            . '</div></section>';
+    }
+
     public function render(Project $project): string
     {
         $all = $this->participations->forProject($project->id);

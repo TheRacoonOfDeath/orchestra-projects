@@ -73,7 +73,7 @@ views in **Projects** in wp-admin (views in `src/Ui`, shared by both).
 | View | Who | Content |
 |------|-----|---------|
 | Project list | everyone | members: current projects with response, parts and download; staff: all projects; organizers: "New project" |
-| Project → Overview | everyone who may see the project | details, staff, description, own response and parts, program; email buttons and status changes for staff |
+| Project → Overview | everyone who may see the project | details, staff, description, own response and parts, the names of everyone who accepted, program; email buttons and status changes for staff |
 | Project → Program | conductors, organizers | add, order and remove pieces |
 | Project → Participation | conductors (read), organizers | accepted, pending, declined; organizers change decisions and export the accepted participants |
 | Project → Assignments | conductors, organizers | parts with assigned members; conductors and organizers assign |
