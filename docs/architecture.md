@@ -9,7 +9,7 @@ active status, only through their public services.
 | Data | Storage |
 |------|---------|
 | Project: name, description | custom post type `orchestra_project` (title, content) |
-| Project status and dates | post meta `orchestra_projects_status`, `_start_date`, `_end_date`, `_concert_date` (Y-m-d) |
+| Project status and dates | post meta `orchestra_projects_status`, `_start_date`, `_end_date` (Y-m-d); `_concert_date` once per concert |
 | Conductors and organizers of a project | table `orchestra_projects_staff` |
 | Program | table `orchestra_projects_program` (project, piece, position) |
 | Participation | table `orchestra_projects_participation` (project, user, status, responded at, changed by) |

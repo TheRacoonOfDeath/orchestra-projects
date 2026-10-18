@@ -32,7 +32,7 @@ final class ProjectFormHandler
         $dates = ProjectDates::fromInput(
             $input[ProjectPostType::META_START_DATE] ?? '',
             $input[ProjectPostType::META_END_DATE] ?? '',
-            $input[ProjectPostType::META_CONCERT_DATE] ?? ''
+            $input[ProjectPostType::META_CONCERT_DATE] ?? []
         );
         if ($dates->errors === []) {
             $this->projects->saveDates($projectId, $dates);

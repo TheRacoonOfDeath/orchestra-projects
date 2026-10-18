@@ -21,6 +21,22 @@ final class Dates
     }
 
     /**
+     * The concert dates of a project, e.g. "May 8, 2027, May 9, 2027"; "" if it has none.
+     */
+    public static function concerts(Project $project): string
+    {
+        return \implode(', ', \array_map([self::class, 'format'], $project->concertDates));
+    }
+
+    /**
+     * The label for {@see concerts()}: "Concert" or "Concerts".
+     */
+    public static function concertsLabel(Project $project): string
+    {
+        return \_n('Concert', 'Concerts', \count($project->concertDates), 'orchestra-projects');
+    }
+
+    /**
      * A date (Y-m-d) in the site's date format, with translated month names.
      */
     public static function format(?string $date): string

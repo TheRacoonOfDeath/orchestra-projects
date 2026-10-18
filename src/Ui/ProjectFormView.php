@@ -21,6 +21,9 @@ final class ProjectFormView
     public const FIELD_TITLE = 'orchestra_projects_title';
     public const FIELD_DESCRIPTION = 'orchestra_projects_description';
 
+    private const CONCERTS = 'orchestra-projects-concerts';
+    private const NEW_CONCERT_TEMPLATE = 'orchestra-projects-new-concert';
+
     public function __construct(
         private readonly StaffRepository $staff,
         private readonly MembersService $members,
@@ -70,7 +73,6 @@ final class ProjectFormView
         $fields = [
             [ProjectPostType::META_START_DATE, \__('Start date', 'orchestra-projects'), $project?->startDate],
             [ProjectPostType::META_END_DATE, \__('End date', 'orchestra-projects'), $project?->endDate],
-            [ProjectPostType::META_CONCERT_DATE, \__('Concert date', 'orchestra-projects'), $project?->concertDate],
         ];
         $html = '<div class="orchestra-row">';
         foreach ($fields as [$name, $label, $value]) {
@@ -82,7 +84,42 @@ final class ProjectFormView
             );
         }
 
-        return $html . '</div>';
+        return $html . '</div>' . self::concertFields($project->concertDates ?? []);
+    }
+
+    /**
+     * One date field per concert. New projects have none; "Add concert" adds a field, and
+     * without JavaScript there is always one empty field.
+     *
+     * @param list<string> $dates
+     */
+    private static function concertFields(array $dates): string
+    {
+        return '<fieldset class="orchestra-fieldset orchestra-stack"><legend>'
+            . \esc_html__('Concerts', 'orchestra-projects') . '</legend>'
+            . '<div class="orchestra-stack" id="' . self::CONCERTS . '">'
+            . \implode('', \array_map(static fn (string $date): string => self::concertRow($date, true), $dates))
+            . '</div>'
+            . '<noscript>' . self::concertRow('', false) . '</noscript>'
+            . '<template id="' . self::NEW_CONCERT_TEMPLATE . '">' . self::concertRow('', true) . '</template>'
+            . '<div class="orchestra-actions"><button type="button" class="orchestra-button orchestra-button--small"'
+            . ' data-orchestra-add-row="' . self::NEW_CONCERT_TEMPLATE . '" data-orchestra-target="' . self::CONCERTS
+            . '">' . \esc_html__('+ Add concert', 'orchestra-projects') . '</button></div>'
+            . '<p class="orchestra-muted">'
+            . \esc_html__('A project can have any number of concerts, or none.', 'orchestra-projects') . '</p>'
+            . '</fieldset>';
+    }
+
+    private static function concertRow(string $date, bool $removable): string
+    {
+        $remove = $removable
+            ? '<button type="button" class="orchestra-button orchestra-button--small" data-orchestra-remove-row>'
+                . \esc_html__('Remove', 'orchestra-projects') . '</button>'
+            : '';
+
+        return '<div class="orchestra-actions" data-orchestra-row><input type="date" name="'
+            . ProjectPostType::META_CONCERT_DATE . '[]" value="' . \esc_attr($date) . '" aria-label="'
+            . \esc_attr__('Concert date', 'orchestra-projects') . '" style="width:auto">' . $remove . '</div>';
     }
 
     public function staffFields(int $projectId): string

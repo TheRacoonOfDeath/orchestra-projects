@@ -138,7 +138,7 @@ def act(session, project, op, **fields):
     return session.post("/wp-admin/admin-post.php", data)
 
 
-def create_project(session, title, start, end, concert, conductors=(), organizers=()):
+def create_project(session, title, start, end, concerts=(), conductors=(), organizers=()):
     """Creates a project with the form on the projects page."""
     _, page = session.get(f"{DASHBOARD}&orchestra_project=new")
     data = {
@@ -146,7 +146,7 @@ def create_project(session, title, start, end, concert, conductors=(), organizer
         "_wpnonce": field(page, "_wpnonce") or "missing", "redirect_to": field(page, "redirect_to") or DASHBOARD,
         "orchestra_projects_title": title, "orchestra_projects_description": f"Description of {title}",
         "orchestra_projects_start_date": start, "orchestra_projects_end_date": end,
-        "orchestra_projects_concert_date": concert,
+        "orchestra_projects_concert_date[]": list(concerts),
         "orchestra_projects_staff[conductor][]": [str(i) for i in conductors],
         "orchestra_projects_staff[organizer][]": [str(i) for i in organizers],
     }
@@ -232,19 +232,22 @@ check("orchestra--admin" not in page and "Hello Mia" in page, "members are sent 
 _, page = conductor.get("/wp-admin/admin.php?page=orchestra-projects")
 check("orchestra--admin" not in page, "conductors use the projects page instead of wp-admin")
 
-spring, page = create_project(organizer, "Spring Concert 2027", "2027-03-01", "2027-05-10", "2027-05-09",
+_, page = organizer.get(f"{DASHBOARD}&orchestra_project=new")
+check("+ Add concert" in page and page.count('name="orchestra_projects_concert_date[]"') == 2,
+      "new projects have no concert, only the template and the field without JavaScript")
+spring, page = create_project(organizer, "Spring Concert 2027", "2027-03-01", "2027-05-10", ["2027-05-09", "2027-05-08"],
                               conductors=[ids["conductor"], ids["mia"]], organizers=[ids["organizer"]])
 project = projects_api(f'$x = $p->project({spring}); echo json_encode($x ? [$x->title, $x->status->value,'
-                       f' $x->startDate, $x->endDate, $x->concertDate] : null);')
-check(project == ["Spring Concert 2027", "draft", "2027-03-01", "2027-05-10", "2027-05-09"],
-      "organizer creates a project as draft with its dates")
+                       f' $x->startDate, $x->endDate, $x->concertDates] : null);')
+check(project == ["Spring Concert 2027", "draft", "2027-03-01", "2027-05-10", ["2027-05-08", "2027-05-09"]],
+      "organizer creates a project as draft with its dates and several concerts")
 staff = wp_json(f'global $wpdb; echo json_encode($wpdb->get_results("SELECT user_id, role FROM'
                 f' {{$wpdb->prefix}}orchestra_projects_staff WHERE project_id = {spring} ORDER BY role", ARRAY_A));')
 check(staff == [{"user_id": str(ids["conductor"]), "role": "conductor"},
                 {"user_id": str(ids["organizer"]), "role": "organizer"}],
       "staff is stored, members cannot be selected as conductors")
 
-bad, page = create_project(organizer, "Broken dates", "2027-05-10", "2027-03-01", "2027-02-30")
+bad, page = create_project(organizer, "Broken dates", "2027-05-10", "2027-03-01", ["2027-02-30"])
 check("The end date must not be before the start date." in text(page) and "Concert date is not a valid date." in text(page),
       "invalid dates are rejected with messages")
 
@@ -262,12 +265,16 @@ organizer.post("/wp-admin/admin-post.php", {
     "action": "orchestra_projects", "op": "save", "project": str(spring), "_wpnonce": form_nonce or "x",
     "redirect_to": form_redirect or DASHBOARD, "orchestra_projects_title": "Spring Concert 2027",
     "orchestra_projects_description": "Description of Spring Concert 2027", "orchestra_projects_start_date": "2027-03-01",
-    "orchestra_projects_end_date": "2027-05-10", "orchestra_projects_concert_date": "2027-05-09",
+    "orchestra_projects_end_date": "2027-05-10", "orchestra_projects_concert_date[]": ["2027-05-09"],
     "orchestra_projects_staff[conductor][]": [str(ids["conductor"])],
     "orchestra_projects_staff[organizer][]": [str(ids["organizer"])],
 })
 check(projects_api(f'echo json_encode($p->project({spring})->description);') == "Description of Spring Concert 2027",
       "organizers edit projects on the projects page")
+check(projects_api(f'echo json_encode($p->project({spring})->concertDates);') == ["2027-05-09"],
+      "removed concerts are deleted")
+_, page = organizer.get(DASHBOARD)
+check("Concert: May 9, 2027" in text(page), "the project list shows the concert")
 
 _, page = mia.get(DASHBOARD)
 check("Spring Concert 2027" not in page, "draft projects are hidden from members")
@@ -501,7 +508,9 @@ check("Mo" not in text(page).split("Recipients", 1)[1].split("Subject", 1)[0] an
 wp_eval(f'delete_user_meta({ids["mo"]}, "orchestra_members_inactive");')
 
 # --- Assignment history ---------------------------------------------------------------------
-summer, _ = create_project(organizer, "Summer 2028", "2028-06-01", "2028-07-01", "2028-07-01")
+summer, _ = create_project(organizer, "Summer 2028", "2028-06-01", "2028-07-01")
+check(projects_api(f'echo json_encode($p->project({summer})->concertDates);') == [],
+      "projects can have no concert")
 act(conductor, summer, "program_add", piece=PIRATES)
 act(organizer, summer, "status", target="open")
 for session, login in [(mia, "mia"), (organizer, "organizer"), (mo, "mo")]:

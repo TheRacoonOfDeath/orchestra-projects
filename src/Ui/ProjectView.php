@@ -105,7 +105,7 @@ final class ProjectView
         $facts = [
             ...$facts,
             [\__('Dates', 'orchestra-projects'), \esc_html(Dates::range($project))],
-            [\__('Concert', 'orchestra-projects'), \esc_html(Dates::format($project->concertDate))],
+            [Dates::concertsLabel($project), \esc_html(Dates::concerts($project) ?: '—')],
             [
                 \__('Conductors', 'orchestra-projects'),
                 \esc_html($this->names->list($this->staff->userIds($project->id, StaffRepository::CONDUCTOR))),

@@ -63,9 +63,9 @@ final class ProjectListView
         $html .= '<div class="orchestra-cards">';
         foreach ($projects as $project) {
             $meta = '<span>' . \esc_html(Dates::range($project)) . '</span>';
-            if ($project->concertDate !== null) {
-                $meta .= '<span>' . \esc_html__('Concert', 'orchestra-projects') . ': '
-                    . \esc_html(Dates::format($project->concertDate)) . '</span>';
+            if ($project->concertDates !== []) {
+                $meta .= '<span>' . \esc_html(Dates::concertsLabel($project)) . ': '
+                    . \esc_html(Dates::concerts($project)) . '</span>';
             }
             if ($staff) {
                 $meta .= '<span>' . \esc_html($this->participationView->summary($project)) . '</span>';

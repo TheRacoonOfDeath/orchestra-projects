@@ -19,8 +19,9 @@ meta of orchestra-projects directly.
 | `assignedUserIds(int $projectId, ?array $partIds = null): list<int>` | Users assigned in the project, optionally only to the given parts |
 | `assignments(int $projectId): list<Assignment>` | All assignments of the project |
 
-`Project` has `id`, `title`, `description`, `status` (`ProjectStatus`), `startDate`, `endDate` and
-`concertDate` (Y-m-d or null). Deleted users are left out of the user ID lists; their
+`Project` has `id`, `title`, `description`, `status` (`ProjectStatus`), `startDate` and `endDate`
+(Y-m-d or null), and `concertDates` (list of Y-m-d in chronological order, empty if the project has
+no concert; until 0.11 a single `concertDate`). Deleted users are left out of the user ID lists; their
 `Assignment::$userId` is null.
 
 ## Email groups

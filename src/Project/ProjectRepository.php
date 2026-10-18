@@ -23,7 +23,7 @@ final class ProjectRepository
     }
 
     /**
-     * All saved projects, newest first (by concert, end or start date).
+     * All saved projects, newest first (by last concert, end or start date).
      *
      * @param list<ProjectStatus> $statuses Only projects in these statuses; all if empty
      * @return list<Project>
@@ -62,7 +62,6 @@ final class ProjectRepository
             [
             ProjectPostType::META_START_DATE => $dates->startDate,
             ProjectPostType::META_END_DATE => $dates->endDate,
-            ProjectPostType::META_CONCERT_DATE => $dates->concertDate,
             ] as $key => $value
         ) {
             if ($value === null) {
@@ -70,6 +69,12 @@ final class ProjectRepository
             } else {
                 \update_post_meta($projectId, $key, $value);
             }
+        }
+
+        // One meta entry per concert.
+        \delete_post_meta($projectId, ProjectPostType::META_CONCERT_DATE);
+        foreach ($dates->concertDates as $concertDate) {
+            \add_post_meta($projectId, ProjectPostType::META_CONCERT_DATE, $concertDate);
         }
     }
 
@@ -82,8 +87,23 @@ final class ProjectRepository
             ProjectStatus::fromStored(self::meta($post->ID, ProjectPostType::META_STATUS)),
             self::meta($post->ID, ProjectPostType::META_START_DATE),
             self::meta($post->ID, ProjectPostType::META_END_DATE),
-            self::meta($post->ID, ProjectPostType::META_CONCERT_DATE),
+            self::concertDates($post->ID),
         );
+    }
+
+    /**
+     * @return list<string>
+     */
+    private static function concertDates(int $postId): array
+    {
+        $values = \get_post_meta($postId, ProjectPostType::META_CONCERT_DATE);
+        $dates = \array_values(\array_unique(\array_filter(
+            \is_array($values) ? $values : [],
+            static fn (mixed $value): bool => \is_string($value) && $value !== ''
+        )));
+        \sort($dates);
+
+        return $dates;
     }
 
     private static function meta(int $postId, string $key): ?string

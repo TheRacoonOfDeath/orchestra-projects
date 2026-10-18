@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 21:44+0200\n"
+"POT-Creation-Date: 2026-10-18 22:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -86,7 +86,7 @@ msgstr ""
 
 #: src/Admin/ProjectsPage.php:63 src/Admin/ProjectsPage.php:64
 #: src/Admin/ProjectsPage.php:77 src/Admin/ProjectsPage.php:118
-#: src/Plugin.php:266 src/Project/ProjectPostType.php:38
+#: src/Plugin.php:266 src/Project/ProjectPostType.php:39
 msgid "Projects"
 msgstr ""
 
@@ -95,7 +95,7 @@ msgid "All Projects"
 msgstr ""
 
 #: src/Admin/ProjectsPage.php:84 src/Admin/ProjectsPage.php:85
-#: src/Project/ProjectPostType.php:40
+#: src/Project/ProjectPostType.php:41
 msgid "Add Project"
 msgstr ""
 
@@ -260,7 +260,7 @@ msgid "Project participation"
 msgstr ""
 
 #: src/Privacy/PersonalData.php:86 src/Privacy/PersonalData.php:101
-#: src/Project/ProjectPostType.php:39
+#: src/Project/ProjectPostType.php:40
 msgid "Project"
 msgstr ""
 
@@ -342,44 +342,44 @@ msgid "The part is assigned in the project \"%s\"."
 msgstr ""
 
 #. translators: %s: name of the date field, e.g. "Start date"
-#: src/Project/ProjectDates.php:34
+#: src/Project/ProjectDates.php:38
 #, php-format
 msgid "%s is not a valid date."
 msgstr ""
 
-#: src/Project/ProjectDates.php:41 src/Ui/ProjectFormView.php:71
+#: src/Project/ProjectDates.php:45 src/Ui/ProjectFormView.php:74
 msgid "Start date"
 msgstr ""
 
-#: src/Project/ProjectDates.php:42 src/Ui/ProjectFormView.php:72
+#: src/Project/ProjectDates.php:46 src/Ui/ProjectFormView.php:75
 msgid "End date"
 msgstr ""
 
-#: src/Project/ProjectDates.php:43 src/Ui/ProjectFormView.php:73
+#: src/Project/ProjectDates.php:49 src/Ui/ProjectFormView.php:122
 msgid "Concert date"
 msgstr ""
 
-#: src/Project/ProjectDates.php:46
+#: src/Project/ProjectDates.php:55
 msgid "The end date must not be before the start date."
 msgstr ""
 
-#: src/Project/ProjectPostType.php:41
+#: src/Project/ProjectPostType.php:42
 msgid "Add New Project"
 msgstr ""
 
-#: src/Project/ProjectPostType.php:42
+#: src/Project/ProjectPostType.php:43
 msgid "Edit Project"
 msgstr ""
 
-#: src/Project/ProjectPostType.php:43
+#: src/Project/ProjectPostType.php:44
 msgid "New Project"
 msgstr ""
 
-#: src/Project/ProjectPostType.php:44
+#: src/Project/ProjectPostType.php:45
 msgid "No projects found."
 msgstr ""
 
-#: src/Project/ProjectPostType.php:45
+#: src/Project/ProjectPostType.php:46
 msgid "No projects found in Trash."
 msgstr ""
 
@@ -443,6 +443,7 @@ msgid "Assign"
 msgstr ""
 
 #: src/Ui/AssignmentsView.php:165 src/Ui/ProgramView.php:93
+#: src/Ui/ProjectFormView.php:117
 msgid "Remove"
 msgstr ""
 
@@ -466,8 +467,14 @@ msgstr ""
 msgid "Members"
 msgstr ""
 
+#: src/Ui/Dates.php:36
+msgid "Concert"
+msgid_plural "Concerts"
+msgstr[0] ""
+msgstr[1] ""
+
 #. translators: date format, see https://www.php.net/manual/datetime.format.php; German: j. F Y
-#: src/Ui/Dates.php:61
+#: src/Ui/Dates.php:77
 msgid "F j, Y"
 msgstr ""
 
@@ -598,56 +605,68 @@ msgstr ""
 msgid "Add to program"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:35 src/Ui/ProjectListView.php:43
+#: src/Ui/ProjectFormView.php:38 src/Ui/ProjectListView.php:43
 msgid "New project"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:36
+#: src/Ui/ProjectFormView.php:39
 msgid "Edit project"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:41 src/Ui/ProjectView.php:77
+#: src/Ui/ProjectFormView.php:44 src/Ui/ProjectView.php:77
 #: src/Ui/ProjectsShortcode.php:84
 msgid "All projects"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:48
+#: src/Ui/ProjectFormView.php:51
 msgid "Name"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:51
+#: src/Ui/ProjectFormView.php:54
 msgid "e.g. Spring Concert 2027"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:56
+#: src/Ui/ProjectFormView.php:59
 msgid "Description"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:59
+#: src/Ui/ProjectFormView.php:62
 msgid "Shown to all members, e.g. rehearsal times and places."
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:64
+#: src/Ui/ProjectFormView.php:67
 msgid "Save"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:65
+#: src/Ui/ProjectFormView.php:68
 msgid "Cancel"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:91 src/Ui/ProjectView.php:110
+#: src/Ui/ProjectFormView.php:99
+msgid "Concerts"
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:107
+msgid "+ Add concert"
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:109
+msgid "A project can have any number of concerts, or none."
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:128 src/Ui/ProjectView.php:110
 msgid "Conductors"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:92 src/Ui/ProjectView.php:114
+#: src/Ui/ProjectFormView.php:129 src/Ui/ProjectView.php:114
 msgid "Organizers"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:102
+#: src/Ui/ProjectFormView.php:139
 msgid "Nobody has this role yet."
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:115
+#: src/Ui/ProjectFormView.php:152
 msgid ""
 "Shown on the project page. Every conductor and organizer has their rights in "
 "all projects."
@@ -663,10 +682,6 @@ msgstr ""
 
 #: src/Ui/ProjectListView.php:53
 msgid "There are no current projects."
-msgstr ""
-
-#: src/Ui/ProjectListView.php:67 src/Ui/ProjectView.php:108
-msgid "Concert"
 msgstr ""
 
 #: src/Ui/ProjectListView.php:79

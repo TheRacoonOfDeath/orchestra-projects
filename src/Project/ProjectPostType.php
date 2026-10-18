@@ -20,6 +20,7 @@ final class ProjectPostType
     public const META_STATUS = 'orchestra_projects_status';
     public const META_START_DATE = 'orchestra_projects_start_date';
     public const META_END_DATE = 'orchestra_projects_end_date';
+    /** One entry per concert; the name is kept from the time projects had one concert. */
     public const META_CONCERT_DATE = 'orchestra_projects_concert_date';
 
     public function register(): void
