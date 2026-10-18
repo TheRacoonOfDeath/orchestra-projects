@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 22:03+0200\n"
+"POT-Creation-Date: 2026-10-18 22:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -145,30 +145,26 @@ msgstr ""
 msgid "never played"
 msgstr ""
 
-#: src/Email/ProjectEmailGroups.php:71
-msgid "All participants (everyone asked)"
+#: src/Email/ProjectEmailGroups.php:77
+msgid "Accepted and pending participants"
 msgstr ""
 
-#: src/Email/ProjectEmailGroups.php:72
+#: src/Email/ProjectEmailGroups.php:78
 msgid "Accepted participants"
 msgstr ""
 
-#: src/Email/ProjectEmailGroups.php:73
+#: src/Email/ProjectEmailGroups.php:79
 msgid "Pending participants (no response yet)"
 msgstr ""
 
-#: src/Email/ProjectEmailGroups.php:74
-msgid "Declined participants"
-msgstr ""
-
 #. translators: %s: piece title
-#: src/Email/ProjectEmailGroups.php:102
+#: src/Email/ProjectEmailGroups.php:111
 #, php-format
 msgid "Everyone playing %s"
 msgstr ""
 
 #. translators: 1: piece title, 2: part name
-#: src/Email/ProjectEmailGroups.php:109
+#: src/Email/ProjectEmailGroups.php:118
 #, php-format
 msgid "%1$s: %2$s"
 msgstr ""
@@ -721,7 +717,7 @@ msgid "Email pending participants"
 msgstr ""
 
 #: src/Ui/ProjectView.php:142
-msgid "Email everyone asked"
+msgid "Email accepted and pending"
 msgstr ""
 
 #: src/Ui/ProjectView.php:145

@@ -490,6 +490,12 @@ check("Spring Concert 2027" in plain and "Accepted participants" in plain
       and "Pirates of the Caribbean: Horn 1" in plain and "Everyone playing Pirates of the Caribbean" in plain,
       "conductors can email the project, piece and part groups")
 check("Lord of the Dance: Violin 1" not in plain, "parts without assignments have no group")
+check("Declined participants" not in plain and "Accepted and pending participants" in plain,
+      "there is no group for members who declined")
+_, page = send_email(conductor, [f"orchestra_projects_{spring}_all"], "Reminder", "review")
+listed = text(page).split("Recipients", 1)[1].split("Subject", 1)[0]
+check("Mia" in listed and "Olga" in listed and "Mo" in listed and "Max" not in listed,
+      "the accepted and pending participants leave out those who declined")
 check("Broken dates" not in plain, "draft projects have no groups")
 _, page = mo.get(COMPOSE)
 check("not allowed to send emails" in page, "members cannot email project groups")

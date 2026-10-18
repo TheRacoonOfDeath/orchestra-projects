@@ -110,14 +110,16 @@ open or in preparation, listed under the project's name. Emailing them requires
 
 | Group ID | Recipients |
 |----------|------------|
-| `orchestra_projects_{project}_all` | everyone asked to respond |
-| `orchestra_projects_{project}_accepted` / `_open` / `_declined` | by participation status |
+| `orchestra_projects_{project}_all` | accepted and pending participants (the ID is kept from when the group included everyone asked) |
+| `orchestra_projects_{project}_accepted` / `_open` | by participation status |
 | `orchestra_projects_{project}_piece_{piece}` | everyone assigned to a part of the piece |
 | `orchestra_projects_{project}_part_{part}` | everyone assigned to the part |
 
-Piece and part groups exist only when they have assignments. orchestra-members removes inactive
-members from all groups. The Overview tab links to emails to the accepted, pending and all
-participants, the Assignments tab to the players of each piece.
+Members who declined are in no group: only accepted and pending participants are emailed (piece
+and part groups contain assigned members, who have accepted). Piece and part groups exist only when
+they have assignments. orchestra-members removes inactive members from all groups. The Overview tab
+links to emails to the accepted, the pending, and the accepted and pending participants, the
+Assignments tab to the players of each piece.
 
 ## Capabilities
 

@@ -10,6 +10,7 @@ use Orchestra\Email\RecipientGroup;
 use Orchestra\Library\LibraryService;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Capabilities;
+use Orchestra\Projects\Participation\Participation;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationStatus;
 use Orchestra\Projects\Program\ProgramRepository;
@@ -38,8 +39,12 @@ final class ProjectEmailGroups
         \add_action(EmailService::REGISTER_GROUPS_ACTION, [$this, 'registerGroups']);
     }
 
+    /**
+     * @param ParticipationStatus|null $status null for the accepted and pending participants together
+     */
     public static function participantsGroupId(int $projectId, ?ParticipationStatus $status = null): string
     {
+        // "all" is kept from the time the group included those who declined, so that links still work.
         return 'orchestra_projects_' . $projectId . '_' . ($status === null ? 'all' : $status->value);
     }
 
@@ -67,17 +72,21 @@ final class ProjectEmailGroups
 
     private function registerProject(EmailGroupRegistry $registry, Project $project): void
     {
+        // Only those who accepted or have not responded yet; those who declined are not emailed.
         $participantGroups = [
-            [null, \__('All participants (everyone asked)', 'orchestra-projects')],
+            [null, \__('Accepted and pending participants', 'orchestra-projects')],
             [ParticipationStatus::Accepted, \__('Accepted participants', 'orchestra-projects')],
             [ParticipationStatus::Open, \__('Pending participants (no response yet)', 'orchestra-projects')],
-            [ParticipationStatus::Declined, \__('Declined participants', 'orchestra-projects')],
         ];
         foreach ($participantGroups as [$status, $label]) {
+            $statuses = $status === null ? [ParticipationStatus::Accepted, ParticipationStatus::Open] : [$status];
             $id = self::participantsGroupId($project->id, $status);
             $this->add($registry, $project, $id, $label, fn (): array => \array_map(
-                static fn ($participation): ?int => $participation->userId,
-                $this->participations->forProject($project->id, $status)
+                static fn (Participation $participation): ?int => $participation->userId,
+                \array_filter(
+                    $this->participations->forProject($project->id),
+                    static fn (Participation $p): bool => \in_array($p->status, $statuses, true)
+                )
             ));
         }
 

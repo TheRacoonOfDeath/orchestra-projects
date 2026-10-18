@@ -139,7 +139,8 @@ final class ProjectView
                 => \__('Email accepted participants', 'orchestra-projects'),
             ProjectEmailGroups::participantsGroupId($project->id, ParticipationStatus::Open)
                 => \__('Email pending participants', 'orchestra-projects'),
-            ProjectEmailGroups::participantsGroupId($project->id) => \__('Email everyone asked', 'orchestra-projects'),
+            ProjectEmailGroups::participantsGroupId($project->id)
+                => \__('Email accepted and pending', 'orchestra-projects'),
         ]);
         if ($email !== '') {
             $html .= '<section class="orchestra-stack"><h3>' . \esc_html__('Email', 'orchestra-projects') . '</h3>'
