@@ -56,15 +56,22 @@ class Session:
                 "log": user, "pwd": password, "wp-submit": "Log In", "testcookie": "1",
             }, cookie="wordpress_test_cookie=WP%20Cookie%20check")
 
-    def request(self, path, data=None, cookie=None, follow=True):
-        """Returns (status, headers, body). Values in `data` may be lists."""
+    def request(self, path, data=None, cookie=None, follow=True, files=None):
+        """Returns (status, headers, body). Values in `data` may be lists. `files` is a list of
+        (field, path, file name) and sends the form as multipart/form-data."""
         header_file = os.path.join(WORK, "headers.txt")
         cmd = ["curl", "-s", "-c", self.jar, "-b", self.jar, "-D", header_file, "-o", "-"]
         if follow:
             cmd.append("-L")
         if cookie:
             cmd += ["--cookie", cookie]
-        if data is not None:
+        if files is not None:
+            for key, value in (data or {}).items():
+                for v in (value if isinstance(value, list) else [value]):
+                    cmd += ["--form-string", f"{key}={v}"]
+            for key, file_path, file_name in files:
+                cmd += ["-F", f"{key}=@{file_path};filename={file_name}"]
+        elif data is not None:
             for key, value in data.items():
                 for v in (value if isinstance(value, list) else [value]):
                     cmd += ["--data-urlencode", f"{key}={v}"]
@@ -501,6 +508,85 @@ before = len(mails())
 send_email(conductor, [f"orchestra_projects_{spring}_part_{HORN1}", f"orchestra_projects_{spring}_piece_{PIRATES}"], "Horns")
 recipients = sorted(m["to"] for m in mails()[before:])
 check(recipients == ["mia@example.com", "organizer@example.com"], "overlapping groups send one email per person")
+
+# --- Formatted emails with attachments --------------------------------------------------------
+def tiny_png():
+    import struct
+    import zlib
+
+    def chunk(kind, payload):
+        return struct.pack(">I", len(payload)) + kind + payload + struct.pack(">I", zlib.crc32(kind + payload))
+    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", 1, 1, 8, 2, 0, 0, 0))
+            + chunk(b"IDAT", zlib.compress(b"\x00\xff\x00\x00")) + chunk(b"IEND", b""))
+
+
+def work_file(name, content):
+    path = os.path.join(WORK, name)
+    with open(path, "wb") as handle:
+        handle.write(content)
+    return path
+
+
+def hidden_fields(form):
+    """The hidden fields of a form as a dict of lists."""
+    fields = {}
+    for tag in re.findall(r'<(?:input|textarea)[^>]*type="hidden"[^>]*>|<textarea[^>]*hidden[^>]*>.*?</textarea>', form,
+                          flags=re.S):
+        name = re.search(r'name="([^"]+)"', tag).group(1)
+        value = re.search(r'value="([^"]*)"', tag) if tag.startswith("<input") else re.search(r">(.*)</textarea>", tag,
+                                                                                               flags=re.S)
+        fields.setdefault(name, []).append(html.unescape(value.group(1) if value else ""))
+    return fields
+
+
+pdf = work_file("plan.pdf", b"%PDF-1.4\n% Rehearsal plan\n%%EOF\n")
+png = work_file("seating.png", tiny_png())
+script = work_file("evil.php", b"<?php echo 'x';")
+_, page = organizer.get(EMAIL)
+check('id="orchestra_email_body"' in page and "tinymce" in page.lower() and 'name="attachments[]"' in page
+      and 'enctype="multipart/form-data"' in page, "the email page has an editor and a file field")
+body = ('<p><strong>Bold</strong> and <em>italic</em> <span style="color: #c0392b; font-size: 20px; position: fixed">'
+        'red</span></p><script>alert(1)</script><ul><li>One</li></ul>')
+review = {"_wpnonce": field(page, "_wpnonce") or "missing", "op": "review", "subject": "Plan & seating",
+          "body": body, "groups[]": [accepted_group]}
+_, _, raw = organizer.request(EMAIL, review, files=[("attachments[]", script, "evil.php")])
+check("cannot be attached" in text(raw.decode()) and "orchestra_email_send" not in raw.decode(),
+      "files of other types are rejected")
+_, page = organizer.get(EMAIL)
+review["_wpnonce"] = field(page, "_wpnonce") or "missing"
+_, _, raw = organizer.request(EMAIL, review, files=[("attachments[]", pdf, "Plan.pdf"), ("attachments[]", png, "Plan.png"),
+                                                    ("attachments[]", pdf, "Plan.pdf")])
+page = raw.decode()
+send_form = next((f for f in re.findall(r"<form.*?</form>", page, flags=re.S) if "orchestra_email_send" in f), "")
+fields = hidden_fields(send_form)
+check("<strong>Bold</strong>" in page and "<script>alert" not in page and "Plan.pdf" in text(page)
+      and len(fields.get("attachment_ids[]", [])) == 3, "the review shows the formatted text and the attachments")
+STORED = 'glob(WP_CONTENT_DIR . "/uploads/orchestra-email-*/*-*-*-*-*")'
+uploads = wp_json(f'echo json_encode(array_map(fn ($f) => basename($f), {STORED}));')
+check(len(uploads) == 3 and all(re.fullmatch(r"[0-9a-f-]{36}", f) for f in uploads),
+      "attachments wait in the private directory under random names")
+_, page = conductor.get(EMAIL)
+_, page = conductor.post(EMAIL, {"_wpnonce": field(page, "_wpnonce") or "missing", "op": "review", "subject": "Mine",
+                                 "body": "Hi", "groups[]": [accepted_group],
+                                 "attachment_ids[]": fields.get("attachment_ids[]", [])})
+check("no longer available" in text(page) and "orchestra_email_send" not in page,
+      "nobody can send the attachments of someone else")
+before = len(mails())
+organizer.post("/wp-admin/admin-post.php", {**fields, "action": "orchestra_email_send", "redirect_to": EMAIL})
+sent = mails()[before:]
+first = sent[0] if sent else {}
+message = first.get("message", "")
+names = sorted(first.get("attachments", {}).keys()) if isinstance(first.get("attachments"), dict) else []
+check(len(sent) == 2 and "<strong>Bold</strong>" in message and "<em>italic</em>" in message
+      and 'style="color: #c0392b; font-size: 20px;"' in message and "<script" not in message
+      and "position" not in message and "<li>One</li>" in message, "the email keeps bold, italic, size, color and lists")
+check(any("text/html" in h for h in first.get("headers", [])) and "Sent by Olga" in message,
+      "emails are sent as HTML with the footer")
+check(names == ["Plan (2).pdf", "Plan.pdf", "Plan.png"], "attachments keep their names, made unique")
+leftover = wp_json(f'global $wpdb; echo json_encode([count({STORED}),'
+                   ' (int) $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}orchestra_email_attachments")]);')
+check(leftover == [0, 0], "attachments are deleted once the email has been sent")
+
 wp_eval(f'update_user_meta({ids["mo"]}, "orchestra_members_inactive", "1");')
 _, page = send_email(organizer, [f"orchestra_projects_{spring}_open"], "Please respond", "review")
 check("Mo" not in text(page).split("Recipients", 1)[1].split("Subject", 1)[0] and "Nia" in page,
