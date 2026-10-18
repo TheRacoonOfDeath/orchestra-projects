@@ -486,10 +486,9 @@ def send_email(session, groups, subject, op="send"):
 
 _, page = conductor.get(COMPOSE)
 plain = text(page)
-check("Spring Concert 2027" in plain and "Accepted participants" in plain
-      and "Pirates of the Caribbean: Horn 1" in plain and "Everyone playing Pirates of the Caribbean" in plain,
-      "conductors can email the project, piece and part groups")
-check("Lord of the Dance: Violin 1" not in plain, "parts without assignments have no group")
+check("Spring Concert 2027" in plain and "Accepted participants" in plain, "conductors can email the project groups")
+check("Everyone playing" not in plain and "Pirates of the Caribbean: Horn 1" not in plain,
+      "there are no groups for pieces or parts")
 check("Declined participants" not in plain and "Accepted and pending participants" in plain,
       "there is no group for members who declined")
 _, page = send_email(conductor, [f"orchestra_projects_{spring}_all"], "Reminder", "review")
@@ -504,16 +503,17 @@ accepted_group = f"orchestra_projects_{spring}_accepted"
 _, page = organizer.get(manage_url(spring))
 check(f"groups%5B%5D={accepted_group}" in page, "the project overview links to an email to the accepted participants")
 _, page = conductor.get(manage_url(spring, "assignments"))
-check(f"orchestra_projects_{spring}_piece_{PIRATES}" in page, "the assignments link to an email to the players of a piece")
+check("_piece_" not in page and "Email the players" not in page, "the assignments do not link to emails per piece")
 
 before = len(mails())
 send_email(organizer, [accepted_group], "Rehearsal plan")
 recipients = sorted(m["to"] for m in mails()[before:])
 check(recipients == ["mia@example.com", "organizer@example.com"], "email to the accepted participants")
 before = len(mails())
-send_email(conductor, [f"orchestra_projects_{spring}_part_{HORN1}", f"orchestra_projects_{spring}_piece_{PIRATES}"], "Horns")
+send_email(conductor, [accepted_group, f"orchestra_projects_{spring}_all"], "Reminder")
 recipients = sorted(m["to"] for m in mails()[before:])
-check(recipients == ["mia@example.com", "organizer@example.com"], "overlapping groups send one email per person")
+check(len(recipients) == len(set(recipients)) and {"mia@example.com", "organizer@example.com"} <= set(recipients)
+      and "max@example.com" not in recipients, "overlapping groups send one email per person")
 
 # --- Formatted emails with attachments --------------------------------------------------------
 def tiny_png():

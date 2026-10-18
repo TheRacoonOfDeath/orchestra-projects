@@ -175,13 +175,7 @@ final class Plugin
             ? EmailPlugin::instance()->email()
             : null;
         if ($email !== null) {
-            (new ProjectEmailGroups(
-                $this->projectRepository,
-                $this->program,
-                $this->participations,
-                $this->assignments,
-                $library
-            ))->register();
+            (new ProjectEmailGroups($this->projectRepository, $this->participations))->register();
         }
         $emailLinks = new EmailLinks($email);
 
@@ -225,8 +219,7 @@ final class Plugin
                 $assignmentService,
                 $this->participations,
                 $library,
-                $names,
-                $emailLinks
+                $names
             ),
             $emailLinks
         );

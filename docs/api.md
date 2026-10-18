@@ -26,8 +26,8 @@ no concert; until 0.11 a single `concertDate`). Deleted users are left out of th
 
 ## Email groups
 
-`Email\ProjectEmailGroups::participantsGroupId()`, `pieceGroupId()` and `partGroupId()` return the
-IDs of the email groups, e.g. for `EmailService::composeUrl()`.
+`Email\ProjectEmailGroups::participantsGroupId()` returns the IDs of the email groups, e.g. for
+`EmailService::composeUrl()`. The groups per piece and part were removed in 0.13.
 
 ## Actions
 

@@ -19,7 +19,7 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
   sheet music of each part, or all of it in one zip; organizers and conductors create projects, change their status and manage
   program, participation and assignments on the same page (or in **Projects** in wp-admin)
 - Email groups for [orchestra-email](https://github.com/TheRacoonOfDeath/orchestra-email), if it is
-  installed: participants by status, and the players of each piece and part
+  installed: the accepted and pending participants of each project
 - Pieces and parts used in projects cannot be deleted in the library
 - Export of participation and assignments with the WordPress privacy tools; deleting an account
   anonymizes its history

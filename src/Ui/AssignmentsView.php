@@ -8,14 +8,12 @@ use Orchestra\Core\Ui\Form;
 use Orchestra\Core\Ui\Html;
 use Orchestra\Library\LibraryService;
 use Orchestra\Library\Part\Part;
-use Orchestra\Projects\Admin\EmailLinks;
 use Orchestra\Projects\Admin\Names;
 use Orchestra\Projects\Assignment\Assignment;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Assignment\HistoryMark;
 use Orchestra\Projects\Capabilities;
-use Orchestra\Projects\Email\ProjectEmailGroups;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationStatus;
 use Orchestra\Projects\Program\ProgramRepository;
@@ -33,7 +31,6 @@ final class AssignmentsView
         private readonly ParticipationRepository $participations,
         private readonly LibraryService $library,
         private readonly Names $names,
-        private readonly EmailLinks $emailLinks,
     ) {
     }
 
@@ -111,13 +108,7 @@ final class AssignmentsView
         $piece = $this->library->piece($pieceId);
         $parts = $this->library->parts($pieceId);
         $title = \esc_html($piece->title ?? '#' . $pieceId);
-
-        $assignedParts = \array_filter($parts, static fn (Part $part): bool => isset($byPart[$part->id]));
-        $email = $assignedParts === [] ? '' : $this->emailLinks->buttons($project, [
-            ProjectEmailGroups::pieceGroupId($project->id, $pieceId) => \__('Email the players', 'orchestra-projects'),
-        ]);
-        $html = '<section class="orchestra-stack"><div class="orchestra-toolbar"><h3>' . $title . '</h3>' . $email
-            . '</div>';
+        $html = '<section class="orchestra-stack"><h3>' . $title . '</h3>';
         if ($parts === []) {
             return $html . Html::empty(\__('The piece has no parts.', 'orchestra-projects')) . '</section>';
         }
