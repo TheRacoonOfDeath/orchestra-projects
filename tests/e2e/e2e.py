@@ -344,15 +344,24 @@ check(participation_of(spring, "organizer")["status"] == "accepted", "organizers
 _, page = mia.get(DASHBOARD)
 check("Accepted" in page and response_nonce(page, mia_participation) is None, "no response buttons after responding")
 _, page = mo.get(f"{DASHBOARD}&orchestra_project={spring}")
-accepted = text(page).split("Accepted (", 1)[1].split("Program", 1)[0] if "Accepted (" in text(page) else ""
-check(accepted.startswith("2)") and "Mia" in accepted and "Olga" in accepted and "Max" not in accepted,
-      "members see who accepted, even before responding themselves")
+check("orchestra_tab=accepted" in page and "Who accepted" in page and "2 people have accepted" not in page,
+      "members have a tab with everyone who accepted, not on the overview")
+_, page = mo.get(f"{DASHBOARD}&orchestra_project={spring}&orchestra_tab=accepted")
+accepted = page.split('<ul class="orchestra-list">', 1)[1].split("</ul>", 1)[0] if "orchestra-list" in page else ""
+check("2 people have accepted." in text(page) and "<li>Mia</li>" in accepted and "<li>Olga</li>" in accepted
+      and "Max" not in accepted, "members see who accepted, even before responding themselves")
+_, page = conductor.get(manage_url(spring))
+check("orchestra_tab=accepted" not in page, "conductors see who accepted on the participation tab instead")
 
 _, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}")
 plain = text(page)
 check("Description of Spring Concert 2027" in plain and "Carl" in plain and "Olga" in plain
-      and plain.index("Pirates of the Caribbean") < plain.index("Lord of the Dance"),
-      "the project page shows description, staff and the ordered program")
+      and 'class="orchestra-program"' not in page and "orchestra_tab=program" in page,
+      "the project page shows description and staff, the program on its own tab")
+_, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}&orchestra_tab=program")
+program = page.split('<ol class="orchestra-program">', 1)[1].split("</ol>", 1)[0] if "orchestra-program" in page else ""
+check(program.index("Pirates of the Caribbean") < program.index("Lord of the Dance") and "program_up" not in page,
+      "members see the ordered program as a list, without changing it")
 
 _, page = conductor.get(manage_url(spring, "participation"))
 check("Mia" in page and "Max" in page and 'name="status"' not in page,

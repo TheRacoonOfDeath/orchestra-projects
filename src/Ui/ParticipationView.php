@@ -49,15 +49,10 @@ final class ParticipationView
     }
 
     /**
-     * The names of everyone who accepted, for the project overview; "" for users who may not see
-     * them or when nobody has accepted yet.
+     * The names of everyone who accepted, for the members' tab of the same name.
      */
     public function accepted(Project $project): string
     {
-        if (!\current_user_can(Capabilities::PARTICIPANTS_READ)) {
-            return '';
-        }
-
         $names = [];
         foreach ($this->participations->forProject($project->id, ParticipationStatus::Accepted) as $participation) {
             if ($participation->userId !== null) {
@@ -65,14 +60,17 @@ final class ParticipationView
             }
         }
         if ($names === []) {
-            return '';
+            return Html::empty(\__('Nobody has accepted yet.', 'orchestra-projects'));
         }
         \natcasesort($names);
 
-        return '<section class="orchestra-stack"><h3>' . \esc_html__('Accepted', 'orchestra-projects')
-            . ' <span class="orchestra-muted">(' . \count($names) . ')</span></h3><div class="orchestra-checklist">'
-            . \implode('', \array_map(static fn (string $n): string => '<span>' . \esc_html($n) . '</span>', $names))
-            . '</div></section>';
+        return '<p class="orchestra-muted">' . \esc_html(\sprintf(
+            /* translators: %d: number of people */
+            \_n('%d person has accepted.', '%d people have accepted.', \count($names), 'orchestra-projects'),
+            \count($names)
+        )) . '</p><ul class="orchestra-list">'
+            . \implode('', \array_map(static fn (string $n): string => '<li>' . \esc_html($n) . '</li>', $names))
+            . '</ul>';
     }
 
     public function render(Project $project): string

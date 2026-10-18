@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-19 00:51+0200\n"
+"POT-Creation-Date: 2026-10-19 00:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -181,8 +181,8 @@ msgstr ""
 msgid "Assignments: %s"
 msgstr ""
 
-#: src/Export/AssignmentsPdfController.php:63 src/Ui/ParticipationView.php:114
-#: src/Ui/ProgramView.php:108 src/Ui/ProjectView.php:64
+#: src/Export/AssignmentsPdfController.php:63 src/Ui/ParticipationView.php:112
+#: src/Ui/ProgramView.php:108 src/Ui/ProjectView.php:68
 msgid "Assignments"
 msgstr ""
 
@@ -246,7 +246,7 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
-#: src/Participation/ParticipationStatus.php:18 src/Ui/ParticipationView.php:72
+#: src/Participation/ParticipationStatus.php:18
 msgid "Accepted"
 msgstr ""
 
@@ -277,12 +277,12 @@ msgstr ""
 msgid "Project"
 msgstr ""
 
-#: src/Privacy/PersonalData.php:89 src/Ui/ProjectView.php:61
-#: src/Ui/ProjectView.php:144
+#: src/Privacy/PersonalData.php:89 src/Ui/ProjectView.php:62
+#: src/Ui/ProjectView.php:149
 msgid "Participation"
 msgstr ""
 
-#: src/Privacy/PersonalData.php:90 src/Ui/ParticipationView.php:113
+#: src/Privacy/PersonalData.php:90 src/Ui/ParticipationView.php:111
 msgid "Responded"
 msgstr ""
 
@@ -529,37 +529,49 @@ msgstr ""
 msgid "%1$d accepted, %2$d declined, %3$d pending"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:83
+#: src/Ui/ParticipationView.php:63
+msgid "Nobody has accepted yet."
+msgstr ""
+
+#. translators: %d: number of people
+#: src/Ui/ParticipationView.php:69
+#, php-format
+msgid "%d person has accepted."
+msgid_plural "%d people have accepted."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Ui/ParticipationView.php:81
 msgid "Members are asked to respond when the project is opened."
 msgstr ""
 
-#: src/Ui/ParticipationView.php:84
+#: src/Ui/ParticipationView.php:82
 msgid "Nobody has been asked to respond."
 msgstr ""
 
-#: src/Ui/ParticipationView.php:107
+#: src/Ui/ParticipationView.php:105
 msgid "Nobody"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:112
+#: src/Ui/ParticipationView.php:110
 msgid "Member"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:117 src/Ui/ParticipationView.php:183
+#: src/Ui/ParticipationView.php:115 src/Ui/ParticipationView.php:181
 msgid "Change"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:153
+#: src/Ui/ParticipationView.php:151
 msgid "Export accepted participants (CSV)"
 msgstr ""
 
 #. translators: %d: number of assignments
-#: src/Ui/ParticipationView.php:166
+#: src/Ui/ParticipationView.php:164
 #, php-format
 msgid "The member's %d assignments in this project will be removed. Continue?"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:181
+#: src/Ui/ParticipationView.php:179
 msgid "New status"
 msgstr ""
 
@@ -613,7 +625,7 @@ msgstr ""
 msgid "Edit project"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:44 src/Ui/ProjectView.php:88
+#: src/Ui/ProjectFormView.php:44 src/Ui/ProjectView.php:92
 #: src/Ui/ProjectsShortcode.php:84
 msgid "All projects"
 msgstr ""
@@ -654,11 +666,11 @@ msgstr ""
 msgid "A project can have any number of concerts, or none."
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:128 src/Ui/ProjectView.php:134
+#: src/Ui/ProjectFormView.php:128 src/Ui/ProjectView.php:139
 msgid "Conductors"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:129 src/Ui/ProjectView.php:138
+#: src/Ui/ProjectFormView.php:129 src/Ui/ProjectView.php:143
 msgid "Organizers"
 msgstr ""
 
@@ -688,66 +700,70 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: src/Ui/ProjectView.php:56
+#: src/Ui/ProjectView.php:57
 msgid "Overview"
 msgstr ""
 
-#: src/Ui/ProjectView.php:58 src/Ui/ProjectView.php:159
+#: src/Ui/ProjectView.php:59 src/Ui/ProjectView.php:163
 msgid "Program"
 msgstr ""
 
-#: src/Ui/ProjectView.php:87
+#: src/Ui/ProjectView.php:65
+msgid "Who accepted"
+msgstr ""
+
+#: src/Ui/ProjectView.php:91
 msgid "Completed projects"
 msgstr ""
 
-#: src/Ui/ProjectView.php:92
+#: src/Ui/ProjectView.php:96
 msgid "Edit"
 msgstr ""
 
-#: src/Ui/ProjectView.php:128 src/Ui/ProjectView.php:216
+#: src/Ui/ProjectView.php:133 src/Ui/ProjectView.php:220
 msgid "Status"
 msgstr ""
 
-#: src/Ui/ProjectView.php:131
+#: src/Ui/ProjectView.php:136
 msgid "Dates"
 msgstr ""
 
-#: src/Ui/ProjectView.php:164
+#: src/Ui/ProjectView.php:168
 msgid "Email accepted participants"
 msgstr ""
 
-#: src/Ui/ProjectView.php:166
+#: src/Ui/ProjectView.php:170
 msgid "Email pending participants"
 msgstr ""
 
-#: src/Ui/ProjectView.php:168
+#: src/Ui/ProjectView.php:172
 msgid "Email accepted and pending"
 msgstr ""
 
-#: src/Ui/ProjectView.php:171
+#: src/Ui/ProjectView.php:175
 msgid "Email"
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:190
+#: src/Ui/ProjectView.php:194
 #, php-format
 msgid "Change the status to \"%s\"?"
 msgstr ""
 
-#: src/Ui/ProjectView.php:195
+#: src/Ui/ProjectView.php:199
 msgid ""
 "All active members and organizers who have not been asked yet will be asked "
 "to respond."
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:201
+#: src/Ui/ProjectView.php:205
 #, php-format
 msgid "Move to \"%s\""
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:203
+#: src/Ui/ProjectView.php:207
 #, php-format
 msgid "Back to \"%s\""
 msgstr ""

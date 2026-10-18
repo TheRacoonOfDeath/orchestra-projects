@@ -26,6 +26,7 @@ final class ProjectView
     public const PROGRAM = 'program';
     public const PARTICIPATION = 'participation';
     public const ASSIGNMENTS = 'assignments';
+    public const ACCEPTED = 'accepted';
 
     public function __construct(
         private readonly StaffRepository $staff,
@@ -54,11 +55,15 @@ final class ProjectView
     public static function tabs(Project $project): array
     {
         $tabs = [self::OVERVIEW => \__('Overview', 'orchestra-projects')];
-        if (\current_user_can(Capabilities::PROGRAM_MANAGE)) {
+        // Conductors and organizers arrange the program, members see it as a list.
+        if (\current_user_can(Capabilities::PROGRAM_MANAGE) || \current_user_can(Capabilities::PROJECT_READ)) {
             $tabs[self::PROGRAM] = \__('Program', 'orchestra-projects');
         }
         if (\current_user_can(Capabilities::PARTICIPATION_READ_OTHERS)) {
             $tabs[self::PARTICIPATION] = \__('Participation', 'orchestra-projects');
+        } elseif (\current_user_can(Capabilities::PARTICIPANTS_READ)) {
+            // Conductors and organizers see who accepted on the participation tab.
+            $tabs[self::ACCEPTED] = \__('Who accepted', 'orchestra-projects');
         }
         if (\current_user_can(Capabilities::PROGRAM_MANAGE) && \current_user_can(Capabilities::ASSIGNMENT_READ)) {
             $tabs[self::ASSIGNMENTS] = \__('Assignments', 'orchestra-projects');
@@ -100,8 +105,11 @@ final class ProjectView
         }
 
         return $html . match ($tab) {
-            self::PROGRAM => $this->programView->manage($project),
+            self::PROGRAM => \current_user_can(Capabilities::PROGRAM_MANAGE)
+                ? $this->programView->manage($project)
+                : $this->programView->list($project),
             self::PARTICIPATION => $this->participationView->render($project),
+            self::ACCEPTED => $this->participationView->accepted($project),
             self::ASSIGNMENTS => $this->assignmentsView->render($project),
             self::OVERVIEW => $this->overview($project, !$withHeading),
             default => self::pluginTab($project, $tab, $urls),
@@ -155,9 +163,6 @@ final class ProjectView
             $html .= '<div class="orchestra-card orchestra-stack">' . $own . '</div>';
         }
 
-        $html .= $this->participationView->accepted($project);
-        $html .= '<section class="orchestra-stack"><h3>' . \esc_html__('Program', 'orchestra-projects') . '</h3>'
-            . $this->programView->list($project) . '</section>';
 
         $email = $this->emailLinks->buttons($project, [
             ProjectEmailGroups::participantsGroupId($project->id, ParticipationStatus::Accepted)
