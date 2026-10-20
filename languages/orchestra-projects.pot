@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 23:56+0200\n"
+"POT-Creation-Date: 2026-10-21 00:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,7 +34,7 @@ msgid "The project does not exist."
 msgstr ""
 
 #: src/Admin/ProjectActions.php:79 src/Admin/ProjectActions.php:106
-#: src/Export/AssignmentsPdfController.php:58
+#: src/Export/AssignmentsPdfController.php:67
 #: src/Export/ParticipantsExportController.php:84
 #: src/Frontend/ResponseController.php:59
 msgid "You are not allowed to do this."
@@ -137,7 +137,7 @@ msgstr ""
 msgid "The part does not belong to a piece of the program."
 msgstr ""
 
-#: src/Assignment/AssignmentService.php:228 src/Ui/AssignmentsView.php:67
+#: src/Assignment/AssignmentService.php:228 src/Ui/AssignmentsView.php:68
 msgid ""
 "Assignments can only be changed while the project is open for participation "
 "or in preparation."
@@ -171,12 +171,12 @@ msgstr ""
 msgid "The program has no pieces yet."
 msgstr ""
 
-#: src/Export/AssignmentsPdf.php:66 src/Ui/AssignmentsView.php:201
+#: src/Export/AssignmentsPdf.php:66 src/Ui/AssignmentsView.php:202
 msgid "The piece has no parts."
 msgstr ""
 
 #: src/Export/AssignmentsPdf.php:78 src/Privacy/PersonalData.php:118
-#: src/Ui/AssignmentsView.php:220
+#: src/Ui/AssignmentsView.php:222
 msgid "Part"
 msgstr ""
 
@@ -194,7 +194,7 @@ msgstr ""
 msgid "Assignments: %s"
 msgstr ""
 
-#: src/Export/AssignmentsPdf.php:132 src/Ui/AssignmentsView.php:156
+#: src/Export/AssignmentsPdf.php:132 src/Ui/AssignmentsView.php:157
 #: src/Ui/ParticipationView.php:114
 msgid "Member"
 msgstr ""
@@ -203,8 +203,8 @@ msgstr ""
 msgid "Parts by member"
 msgstr ""
 
-#: src/Export/AssignmentsPdfController.php:63 src/Ui/ParticipationView.php:116
-#: src/Ui/ProgramView.php:112 src/Ui/ProjectView.php:69
+#: src/Export/AssignmentsPdfController.php:72 src/Ui/ParticipationView.php:116
+#: src/Ui/ProgramView.php:112 src/Ui/ProjectView.php:70
 msgid "Assignments"
 msgstr ""
 
@@ -329,7 +329,7 @@ msgid "Project"
 msgstr ""
 
 #: src/Privacy/PersonalData.php:89 src/Ui/ProjectView.php:63
-#: src/Ui/ProjectView.php:179
+#: src/Ui/ProjectView.php:180
 msgid "Participation"
 msgstr ""
 
@@ -489,15 +489,15 @@ msgstr ""
 msgid "Download PDF"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:89 src/Ui/AssignmentsView.php:172
+#: src/Ui/AssignmentsView.php:90 src/Ui/AssignmentsView.php:173
 msgid "Nobody has accepted to participate yet."
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:97
+#: src/Ui/AssignmentsView.php:98
 msgid "Assign the parts played last time"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:104
+#: src/Ui/AssignmentsView.php:105
 #, php-format
 msgid ""
 "Assigns %d part: members who are not assigned in a piece yet get the part "
@@ -508,40 +508,40 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Ui/AssignmentsView.php:136
+#: src/Ui/AssignmentsView.php:137
 msgid "View"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:137
+#: src/Ui/AssignmentsView.php:138
 msgid "By piece"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:140
+#: src/Ui/AssignmentsView.php:141
 msgid "By member"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:214
+#: src/Ui/AssignmentsView.php:216
 msgid "At least one member has not been assigned a part yet"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:220
+#: src/Ui/AssignmentsView.php:222
 msgid "Assigned"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:222 src/Ui/AssignmentsView.php:308
+#: src/Ui/AssignmentsView.php:224 src/Ui/AssignmentsView.php:310
 msgid "Assign"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:259 src/Ui/ProgramView.php:97
+#: src/Ui/AssignmentsView.php:261 src/Ui/ProgramView.php:97
 #: src/Ui/ProjectFormView.php:118
 msgid "Remove"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:303
+#: src/Ui/AssignmentsView.php:305
 msgid "Assign members"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:307
+#: src/Ui/AssignmentsView.php:309
 msgid "Members"
 msgstr ""
 
@@ -590,39 +590,43 @@ msgid ""
 "it."
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:125 src/Ui/MemberProjectView.php:238
+#: src/Ui/MemberProjectView.php:125 src/Ui/MemberProjectView.php:230
 msgid "Accept to participate? Your decision is final."
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:126 src/Ui/MemberProjectView.php:239
+#: src/Ui/MemberProjectView.php:126 src/Ui/MemberProjectView.php:231
 msgid "Decline to participate? Your decision is final."
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:235
+#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:227
 msgid "Accept"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:235
+#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:227
 msgid "Decline"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:150
-msgid "Your parts appear here once the conductors have assigned them."
+#: src/Ui/MemberProjectView.php:158
+msgid "No part assigned yet"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:192
+#: src/Ui/MemberProjectView.php:159
+msgid "No part"
+msgstr ""
+
+#: src/Ui/MemberProjectView.php:185
 msgid "No sheet music yet"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:196
+#: src/Ui/MemberProjectView.php:188
 msgid "Download"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:205
+#: src/Ui/MemberProjectView.php:197
 msgid "Your parts"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:210
+#: src/Ui/MemberProjectView.php:202
 msgid "Download all as a zip file"
 msgstr ""
 
@@ -790,7 +794,7 @@ msgstr ""
 msgid "Edit project"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:44 src/Ui/ProjectView.php:93
+#: src/Ui/ProjectFormView.php:44 src/Ui/ProjectView.php:94
 #: src/Ui/ProjectsShortcode.php:84
 msgid "All projects"
 msgstr ""
@@ -831,11 +835,11 @@ msgstr ""
 msgid "A project can have any number of concerts, or none."
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:129 src/Ui/ProjectView.php:169
+#: src/Ui/ProjectFormView.php:129 src/Ui/ProjectView.php:170
 msgid "Conductors"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:130 src/Ui/ProjectView.php:173
+#: src/Ui/ProjectFormView.php:130 src/Ui/ProjectView.php:174
 msgid "Organizers"
 msgstr ""
 
@@ -881,75 +885,75 @@ msgstr ""
 msgid "Who accepted"
 msgstr ""
 
-#: src/Ui/ProjectView.php:92
+#: src/Ui/ProjectView.php:93
 msgid "Completed projects"
 msgstr ""
 
-#: src/Ui/ProjectView.php:97
+#: src/Ui/ProjectView.php:98
 msgid "Edit"
 msgstr ""
 
 #. translators: %s: date
-#: src/Ui/ProjectView.php:131
+#: src/Ui/ProjectView.php:132
 #, php-format
 msgid ""
 "The project ended on %s. Complete it to move it to the completed projects."
 msgstr ""
 
-#: src/Ui/ProjectView.php:136
+#: src/Ui/ProjectView.php:137
 msgid "Complete the project"
 msgstr ""
 
-#: src/Ui/ProjectView.php:139
+#: src/Ui/ProjectView.php:140
 msgid ""
 "Complete the project? Its program, participation and parts can no longer be "
 "changed."
 msgstr ""
 
-#: src/Ui/ProjectView.php:163 src/Ui/ProjectView.php:248
+#: src/Ui/ProjectView.php:164 src/Ui/ProjectView.php:249
 msgid "Status"
 msgstr ""
 
-#: src/Ui/ProjectView.php:166
+#: src/Ui/ProjectView.php:167
 msgid "Dates"
 msgstr ""
 
-#: src/Ui/ProjectView.php:196
+#: src/Ui/ProjectView.php:197
 msgid "Email accepted participants"
 msgstr ""
 
-#: src/Ui/ProjectView.php:198
+#: src/Ui/ProjectView.php:199
 msgid "Email pending participants"
 msgstr ""
 
-#: src/Ui/ProjectView.php:200
+#: src/Ui/ProjectView.php:201
 msgid "Email accepted and pending"
 msgstr ""
 
-#: src/Ui/ProjectView.php:203
+#: src/Ui/ProjectView.php:204
 msgid "Email"
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:222
+#: src/Ui/ProjectView.php:223
 #, php-format
 msgid "Change the status to \"%s\"?"
 msgstr ""
 
-#: src/Ui/ProjectView.php:227
+#: src/Ui/ProjectView.php:228
 msgid ""
 "All active members and organizers who have not been asked yet will be asked "
 "to respond."
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:233
+#: src/Ui/ProjectView.php:234
 #, php-format
 msgid "Move to \"%s\""
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:235
+#: src/Ui/ProjectView.php:236
 #, php-format
 msgid "Back to \"%s\""
 msgstr ""

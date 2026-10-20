@@ -133,52 +133,41 @@ final class MemberProjectView
     }
 
     /**
-     * Tells members who take part that their parts are still to come.
+     * The member's part in every piece of the program, with the sheet music; pieces in which they
+     * have no part yet say so. Shown to members who take part or have parts.
      */
-    private function noPartsYet(Project $project): string
-    {
-        $participation = $this->participations->findFor($project->id, \get_current_user_id());
-        if (
-            $participation?->status !== ParticipationStatus::Accepted
-            || !$project->status->assignmentsEditable()
-            || $this->program->pieceIds($project->id) === []
-        ) {
-            return '';
-        }
-
-        return '<p class="orchestra-muted">' . \esc_html__(
-            'Your parts appear here once the conductors have assigned them.',
-            'orchestra-projects'
-        ) . '</p>';
-    }
-
     public function parts(Project $project): string
     {
         if (!\current_user_can(Capabilities::ASSIGNMENT_READ)) {
             return '';
         }
-        $assignments = $this->assignments->forProjectAndUser($project->id, \get_current_user_id());
-        if ($assignments === []) {
-            return $this->noPartsYet($project);
+        $userId = \get_current_user_id();
+        $assignments = $this->assignments->forProjectAndUser($project->id, $userId);
+        $participation = $this->participations->findFor($project->id, $userId);
+        $pieceIds = $this->program->pieceIds($project->id);
+        if ($pieceIds === [] || ($assignments === [] && $participation?->status !== ParticipationStatus::Accepted)) {
+            return '';
         }
 
-        $order = \array_flip($this->program->pieceIds($project->id));
-        \usort($assignments, static fn ($a, $b): int => ($order[$a->pieceId] ?? 0) <=> ($order[$b->pieceId] ?? 0));
-
-        $new = $this->assignmentService->newParts(
-            $project->id,
-            \array_map(static fn ($a): int => $a->pieceId, $assignments)
-        );
+        $byPiece = [];
+        foreach ($assignments as $assignment) {
+            $byPiece[$assignment->pieceId] = $assignment;
+        }
+        $new = $this->assignmentService->newParts($project->id, \array_keys($byPiece));
+        $noPart = $project->status->assignmentsEditable()
+            ? \__('No part assigned yet', 'orchestra-projects')
+            : \__('No part', 'orchestra-projects');
         $items = '';
         $partIds = [];
-        foreach ($assignments as $assignment) {
-            $part = $this->library->part($assignment->partId);
-            $piece = $this->library->piece($assignment->pieceId);
-            if ($part === null || $piece === null) {
+        foreach ($pieceIds as $pieceId) {
+            $piece = $this->library->piece($pieceId);
+            if ($piece === null) {
                 continue;
             }
-            $file = $this->library->sheetMusic($part->id);
-            if ($file !== null) {
+            $assignment = $byPiece[$pieceId] ?? null;
+            $part = $assignment === null ? null : $this->library->part($assignment->partId);
+            $file = $part === null ? null : $this->library->sheetMusic($part->id);
+            if ($part !== null && $file !== null) {
                 $partIds[] = $part->id;
             }
             // The piece with its composer on the first line, the part with its download on the second.
@@ -186,16 +175,19 @@ final class MemberProjectView
                 . ($piece->composer === ''
                     ? ''
                     : ' <span class="orchestra-muted">(' . \esc_html($piece->composer) . ')</span>')
-                . '</div><div class="orchestra-actions"><span>' . \esc_html($part->name) . '</span>'
-                . (isset($new[$assignment->id]) ? Badges::newPart() : '')
-                . ($file === null
-                    ? '<span class="orchestra-muted">' . \esc_html__('No sheet music yet', 'orchestra-projects')
-                        . '</span>'
-                    : Form::link(
-                        $this->library->downloadUrl($file),
-                        \__('Download', 'orchestra-projects'),
-                        'small'
-                    ))
+                . '</div><div class="orchestra-actions">'
+                . ($part === null
+                    ? '<span class="orchestra-muted">' . \esc_html($noPart) . '</span>'
+                    : '<span>' . \esc_html($part->name) . '</span>'
+                        . (isset($new[$assignment->id]) ? Badges::newPart() : '')
+                        . ($file === null
+                            ? '<span class="orchestra-muted">'
+                                . \esc_html__('No sheet music yet', 'orchestra-projects') . '</span>'
+                            : Form::link(
+                                $this->library->downloadUrl($file),
+                                \__('Download', 'orchestra-projects'),
+                                'small'
+                            )))
                 . '</div></div></li>';
         }
         if ($items === '') {

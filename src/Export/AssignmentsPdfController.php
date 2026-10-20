@@ -44,6 +44,14 @@ final class AssignmentsPdfController
     }
 
     /**
+     * The PDF is for conductors and organizers; members see the assignments on the tab.
+     */
+    public static function allowed(): bool
+    {
+        return \current_user_can(Capabilities::ASSIGNMENT_MANAGE);
+    }
+
+    /**
      * @internal Hooked to `admin_post_orchestra_projects_assignments_pdf`.
      */
     public function handle(): never
@@ -54,6 +62,7 @@ final class AssignmentsPdfController
             $project === null
             || !ProjectView::canSee($project)
             || !\array_key_exists(ProjectView::ASSIGNMENTS, ProjectView::tabs($project))
+            || !self::allowed()
         ) {
             \wp_die(\esc_html__('You are not allowed to do this.', 'orchestra-projects'), 403);
         }

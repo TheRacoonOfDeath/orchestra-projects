@@ -65,7 +65,8 @@ final class ProjectView
             // Conductors and organizers see who accepted on the participation tab.
             $tabs[self::ACCEPTED] = \__('Who accepted', 'orchestra-projects');
         }
-        if (\current_user_can(Capabilities::PROGRAM_MANAGE) && \current_user_can(Capabilities::ASSIGNMENT_READ)) {
+        // Everyone sees who plays which part; conductors and organizers assign there.
+        if (\current_user_can(Capabilities::ASSIGNMENT_READ)) {
             $tabs[self::ASSIGNMENTS] = \__('Assignments', 'orchestra-projects');
         }
 

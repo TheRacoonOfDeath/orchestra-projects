@@ -479,6 +479,13 @@ dance = page.split("<h3>Lord of the Dance", 1)[1].split("</h3>", 1)[0]
 check("At least one member has not been assigned a part yet" in dance,
       "pieces in which an accepted member has no part yet show a warning")
 check(NEW_BADGE in pirates, "the assignments mark members who play a part for the first time")
+_, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}")
+check("orchestra_tab=assignments" in page, "members have the assignments tab")
+_, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}&orchestra_tab=assignments")
+mia_pirates = page.split("<h3>Pirates of the Caribbean", 1)[1].split("</section>", 1)[0] if "<h3>Pirates" in page else ""
+check("Horn 1" in mia_pirates and "Mia" in mia_pirates and "Olga" in mia_pirates and 'name="users[]"' not in page
+      and "unassign" not in page and "Download PDF" not in page and "played last time" not in page
+      and "At least one member" not in page, "members see who plays which part, without changing it")
 pdf_html = assignments_pdf_html(spring)
 check("Mia*" in pdf_html and "* plays this part for the first time" in pdf_html,
       "the PDF marks new parts with an asterisk and explains it")
@@ -759,6 +766,10 @@ check(summer_parts == {login: spring_parts[login] for login in accepted} and "mo
       f"members get the part they played last time, others stay unassigned: {summer_parts}")
 _, page = conductor.get(manage_url(summer, "assignments"))
 check("Assign the parts played last time" not in page, "the button is gone once there is nothing left to assign")
+_, mo_page = mo.get(f"{DASHBOARD}&orchestra_project={summer}")
+mo_parts = text(mo_page).split("Your parts", 1)[1] if "Your parts" in text(mo_page) else ""
+check("Pirates of the Caribbean" in mo_parts and "No part assigned yet" in mo_parts,
+      "members who take part see every piece, also those without a part yet")
 check(NEW_BADGE not in page and "plays this part for the first time" not in assignments_pdf_html(summer),
       "parts played in another project before are not new")
 check("At least one member has not been assigned a part yet" in page.split("<h3>Pirates of the Caribbean", 1)[1]

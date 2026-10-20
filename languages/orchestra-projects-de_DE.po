@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 23:43+0200\n"
+"POT-Creation-Date: 2026-10-21 00:05+0200\n"
 "PO-Revision-Date: 2026-10-16 00:00+0000\n"
 "Last-Translator: Julian Nickerl\n"
 "Language-Team: German\n"
@@ -29,7 +29,7 @@ msgid "The project does not exist."
 msgstr "Das Projekt existiert nicht."
 
 #: src/Admin/ProjectActions.php:79 src/Admin/ProjectActions.php:106
-#: src/Export/AssignmentsPdfController.php:58
+#: src/Export/AssignmentsPdfController.php:67
 #: src/Export/ParticipantsExportController.php:84
 #: src/Frontend/ResponseController.php:59
 msgid "You are not allowed to do this."
@@ -134,7 +134,7 @@ msgstr "neu"
 msgid "The part does not belong to a piece of the program."
 msgstr "Die Stimme gehört zu keinem Stück des Programms."
 
-#: src/Assignment/AssignmentService.php:228 src/Ui/AssignmentsView.php:67
+#: src/Assignment/AssignmentService.php:228 src/Ui/AssignmentsView.php:68
 msgid ""
 "Assignments can only be changed while the project is open for participation "
 "or in preparation."
@@ -170,12 +170,12 @@ msgstr "Unentschlossene Teilnehmer (noch keine Antwort)"
 msgid "The program has no pieces yet."
 msgstr "Das Programm hat noch keine Stücke."
 
-#: src/Export/AssignmentsPdf.php:66 src/Ui/AssignmentsView.php:201
+#: src/Export/AssignmentsPdf.php:66 src/Ui/AssignmentsView.php:202
 msgid "The piece has no parts."
 msgstr "Das Stück hat keine Stimmen."
 
 #: src/Export/AssignmentsPdf.php:78 src/Privacy/PersonalData.php:118
-#: src/Ui/AssignmentsView.php:220
+#: src/Ui/AssignmentsView.php:222
 msgid "Part"
 msgstr "Stimme"
 
@@ -193,7 +193,7 @@ msgstr "* spielt diese Stimme zum ersten Mal"
 msgid "Assignments: %s"
 msgstr "Stimmverteilung: %s"
 
-#: src/Export/AssignmentsPdf.php:132 src/Ui/AssignmentsView.php:156
+#: src/Export/AssignmentsPdf.php:132 src/Ui/AssignmentsView.php:157
 #: src/Ui/ParticipationView.php:114
 msgid "Member"
 msgstr "Mitglied"
@@ -202,8 +202,8 @@ msgstr "Mitglied"
 msgid "Parts by member"
 msgstr "Stimmen nach Mitgliedern"
 
-#: src/Export/AssignmentsPdfController.php:63 src/Ui/ParticipationView.php:116
-#: src/Ui/ProgramView.php:112 src/Ui/ProjectView.php:69
+#: src/Export/AssignmentsPdfController.php:72 src/Ui/ParticipationView.php:116
+#: src/Ui/ProgramView.php:112 src/Ui/ProjectView.php:70
 msgid "Assignments"
 msgstr "Stimmverteilung"
 
@@ -336,7 +336,7 @@ msgid "Project"
 msgstr "Projekt"
 
 #: src/Privacy/PersonalData.php:89 src/Ui/ProjectView.php:63
-#: src/Ui/ProjectView.php:179
+#: src/Ui/ProjectView.php:180
 msgid "Participation"
 msgstr "Teilnahme"
 
@@ -513,15 +513,15 @@ msgstr ""
 msgid "Download PDF"
 msgstr "PDF herunterladen"
 
-#: src/Ui/AssignmentsView.php:89 src/Ui/AssignmentsView.php:172
+#: src/Ui/AssignmentsView.php:90 src/Ui/AssignmentsView.php:173
 msgid "Nobody has accepted to participate yet."
 msgstr "Noch niemand hat sich angemeldet."
 
-#: src/Ui/AssignmentsView.php:97
+#: src/Ui/AssignmentsView.php:98
 msgid "Assign the parts played last time"
 msgstr "In die zuletzt gespielten Stimmen einteilen"
 
-#: src/Ui/AssignmentsView.php:104
+#: src/Ui/AssignmentsView.php:105
 #, php-format
 msgid ""
 "Assigns %d part: members who are not assigned in a piece yet get the part "
@@ -538,40 +538,40 @@ msgstr[1] ""
 "die zuletzt gespielte. Wer das Stück noch nie gespielt hat, wird nicht "
 "eingeteilt."
 
-#: src/Ui/AssignmentsView.php:136
+#: src/Ui/AssignmentsView.php:137
 msgid "View"
 msgstr "Ansicht"
 
-#: src/Ui/AssignmentsView.php:137
+#: src/Ui/AssignmentsView.php:138
 msgid "By piece"
 msgstr "Nach Stücken"
 
-#: src/Ui/AssignmentsView.php:140
+#: src/Ui/AssignmentsView.php:141
 msgid "By member"
 msgstr "Nach Mitgliedern"
 
-#: src/Ui/AssignmentsView.php:214
+#: src/Ui/AssignmentsView.php:216
 msgid "At least one member has not been assigned a part yet"
 msgstr "Mindestens ein Mitglied hat noch keine Stimme"
 
-#: src/Ui/AssignmentsView.php:220
+#: src/Ui/AssignmentsView.php:222
 msgid "Assigned"
 msgstr "Eingeteilt"
 
-#: src/Ui/AssignmentsView.php:222 src/Ui/AssignmentsView.php:308
+#: src/Ui/AssignmentsView.php:224 src/Ui/AssignmentsView.php:310
 msgid "Assign"
 msgstr "Einteilen"
 
-#: src/Ui/AssignmentsView.php:259 src/Ui/ProgramView.php:97
+#: src/Ui/AssignmentsView.php:261 src/Ui/ProgramView.php:97
 #: src/Ui/ProjectFormView.php:118
 msgid "Remove"
 msgstr "Entfernen"
 
-#: src/Ui/AssignmentsView.php:303
+#: src/Ui/AssignmentsView.php:305
 msgid "Assign members"
 msgstr "Mitglieder einteilen"
 
-#: src/Ui/AssignmentsView.php:307
+#: src/Ui/AssignmentsView.php:309
 msgid "Members"
 msgstr "Mitglieder"
 
@@ -624,40 +624,43 @@ msgstr ""
 "Z. B. wenn du nur bei einigen Konzerten dabei sein kannst. Nur die "
 "Organisatoren sehen ihn."
 
-#: src/Ui/MemberProjectView.php:125 src/Ui/MemberProjectView.php:238
+#: src/Ui/MemberProjectView.php:125 src/Ui/MemberProjectView.php:230
 msgid "Accept to participate? Your decision is final."
 msgstr "Anmelden? Deine Entscheidung ist endgültig."
 
-#: src/Ui/MemberProjectView.php:126 src/Ui/MemberProjectView.php:239
+#: src/Ui/MemberProjectView.php:126 src/Ui/MemberProjectView.php:231
 msgid "Decline to participate? Your decision is final."
 msgstr "Teilnahme absagen? Deine Entscheidung ist endgültig."
 
-#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:235
+#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:227
 msgid "Accept"
 msgstr "Anmelden"
 
-#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:235
+#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:227
 msgid "Decline"
 msgstr "Absagen"
 
-#: src/Ui/MemberProjectView.php:150
-msgid "Your parts appear here once the conductors have assigned them."
-msgstr ""
-"Deine Stimmen erscheinen hier, sobald die Dirigenten sie verteilt haben."
+#: src/Ui/MemberProjectView.php:158
+msgid "No part assigned yet"
+msgstr "Noch keine Stimme zugeteilt"
 
-#: src/Ui/MemberProjectView.php:192
+#: src/Ui/MemberProjectView.php:159
+msgid "No part"
+msgstr "Keine Stimme"
+
+#: src/Ui/MemberProjectView.php:185
 msgid "No sheet music yet"
 msgstr "Noch keine Noten"
 
-#: src/Ui/MemberProjectView.php:196
+#: src/Ui/MemberProjectView.php:188
 msgid "Download"
 msgstr "Herunterladen"
 
-#: src/Ui/MemberProjectView.php:205
+#: src/Ui/MemberProjectView.php:197
 msgid "Your parts"
 msgstr "Deine Stimmen"
 
-#: src/Ui/MemberProjectView.php:210
+#: src/Ui/MemberProjectView.php:202
 msgid "Download all as a zip file"
 msgstr "Alle als ZIP-Datei herunterladen"
 
@@ -835,7 +838,7 @@ msgstr "Neues Projekt"
 msgid "Edit project"
 msgstr "Projekt bearbeiten"
 
-#: src/Ui/ProjectFormView.php:44 src/Ui/ProjectView.php:93
+#: src/Ui/ProjectFormView.php:44 src/Ui/ProjectView.php:94
 #: src/Ui/ProjectsShortcode.php:84
 msgid "All projects"
 msgstr "Alle Projekte"
@@ -876,11 +879,11 @@ msgstr "+ Konzert hinzufügen"
 msgid "A project can have any number of concerts, or none."
 msgstr "Ein Projekt kann beliebig viele Konzerte haben, auch keines."
 
-#: src/Ui/ProjectFormView.php:129 src/Ui/ProjectView.php:169
+#: src/Ui/ProjectFormView.php:129 src/Ui/ProjectView.php:170
 msgid "Conductors"
 msgstr "Dirigenten"
 
-#: src/Ui/ProjectFormView.php:130 src/Ui/ProjectView.php:173
+#: src/Ui/ProjectFormView.php:130 src/Ui/ProjectView.php:174
 msgid "Organizers"
 msgstr "Organisatoren"
 
@@ -932,16 +935,16 @@ msgstr "Programm"
 msgid "Who accepted"
 msgstr "Anmeldungen"
 
-#: src/Ui/ProjectView.php:92
+#: src/Ui/ProjectView.php:93
 msgid "Completed projects"
 msgstr "Abgeschlossene Projekte"
 
-#: src/Ui/ProjectView.php:97
+#: src/Ui/ProjectView.php:98
 msgid "Edit"
 msgstr "Bearbeiten"
 
 #. translators: %s: date
-#: src/Ui/ProjectView.php:131
+#: src/Ui/ProjectView.php:132
 #, php-format
 msgid ""
 "The project ended on %s. Complete it to move it to the completed projects."
@@ -949,11 +952,11 @@ msgstr ""
 "Das Projekt ist am %s zu Ende gegangen. Schließe es ab, damit es unter den "
 "abgeschlossenen Projekten steht."
 
-#: src/Ui/ProjectView.php:136
+#: src/Ui/ProjectView.php:137
 msgid "Complete the project"
 msgstr "Projekt abschließen"
 
-#: src/Ui/ProjectView.php:139
+#: src/Ui/ProjectView.php:140
 msgid ""
 "Complete the project? Its program, participation and parts can no longer be "
 "changed."
@@ -961,37 +964,37 @@ msgstr ""
 "Projekt abschließen? Programm, Teilnahme und Stimmverteilung können danach "
 "nicht mehr geändert werden."
 
-#: src/Ui/ProjectView.php:163 src/Ui/ProjectView.php:248
+#: src/Ui/ProjectView.php:164 src/Ui/ProjectView.php:249
 msgid "Status"
 msgstr "Status"
 
-#: src/Ui/ProjectView.php:166
+#: src/Ui/ProjectView.php:167
 msgid "Dates"
 msgstr "Termine"
 
-#: src/Ui/ProjectView.php:196
+#: src/Ui/ProjectView.php:197
 msgid "Email accepted participants"
 msgstr "E-Mail an Angemeldete"
 
-#: src/Ui/ProjectView.php:198
+#: src/Ui/ProjectView.php:199
 msgid "Email pending participants"
 msgstr "E-Mail an Unentschlossene"
 
-#: src/Ui/ProjectView.php:200
+#: src/Ui/ProjectView.php:201
 msgid "Email accepted and pending"
 msgstr "E-Mail an Angemeldete und Unentschlossene"
 
-#: src/Ui/ProjectView.php:203
+#: src/Ui/ProjectView.php:204
 msgid "Email"
 msgstr "E-Mail"
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:222
+#: src/Ui/ProjectView.php:223
 #, php-format
 msgid "Change the status to \"%s\"?"
 msgstr "Den Status zu „%s“ ändern?"
 
-#: src/Ui/ProjectView.php:227
+#: src/Ui/ProjectView.php:228
 msgid ""
 "All active members and organizers who have not been asked yet will be asked "
 "to respond."
@@ -1000,13 +1003,13 @@ msgstr ""
 "werden um eine Antwort gebeten."
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:233
+#: src/Ui/ProjectView.php:234
 #, php-format
 msgid "Move to \"%s\""
 msgstr "Weiter zu „%s“"
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:235
+#: src/Ui/ProjectView.php:236
 #, php-format
 msgid "Back to \"%s\""
 msgstr "Zurück zu „%s“"
@@ -1114,6 +1117,10 @@ msgstr "Du darfst die Projekte nicht sehen."
 
 #~ msgid "Yes"
 #~ msgstr "Ja"
+
+#~ msgid "Your parts appear here once the conductors have assigned them."
+#~ msgstr ""
+#~ "Deine Stimmen erscheinen hier, sobald die Dirigenten sie verteilt haben."
 
 #, php-format
 #~ msgid "currently %s"

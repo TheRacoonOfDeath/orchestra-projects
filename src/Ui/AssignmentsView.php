@@ -53,7 +53,7 @@ final class AssignmentsView
 
         $byMember = ($_GET[self::VIEW_PARAMETER] ?? null) === self::VIEW_MEMBERS;
         $html = '<div class="orchestra-toolbar">' . self::viewSwitch($byMember)
-            . (AssignmentsPdfController::available()
+            . (AssignmentsPdfController::available() && AssignmentsPdfController::allowed()
                 ? Form::link(
                     AssignmentsPdfController::url($project->id),
                     \__('Download PDF', 'orchestra-projects'),
@@ -62,7 +62,8 @@ final class AssignmentsView
                 : '')
             . '</div>';
         $editable = $project->status->assignmentsEditable() && \current_user_can(Capabilities::ASSIGNMENT_MANAGE);
-        if (!$project->status->assignmentsEditable()) {
+        $manager = \current_user_can(Capabilities::ASSIGNMENT_MANAGE);
+        if ($manager && !$project->status->assignmentsEditable()) {
             $html .= '<div class="orchestra-notice"><p>' . \esc_html__(
                 'Assignments can only be changed while the project is open for participation or in preparation.',
                 'orchestra-projects'
@@ -209,7 +210,8 @@ final class AssignmentsView
         }
         // Accepted participants without a part in this piece.
         $unassigned = \array_diff_key($players, $partOf);
-        if ($project->status->assignmentsEditable() && $unassigned !== []) {
+        // The warning is for those who assign; members see the parts only.
+        if ($editable && $unassigned !== []) {
             $title .= ' ' . Html::badge(
                 \__('At least one member has not been assigned a part yet', 'orchestra-projects'),
                 'warning'

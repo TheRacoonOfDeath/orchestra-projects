@@ -94,12 +94,12 @@ views in **Projects** in wp-admin (views in `src/Ui`, shared by both).
 
 | View | Who | Content |
 |------|-----|---------|
-| Project list | everyone | a card per project: the status above the title, the dates (the concerts only on the project page); members: response, and per part the piece with its composer, below it the part with "new" and the download; staff: all projects; organizers: "New project" |
+| Project list | everyone | a card per project: the status above the title, the dates (the concerts only on the project page); members who take part: response, and every piece of the program with its composer, below it their part with "new" and the download, or "No part assigned yet"; staff: all projects; organizers: "New project" |
 | Project → Overview | everyone who may see the project | details, staff, description, own response and parts; email buttons and status changes for staff |
 | Project → Who accepted | members | the names of everyone who accepted (conductors and organizers see them on the Participation tab) |
 | Project → Program | everyone who may see the project | members: the ordered list of pieces; conductors and organizers: add, order and remove pieces |
 | Project → Participation | conductors (read), organizers | accepted, pending, declined, with the last change and who entered it; organizers see the members' comments, write notes, change decisions and export the accepted participants |
-| Project → Assignments | conductors, organizers | "By piece": parts with assigned members, where conductors and organizers assign; "By member" (`&orchestra_assignments_view=members`): a read-only table with a row per member and a column per piece (`AssignmentMatrix`) |
+| Project → Assignments | everyone who may see the project | "By piece": parts with assigned members; conductors and organizers assign there, members only see it (no forms, history marks, warnings or PDF); "By member" (`&orchestra_assignments_view=members`): a read-only table with a row per member and a column per piece (`AssignmentMatrix`) |
 | Project form | organizers | name, description, dates, staff (in wp-admin: the WordPress editor with the same fields) |
 
 URLs on the projects page: `?orchestra_project=ID&orchestra_tab=program`, `&orchestra_edit=1`,
@@ -110,8 +110,8 @@ were sent from.
 ## Assignments as PDF
 
 The assignments tab has a "Download PDF" button
-(`admin-post.php?action=orchestra_projects_assignments_pdf&project=ID`) for everyone who can open
-the tab. The PDF lists every piece of the program with its composer, its parts and the assigned
+(`admin-post.php?action=orchestra_projects_assignments_pdf&project=ID`) for conductors and
+organizers (`orchestra_projects_assignment_manage`); members see the tab, not the PDF. The PDF lists every piece of the program with its composer, its parts and the assigned
 players, and the project's dates and concerts; then, on a page of its own, the parts by member as in
 the "By member" view. Players of a new part (see above) have an asterisk
 after their name, explained below the last piece. It is created by orchestra-core 0.8
