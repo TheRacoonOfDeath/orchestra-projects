@@ -156,7 +156,7 @@ msgstr "noch nie gespielt"
 
 #: src/Email/ProjectEmailGroups.php:60
 msgid "Accepted and pending participants"
-msgstr "Angemeldete und ausstehende Teilnehmer"
+msgstr "Angemeldete und unentschlossene Teilnehmer"
 
 #: src/Email/ProjectEmailGroups.php:61
 msgid "Accepted participants"
@@ -164,7 +164,7 @@ msgstr "Angemeldete Teilnehmer"
 
 #: src/Email/ProjectEmailGroups.php:62
 msgid "Pending participants (no response yet)"
-msgstr "Ausstehende Teilnehmer (noch keine Antwort)"
+msgstr "Unentschlossene Teilnehmer (noch keine Antwort)"
 
 #: src/Export/AssignmentsPdf.php:54
 msgid "The program has no pieces yet."
@@ -291,7 +291,7 @@ msgstr ""
 
 #: src/Participation/ParticipationStatus.php:17
 msgid "Pending"
-msgstr "Ausstehend"
+msgstr "Unentschlossen"
 
 #: src/Participation/ParticipationStatus.php:18
 msgid "Accepted"
@@ -665,7 +665,7 @@ msgstr "Alle als ZIP-Datei herunterladen"
 #: src/Ui/ParticipationView.php:45
 #, php-format
 msgid "%1$d accepted, %2$d declined, %3$d pending"
-msgstr "%1$d angemeldet, %2$d abgesagt, %3$d ausstehend"
+msgstr "%1$d angemeldet, %2$d abgesagt, %3$d unentschlossen"
 
 #: src/Ui/ParticipationView.php:65
 msgid ""
