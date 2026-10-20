@@ -15,7 +15,7 @@ use wpdb;
 final class Schema
 {
     /** Increase whenever a table definition changes; dbDelta() applies the difference. */
-    public const VERSION = 3;
+    public const VERSION = 4;
 
     public const OPTION_VERSION = 'orchestra_projects_schema_version';
 
@@ -109,7 +109,6 @@ final class Schema
   changed_at datetime DEFAULT NULL,
   member_comment text DEFAULT NULL,
   organizer_note text DEFAULT NULL,
-  fee_paid tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY  (id),
   UNIQUE KEY project_user (project_id,user_id),
   KEY user_id (user_id)
@@ -130,6 +129,21 @@ final class Schema
   KEY user_id (user_id)
 ) {$charsetCollate};");
 
+        $this->removeFees();
         \update_option(self::OPTION_VERSION, self::VERSION, true);
+    }
+
+    /**
+     * Version 3 (orchestra-projects 0.23 and 0.24) stored project fees and who had paid them. The
+     * feature was removed; dbDelta() does not drop columns, so this does.
+     */
+    private function removeFees(): void
+    {
+        $table = $this->participationTable();
+        $column = $this->wpdb->get_var($this->wpdb->prepare('SHOW COLUMNS FROM %i LIKE %s', $table, 'fee_paid'));
+        if ($column !== null) {
+            $this->wpdb->query("ALTER TABLE {$table} DROP COLUMN fee_paid");
+        }
+        \delete_post_meta_by_key('orchestra_projects_fee');
     }
 }

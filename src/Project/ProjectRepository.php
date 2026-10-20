@@ -88,17 +88,7 @@ final class ProjectRepository
             self::meta($post->ID, ProjectPostType::META_START_DATE),
             self::meta($post->ID, ProjectPostType::META_END_DATE),
             self::concertDates($post->ID),
-            self::meta($post->ID, ProjectPostType::META_FEE) ?? '',
         );
-    }
-
-    public function saveFee(int $projectId, string $fee): void
-    {
-        if ($fee === '') {
-            \delete_post_meta($projectId, ProjectPostType::META_FEE);
-        } else {
-            \update_post_meta($projectId, ProjectPostType::META_FEE, $fee);
-        }
     }
 
     /**

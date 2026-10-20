@@ -44,17 +44,8 @@ final class ProjectEditor
         $staff = \__('Conductors and organizers', 'orchestra-projects');
         \add_meta_box('orchestra-projects-dates', $dates, [$this, 'renderDates'], null, 'side');
         \add_meta_box('orchestra-projects-staff', $staff, [$this, 'renderStaff']);
-        \add_meta_box('orchestra-projects-fee', \__('Fee', 'orchestra-projects'), [$this, 'renderFee']);
     }
 
-    /**
-     * @internal Meta box callback.
-     */
-    public function renderFee(WP_Post $post): void
-    {
-        echo '<div class="orchestra orchestra--admin">' . $this->form->feeField($this->projects->find($post->ID))
-            . '</div>'; // escaped by the view
-    }
 
     /**
      * @internal Meta box callback.

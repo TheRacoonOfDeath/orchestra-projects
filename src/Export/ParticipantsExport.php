@@ -11,7 +11,6 @@ use Orchestra\Members\Profile\ProfileField;
 use Orchestra\Projects\Participation\Participation;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationStatus;
-use Orchestra\Projects\Project\ProjectRepository;
 
 /**
  * The accepted participants of a project as a table: last name, first name, email address, one
@@ -23,7 +22,6 @@ final class ParticipantsExport
     public function __construct(
         private readonly ParticipationRepository $participations,
         private readonly MembersService $members,
-        private readonly ProjectRepository $projects,
     ) {
     }
 
@@ -58,13 +56,11 @@ final class ParticipantsExport
                     $this->members->profile($userId),
                     $participation->memberComment ?? '',
                     $participation->organizerNote ?? '',
-                    $participation->feePaid ?? false,
                 ];
             }
         }
-        $withFee = ($this->projects->find($projectId)->fee ?? '') !== '';
 
-        return self::table($this->members->profileFields(), $people, $withFee);
+        return self::table($this->members->profileFields(), $people);
     }
 
     /**
@@ -72,15 +68,13 @@ final class ParticipantsExport
      * created in wp-admin, get their display name as last name.
      *
      * @param list<ProfileField> $fields
-     * @param list<array{Member, ?Profile, string, string, bool}> $people member, profile, comment, note
-     *     and whether the fee is paid
-     * @param bool $withFee Whether the project has a fee: then a column says who paid it
+     * @param list<array{Member, ?Profile, string, string}> $people member, profile, comment and note
      * @return list<list<string>> the headings first
      */
-    public static function table(array $fields, array $people, bool $withFee = false): array
+    public static function table(array $fields, array $people): array
     {
         $rows = [];
-        foreach ($people as [$member, $profile, $comment, $note, $paid]) {
+        foreach ($people as [$member, $profile, $comment, $note]) {
             $lastName = $member->lastName;
             if ($lastName === '' && $member->firstName === '') {
                 $lastName = $member->displayName;
@@ -90,9 +84,6 @@ final class ParticipantsExport
                 $value = $profile?->value($field->id) ?? '';
                 // An unchecked checkbox is stored as "" and exported as "No".
                 $row[] = $value === '' && $field->type !== ProfileField::TYPE_CHECKBOX ? '' : $field->display($value);
-            }
-            if ($withFee) {
-                $row[] = $paid ? \__('Yes', 'orchestra-projects') : \__('No', 'orchestra-projects');
             }
             $row[] = $comment;
             $row[] = $note;
@@ -105,7 +96,6 @@ final class ParticipantsExport
             \__('First name', 'orchestra-projects'),
             \__('Email address', 'orchestra-projects'),
             ...\array_map(static fn (ProfileField $field): string => $field->label, $fields),
-            ...($withFee ? [\__('Fee paid', 'orchestra-projects')] : []),
             \__('Comment', 'orchestra-projects'),
             \__('Organizer note', 'orchestra-projects'),
         ];

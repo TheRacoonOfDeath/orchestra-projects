@@ -22,8 +22,6 @@ final class Participation
         public readonly ?string $memberComment = null,
         /** The organizers' note on the member's participation; only for organizers */
         public readonly ?string $organizerNote = null,
-        /** Whether the member has paid the project's fee; organizers tick it */
-        public readonly bool $feePaid = false,
     ) {
     }
 }

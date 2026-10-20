@@ -15,7 +15,6 @@ use Orchestra\Members\MembersService;
 final class ProjectFormHandler
 {
     public const FIELD_STAFF = 'orchestra_projects_staff';
-    public const FEE_MAX_LENGTH = 300;
 
     public function __construct(
         private readonly ProjectRepository $projects,
@@ -38,8 +37,6 @@ final class ProjectFormHandler
         if ($dates->errors === []) {
             $this->projects->saveDates($projectId, $dates);
         }
-        $fee = \is_string($input[ProjectPostType::META_FEE] ?? null) ? $input[ProjectPostType::META_FEE] : '';
-        $this->projects->saveFee($projectId, \mb_substr(\trim(\sanitize_text_field($fee)), 0, self::FEE_MAX_LENGTH));
 
         $submitted = \is_array($input[self::FIELD_STAFF] ?? null) ? $input[self::FIELD_STAFF] : [];
         foreach (self::staffRoles() as $staffRole => $role) {

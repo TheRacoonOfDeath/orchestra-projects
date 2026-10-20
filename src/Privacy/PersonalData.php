@@ -89,12 +89,6 @@ final class PersonalData
                     ['name' => \__('Participation', 'orchestra-projects'), 'value' => $participation->status->label()],
                     ['name' => \__('Responded', 'orchestra-projects'), 'value' => $participation->respondedAt ?? ''],
                     [
-                        'name' => \__('Fee paid', 'orchestra-projects'),
-                        'value' => $participation->feePaid
-                            ? \__('Yes', 'orchestra-projects')
-                            : \__('No', 'orchestra-projects'),
-                    ],
-                    [
                         'name' => \__('Your comment', 'orchestra-projects'),
                         'value' => $participation->memberComment ?? '',
                     ],

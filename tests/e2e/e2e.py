@@ -191,7 +191,7 @@ NEW_BADGE = 'class="orchestra-projects-new">new</span>'
 def participation_of(project, login):
     return wp_json(
         f'$u = get_user_by("login", "{login}")->ID; global $wpdb;'
-        f'$r = $wpdb->get_row($wpdb->prepare("SELECT id, status, member_comment, organizer_note, fee_paid FROM {{$wpdb->prefix}}orchestra_projects_participation'
+        f'$r = $wpdb->get_row($wpdb->prepare("SELECT id, status, member_comment, organizer_note FROM {{$wpdb->prefix}}orchestra_projects_participation'
         f' WHERE project_id = %d AND user_id = %d", {project}, $u), ARRAY_A); echo json_encode($r);'
     )
 
@@ -293,7 +293,6 @@ organizer.post("/wp-admin/admin-post.php", {
     "action": "orchestra_projects", "op": "save", "project": str(spring), "_wpnonce": form_nonce or "x",
     "redirect_to": form_redirect or DASHBOARD, "orchestra_projects_title": "Spring Concert 2027",
     "orchestra_projects_description": "Description of Spring Concert 2027", "orchestra_projects_start_date": "2027-03-01",
-    "orchestra_projects_fee": "120 €, reduced 80 €",
     "orchestra_projects_end_date": "2027-05-10", "orchestra_projects_concert_date[]": ["2027-05-09"],
     "orchestra_projects_staff[conductor][]": [str(ids["conductor"])],
     "orchestra_projects_staff[organizer][]": [str(ids["organizer"])],
@@ -308,7 +307,6 @@ check(re.search(r'orchestra-badge[^"]*">[^<]*</span></div><h3 class="orchestra-c
       "the project list shows the status on its own line above the title")
 _, page = organizer.get(f"{DASHBOARD}&orchestra_project={spring}")
 check("May 9, 2027" in text(page), "the project page shows the concert")
-check("Fee" in text(page) and "120 €, reduced 80 €" in text(page), "organizers set a fee, shown on the project page")
 
 _, page = mia.get(DASHBOARD)
 check("Spring Concert 2027" not in page, "draft projects are hidden from members")
@@ -410,16 +408,7 @@ check("Only from the 28th" not in page and "Room booked" not in page, "conductor
 status, _ = act(conductor, spring, "participation_note", participation=mia_participation, note="x")
 check(status == 403, "conductors cannot write notes")
 _, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}")
-check("Room booked" not in page and "120 €, reduced 80 €" in text(page),
-      "members do not see the organizers' note, but the fee")
-act(organizer, spring, "participation_paid", participation=mia_participation, paid="1")
-check(participation_of(spring, "mia")["fee_paid"] == "1", "organizers mark the fee as paid")
-_, page = organizer.get(manage_url(spring, "participation"))
-check("Mark as not paid" in page and "Mark as paid" in page, "the participation tab shows who paid the fee")
-status, _ = act(conductor, spring, "participation_paid", participation=mia_participation, paid="0")
-check(status == 403 and participation_of(spring, "mia")["fee_paid"] == "1", "conductors cannot change payments")
-_, page = conductor.get(manage_url(spring, "participation"))
-check("Mark as" not in page, "conductors do not see payments")
+check("Room booked" not in page, "members do not see the organizers' note")
 
 _, page = conductor.get(manage_url(spring, "participation"))
 check("Mia" in page and "Max" in page and 'name="status"' not in page,
@@ -434,8 +423,6 @@ wp("user", "meta", "update", str(ids["mia"]), "orchestra_members_dietary_restric
 EXPORT = f"/wp-admin/admin-post.php?action=orchestra_projects_export_participants&project={spring}"
 _, page = organizer.get(manage_url(spring, "participation"))
 check("Export accepted participants (CSV)" in page, "organizers see the export on the participation tab")
-check("Financial support" in text(page).split("Mia", 1)[1].split("Olga", 1)[0],
-      "organizers see who asked for financial support next to the fee")
 _, page = conductor.get(manage_url(spring, "participation"))
 check("Export accepted participants" not in page, "conductors do not see the export")
 status, _, _ = conductor.request(EXPORT)
@@ -447,9 +434,9 @@ check(status == 200 and headers.get("content-type") == "text/csv; charset=UTF-8"
       "organizers download the participants as a CSV file")
 check(body.startswith(b"\xef\xbb\xbf") and csv.endswith("\r\n"), "the export is UTF-8 with BOM and Windows line endings")
 check(csv.lstrip("﻿").split("\r\n")[:3] == [
-    '"Last name","First name","Email address","Financial support","Dietary restrictions","Fee paid","Comment","Organizer note"',
-    '"Müller","Mia","mia@example.com","Yes","\'=1+1, ""vegan""\nno nuts","Yes","Only from the 28th","Room booked from the 28th"',
-    '"Olga","","organizer@example.com","No","","No","",""',
+    '"Last name","First name","Email address","Financial support","Dietary restrictions","Comment","Organizer note"',
+    '"Müller","Mia","mia@example.com","Yes","\'=1+1, ""vegan""\nno nuts","Only from the 28th","Room booked from the 28th"',
+    '"Olga","","organizer@example.com","No","","",""',
 ] and "max@example.com" not in csv, "one column per property and profile field, accepted participants only, no formulas")
 wp("option", "update", "orchestra_core_language", "de_DE")
 _, _, body = organizer.request(EXPORT)
@@ -864,6 +851,17 @@ check([participation_of(bulk, login)["status"] for login in ("mia", "max", "mo")
 _, page = act(organizer, bulk, "participation_bulk", status="declined")
 check("Select at least one member" in text(page), "changing nobody shows an error")
 wp("post", "delete", str(bulk), "--force")
+
+# --- Upgrading from the fees of 0.23 and 0.24 ------------------------------------------------
+wp_eval('global $wpdb; $wpdb->query("ALTER TABLE {$wpdb->prefix}orchestra_projects_participation'
+        ' ADD COLUMN fee_paid tinyint(1) NOT NULL DEFAULT 0");'
+        f' update_post_meta({spring}, "orchestra_projects_fee", "120 €"); update_option("orchestra_projects_schema_version", 3);')
+organizer.get(DASHBOARD)
+columns = wp_json('global $wpdb; echo json_encode($wpdb->get_col("SHOW COLUMNS FROM {$wpdb->prefix}orchestra_projects_participation"));')
+check("fee_paid" not in columns and "organizer_note" in columns
+      and wp_eval(f'echo get_post_meta({spring}, "orchestra_projects_fee", true);') == ""
+      and wp_eval('echo get_option("orchestra_projects_schema_version");') == "4",
+      "updating removes the fees and who paid them")
 
 # --- Privacy and deleted users --------------------------------------------------------------
 export = wp_json(

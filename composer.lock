@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8b2428995327b829eafbbe720aab0a3b",
+    "content-hash": "a74fc15dfc3b3397b82ac414523acb71",
     "packages": [
         {
             "name": "yahnis-elsts/plugin-update-checker",
@@ -599,16 +599,16 @@
         },
         {
             "name": "orchestra/members",
-            "version": "v0.13.0",
+            "version": "v0.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TheRacoonOfDeath/orchestra-members.git",
-                "reference": "4e3debcaa190219aceac12ef36ff6768f7102aa9"
+                "reference": "0f81fbd98cd3307270597a1742db7abbc6f685d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-members/zipball/4e3debcaa190219aceac12ef36ff6768f7102aa9",
-                "reference": "4e3debcaa190219aceac12ef36ff6768f7102aa9",
+                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-members/zipball/0f81fbd98cd3307270597a1742db7abbc6f685d1",
+                "reference": "0f81fbd98cd3307270597a1742db7abbc6f685d1",
                 "shasum": ""
             },
             "require": {
@@ -662,10 +662,10 @@
             ],
             "description": "Member profiles and active status for the Orchestra plugin suite.",
             "support": {
-                "source": "https://github.com/TheRacoonOfDeath/orchestra-members/tree/v0.13.0",
+                "source": "https://github.com/TheRacoonOfDeath/orchestra-members/tree/v0.14.0",
                 "issues": "https://github.com/TheRacoonOfDeath/orchestra-members/issues"
             },
-            "time": "2026-10-20T21:09:21+00:00"
+            "time": "2026-10-20T21:45:39+00:00"
         },
         {
             "name": "phar-io/manifest",
