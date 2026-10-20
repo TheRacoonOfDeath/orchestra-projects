@@ -41,8 +41,11 @@ active status, only through their public services.
 - Members respond once; the decision is final. Organizers change any decision at any time. Leaving
   Accepted removes the member's assignments in the project, after a confirmation.
 - Assignments need an accepted participation and a part of a piece in the program. A member plays
-  at most one part per piece; assigning another part of the same piece moves them, after a
-  confirmation.
+  at most one part per piece. The assignments tab offers only accepted members without a part in
+  the piece; to move a member, remove their assignment first. The handler still moves a member
+  when the request asks for it (`move=1`) and refuses otherwise.
+- While the assignments can be changed, a piece in which an accepted member has no part yet shows
+  a warning badge next to its title.
 - Removing a piece from the program removes its assignments, after a confirmation.
 - Archived and unpublished pieces cannot be added to programs.
 - orchestra-library refuses to delete pieces in a program and parts with assignments

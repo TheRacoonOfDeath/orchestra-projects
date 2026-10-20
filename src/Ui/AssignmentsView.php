@@ -115,9 +115,9 @@ final class AssignmentsView
         $piece = $this->library->piece($pieceId);
         $parts = $this->library->parts($pieceId);
         $title = \esc_html($piece->title ?? '#' . $pieceId);
-        $html = '<section class="orchestra-stack"><h3>' . $title . '</h3>';
         if ($parts === []) {
-            return $html . Html::empty(\__('The piece has no parts.', 'orchestra-projects')) . '</section>';
+            return '<section class="orchestra-stack"><h3>' . $title . '</h3>'
+                . Html::empty(\__('The piece has no parts.', 'orchestra-projects')) . '</section>';
         }
 
         $partOf = [];
@@ -126,6 +126,15 @@ final class AssignmentsView
                 $partOf[$assignment->userId ?? 0] = $part->name;
             }
         }
+        // Accepted participants without a part in this piece.
+        $unassigned = \array_diff_key($players, $partOf);
+        if ($project->status->assignmentsEditable() && $unassigned !== []) {
+            $title .= ' ' . Html::badge(
+                \__('At least one member has not been assigned a part yet', 'orchestra-projects'),
+                'warning'
+            );
+        }
+        $html = '<section class="orchestra-stack"><h3>' . $title . '</h3>';
 
         $headings = [\__('Part', 'orchestra-projects'), \__('Assigned', 'orchestra-projects')];
         if ($editable) {
@@ -137,7 +146,7 @@ final class AssignmentsView
             $row = ['<strong>' . \esc_html($part->name)
                 . '</strong>', $this->assignedList($project, $assigned, $editable)];
             if ($editable) {
-                $row[] = $this->assignForm($project, $part, $assigned, $players, $partOf);
+                $row[] = $this->assignForm($project, $part, $unassigned);
             }
             $rows[] = $row;
         }
@@ -174,17 +183,11 @@ final class AssignmentsView
     }
 
     /**
-     * @param list<Assignment> $assigned
-     * @param array<int, string> $players
-     * @param array<int, string> $partOf user ID => the part of this piece they play
+     * @param array<int, string> $candidates user ID => name of the accepted participants without a part in
+     *     this piece; members who play another part are moved by removing them there first
      */
-    private function assignForm(Project $project, Part $part, array $assigned, array $players, array $partOf): string
+    private function assignForm(Project $project, Part $part, array $candidates): string
     {
-        $assignedIds = \array_filter(
-            \array_map(static fn (Assignment $a): ?int => $a->userId, $assigned),
-            \is_int(...)
-        );
-        $candidates = \array_diff_key($players, \array_flip($assignedIds));
         if ($candidates === []) {
             return '<span class="orchestra-muted">—</span>';
         }
@@ -197,16 +200,11 @@ final class AssignmentsView
         foreach ($candidates as $userId => $name) {
             $history = $marks[$userId] ?? [];
             $notes = \array_map(static fn (HistoryMark $mark): string => $mark->label(), $history);
-            if (isset($partOf[$userId])) {
-                /* translators: %s: part name */
-                $notes[] = \sprintf(\__('currently %s', 'orchestra-projects'), $partOf[$userId]);
-            }
             $boxes .= '<label class="orchestra-checkbox"><input type="checkbox" name="users[]" value="' . $userId . '"'
                 . ($history === [] ? '' : ' data-history="' . \esc_attr(\implode(' ', \array_map(
                     static fn (HistoryMark $mark): string => $mark->value,
                     $history
                 ))) . '"')
-                . (isset($partOf[$userId]) ? ' data-current="' . \esc_attr($partOf[$userId]) . '"' : '')
                 . '> <span>' . \esc_html($name)
                 . ($notes === []
                     ? ''
@@ -216,13 +214,7 @@ final class AssignmentsView
 
         return '<details class="orchestra-disclosure"><summary>' . \esc_html__('Assign members', 'orchestra-projects')
             . ' <span class="orchestra-muted">(' . \count($candidates) . ')</span></summary>'
-            . ProjectForms::open($project->id, 'assign', ['part' => $part->id, 'move' => 0], [
-                'class' => 'orchestra-stack',
-                'data-orchestra-move-confirm' => \__(
-                    'Some selected members already play another part of this piece. Move them to this part?',
-                    'orchestra-projects'
-                ),
-            ])
+            . ProjectForms::open($project->id, 'assign', ['part' => $part->id], ['class' => 'orchestra-stack'])
             . '<div class="orchestra-checklist" id="orchestra-projects-part-' . $part->id . '" role="group"'
             . ' aria-label="' . \esc_attr__('Members', 'orchestra-projects') . '">' . $boxes . '</div>'
             . Form::submit(\__('Assign', 'orchestra-projects'), 'primary small') . '</form></details>';

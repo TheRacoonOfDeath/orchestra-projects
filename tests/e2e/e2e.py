@@ -424,6 +424,13 @@ check("Select at least one member" in text(page), "assigning nobody shows an err
 _, page = conductor.get(manage_url(spring, "assignments"))
 check("Horn 1" in page and "Mia" in page and "data-current" not in page.split("Horn 1", 1)[0],
       "the assignments tab lists parts and members")
+pirates = page.split("<h3>Pirates of the Caribbean", 1)[1].split("</section>", 1)[0]
+check(f'name="users[]" value="{ids["mia"]}"' not in pirates
+      and f'name="users[]" value="{ids["organizer"]}"' not in pirates and 'name="users[]"' in page,
+      "members who play a part of a piece are not offered for its other parts")
+dance = page.split("<h3>Lord of the Dance", 1)[1].split("</h3>", 1)[0]
+check("At least one member has not been assigned a part yet" in dance,
+      "pieces in which an accepted member has no part yet show a warning")
 
 # --- Sheet music download -------------------------------------------------------------------
 _, page = mia.get(DASHBOARD)
@@ -600,8 +607,11 @@ names = sorted(first.get("attachments", {}).keys()) if isinstance(first.get("att
 check(len(sent) == 2 and "<strong>Bold</strong>" in message and "<em>italic</em>" in message
       and 'style="color: #c0392b; font-size: 20px;"' in message and "<script" not in message
       and "position" not in message and "<li>One</li>" in message, "the email keeps bold, italic, size, color and lists")
-check(any("text/html" in h for h in first.get("headers", [])) and "Sent by Olga" in message,
-      "emails are sent as HTML with the footer")
+own = next((m.get("message", "") for m in sent if m.get("to") == "organizer@example.com"), "")
+others = [m.get("message", "") for m in sent if m.get("to") != "organizer@example.com"]
+check(any("text/html" in h for h in first.get("headers", [])) and "Sent by Olga" in own
+      and others != [] and all("Sent by" not in m for m in others),
+      "emails are sent as HTML; only the sender's copy has the footer naming sender and groups")
 check(names == ["Plan (2).pdf", "Plan.pdf", "Plan.png"], "attachments keep their names, made unique")
 leftover = wp_json(f'global $wpdb; echo json_encode([count({STORED}),'
                    ' (int) $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}orchestra_email_attachments")]);')
@@ -684,6 +694,8 @@ check(summer_parts == {login: spring_parts[login] for login in accepted} and "mo
       f"members get the part they played last time, others stay unassigned: {summer_parts}")
 _, page = conductor.get(manage_url(summer, "assignments"))
 check("Assign the parts played last time" not in page, "the button is gone once there is nothing left to assign")
+check("At least one member has not been assigned a part yet" in page.split("<h3>Pirates of the Caribbean", 1)[1]
+      .split("</h3>", 1)[0], "members who never played the piece leave the warning")
 
 # --- Removing pieces and status rules -------------------------------------------------------
 act(conductor, summer, "assign", part=HORN1, **{"users[]": [str(ids["mia"])]})

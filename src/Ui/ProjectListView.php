@@ -75,9 +75,7 @@ final class ProjectListView
                 . '<a href="' . \esc_url($urls->project($project->id)) . '">' . \esc_html($project->title) . '</a></h3>'
                 . Badges::project($project->status) . '</div><div class="orchestra-card__meta">' . $meta . '</div>'
                 . $this->memberView->participation($project, false) . $this->memberView->parts($project)
-                . '<div class="orchestra-card__actions">'
-                . Form::link($urls->project($project->id), \__('Open', 'orchestra-projects'), 'small')
-                . '</div></article>';
+                . '</article>';
         }
 
         return $html . '</div>';
