@@ -39,7 +39,7 @@ mkdir -p "$DIST_DIR"
 
 echo "Copying plugin files..."
 cp "$PLUGIN_FILE" uninstall.php README.md LICENSE composer.json composer.lock "$DIST_DIR/"
-cp -r src languages "$DIST_DIR/"
+cp -r src languages assets "$DIST_DIR/"
 
 # Install production dependencies only, exactly as locked
 echo "Installing production dependencies..."

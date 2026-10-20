@@ -183,7 +183,7 @@ def assignments_pdf_html(project):
     )
 
 
-NEW_BADGE = 'orchestra-badge--info">new</span>'
+NEW_BADGE = 'class="orchestra-projects-new">new</span>'
 
 
 def participation_of(project, login):
@@ -464,9 +464,10 @@ _, page = mia.get(DASHBOARD)
 plain = text(page)
 check("Your parts" in plain and "Pirates of the Caribbean (Klaus Badelt) Horn 1" in plain
       and "Lord of the Dance (Ronan Hardiman) Violin 1" in plain, "members see their parts on the dashboard")
-check('</div><div class="orchestra-actions"><strong>Horn 1</strong>' in page,
+check('<strong>Pirates of the Caribbean</strong>' in page and '</div><div class="orchestra-actions"><span>Horn 1</span>' in page,
       "the part, its label and its download are on a line below the piece and its composer")
 check(page.count(NEW_BADGE) == 2, "members see which of their parts they play for the first time")
+check("assets/orchestra-projects.css" in page, "the page loads the stylesheet of the label")
 match = re.search(r'href="([^"]*orchestra_library_download_bundle[^"]*)"', page)
 check(match is not None, "the dashboard offers the sheet music download")
 if match:

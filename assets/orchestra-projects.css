@@ -1,0 +1,47 @@
+/*
+ * The styles of orchestra-projects, on top of orchestra-core's orchestra-ui.css.
+ */
+
+/* The project list: more room between status, title, dates and parts than core's cards have. */
+.orchestra .orchestra-projects-card > * + * {
+    margin-top: 0.9rem;
+}
+
+.orchestra .orchestra-projects-card > .orchestra-card__title {
+    margin-top: 0.7rem;
+}
+
+/* A part the member plays for the first time: a yellow starburst that catches the eye. */
+.orchestra-projects-new {
+    align-items: center;
+    background: #facc15;
+    clip-path: polygon(
+        50% 0%, 58.5% 13%, 71.7% 5%, 73.7% 20.3%, 89.1% 18.8%, 84.2% 33.5%, 98.7% 38.9%, 88% 50%,
+        98.7% 61.1%, 84.2% 66.5%, 89.1% 81.2%, 73.7% 79.7%, 71.7% 95%, 58.5% 87%, 50% 100%, 41.5% 87%,
+        28.3% 95%, 26.3% 79.7%, 10.9% 81.2%, 15.8% 66.5%, 1.3% 61.1%, 12% 50%, 1.3% 38.9%, 15.8% 33.5%,
+        10.9% 18.8%, 26.3% 20.3%, 28.3% 5%, 41.5% 13%
+    );
+    color: #422006;
+    display: inline-flex;
+    flex: none;
+    font-size: 0.62rem;
+    font-weight: 800;
+    height: 3.7em;
+    justify-content: center;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-transform: uppercase;
+    transform: rotate(-12deg);
+    vertical-align: middle;
+    width: 3.7em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .orchestra-projects-new {
+        transition: transform 0.3s ease;
+    }
+
+    .orchestra-projects-new:hover {
+        transform: rotate(12deg) scale(1.15);
+    }
+}

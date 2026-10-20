@@ -185,7 +185,7 @@ final class AssignmentsView
                 )
                 : '';
             $items .= '<li class="orchestra-actions"><span>' . \esc_html($this->names->of($assignment->userId))
-                . (isset($new[$assignment->id]) ? ' ' . Html::badge(AssignmentService::newPartLabel(), 'info') : '')
+                . (isset($new[$assignment->id]) ? ' ' . Badges::newPart() : '')
                 . '</span>' . $remove . '</li>';
         }
 

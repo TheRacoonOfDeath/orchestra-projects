@@ -149,6 +149,7 @@ final class Plugin
 
         $library = LibraryPlugin::instance()->library();
         $members = MembersPlugin::instance()->members();
+        Ui\Assets::register($this->pluginFile);
         $this->schema->migrateIfOutdated();
 
         $participation = new ParticipationService(

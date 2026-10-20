@@ -69,7 +69,9 @@ the piece stay unassigned; existing assignments are not changed.
 The marks are shown to users with `orchestra_projects_assignment_history_read` (conductors and organizers).
 
 **New parts:** an assignment to a part the member was never assigned to in another project
-(`AssignmentHistory::newParts()`) is labelled "new": on the member's own parts (project list and
+(`AssignmentHistory::newParts()`) is labelled "new", as a yellow starburst (`Ui\Badges::newPart()`;
+`assets/orchestra-projects.css`, the plugin's only stylesheet, is enqueued by the label and the
+project list, so it is loaded only where they are shown; it also gives the project cards more room): on the member's own parts (project list and
 overview), next to the player on the assignments tab, and with an asterisk after the name in the
 PDF, which then ends with a legend. A member's first project makes every part new.
 

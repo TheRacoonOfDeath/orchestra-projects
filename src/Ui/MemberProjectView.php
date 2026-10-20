@@ -6,7 +6,6 @@ namespace Orchestra\Projects\Ui;
 
 use Orchestra\Core\Ui\Form;
 use Orchestra\Library\LibraryService;
-use Orchestra\Core\Ui\Html;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Capabilities;
@@ -86,12 +85,12 @@ final class MemberProjectView
                 $partIds[] = $part->id;
             }
             // The piece with its composer on the first line, the part with its download on the second.
-            $items .= '<li><div class="orchestra-cell"><div>' . \esc_html($piece->title)
+            $items .= '<li><div class="orchestra-cell"><div><strong>' . \esc_html($piece->title) . '</strong>'
                 . ($piece->composer === ''
                     ? ''
                     : ' <span class="orchestra-muted">(' . \esc_html($piece->composer) . ')</span>')
-                . '</div><div class="orchestra-actions"><strong>' . \esc_html($part->name) . '</strong>'
-                . (isset($new[$assignment->id]) ? Html::badge(AssignmentService::newPartLabel(), 'info') : '')
+                . '</div><div class="orchestra-actions"><span>' . \esc_html($part->name) . '</span>'
+                . (isset($new[$assignment->id]) ? Badges::newPart() : '')
                 . ($file === null
                     ? '<span class="orchestra-muted">' . \esc_html__('No sheet music yet', 'orchestra-projects')
                         . '</span>'
