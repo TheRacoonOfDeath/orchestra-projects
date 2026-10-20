@@ -975,11 +975,11 @@ msgstr "E-Mail an Angemeldete"
 
 #: src/Ui/ProjectView.php:198
 msgid "Email pending participants"
-msgstr "E-Mail an noch nicht Antwortende"
+msgstr "E-Mail an Unentschlossene"
 
 #: src/Ui/ProjectView.php:200
 msgid "Email accepted and pending"
-msgstr "E-Mail an Angemeldete und noch nicht Antwortende"
+msgstr "E-Mail an Angemeldete und Unentschlossene"
 
 #: src/Ui/ProjectView.php:203
 msgid "Email"
