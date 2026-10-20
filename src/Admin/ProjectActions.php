@@ -18,6 +18,7 @@ use Orchestra\Projects\Project\ProjectStatus;
 use Orchestra\Projects\Project\ProjectFormHandler;
 use Orchestra\Projects\Project\ProjectPostType;
 use Orchestra\Projects\Project\ProjectStatusService;
+use Orchestra\Projects\Ui\Dates;
 use Orchestra\Projects\Ui\ProjectFormView;
 use Orchestra\Projects\Ui\ProjectsShortcode;
 
@@ -68,7 +69,7 @@ final class ProjectActions
         }
 
         $capability = match ($operation) {
-            'status' => Capabilities::PROJECT_MANAGE,
+            'status', 'complete' => Capabilities::PROJECT_MANAGE,
             'program_add', 'program_remove', 'program_up', 'program_down' => Capabilities::PROGRAM_MANAGE,
             'participation' => Capabilities::PARTICIPATION_MANAGE,
             'assign', 'assign_last', 'unassign' => Capabilities::ASSIGNMENT_MANAGE,
@@ -145,6 +146,7 @@ final class ProjectActions
         $userId = \get_current_user_id();
         $error = match ($operation) {
             'status' => $this->changeStatus($project),
+            'complete' => $this->status->complete($project, Dates::today()),
             'program_add' => $this->program->add($project, self::int('piece')),
             'program_remove' => $this->program->remove($project, self::int('piece'), self::flag('confirm')),
             'program_up' => $this->program->move($project, self::int('piece'), -1),

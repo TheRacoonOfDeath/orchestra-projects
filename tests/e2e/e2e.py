@@ -119,7 +119,7 @@ def admin_url(project, tab="overview"):
     return f"/wp-admin/admin.php?page=orchestra-projects&project={project}&tab={tab}"
 
 
-TAB_OF = {"status": "overview", "participation": "participation", "assign": "assignments", "unassign": "assignments",
+TAB_OF = {"status": "overview", "complete": "overview", "participation": "participation", "assign": "assignments", "unassign": "assignments",
           "assign_last": "assignments"}
 nonces = {}
 
@@ -494,6 +494,9 @@ check(participation_of(spring, "mia")["status"] == "declined" and "mia" not in a
 act(organizer, spring, "participation", participation=mia_participation, status="accepted")
 act(conductor, spring, "assign", part=HORN1, **{"users[]": [str(ids["mia"])]})
 check(assignments_of(spring).get("mia") == [HORN1], "organizer accepts on behalf of a member")
+_, page = organizer.get(manage_url(spring, "participation"))
+check("entered by Olga" in text(page) and "Last change" in text(page),
+      "the participation tab shows who entered a decision for a member")
 act(organizer, spring, "participation", participation=participation_of(spring, "mo")["id"], status="open")
 
 # --- New, reactivated and promoted players --------------------------------------------------
@@ -779,6 +782,25 @@ wp_eval(f'update_post_meta({spring}, "orchestra_projects_status", "archived");')
 check(projects_api(f"echo json_encode($p->project({spring})->status->value);") == "completed",
       "projects archived by earlier versions count as completed")
 wp_eval(f'update_post_meta({spring}, "orchestra_projects_status", "completed");')
+
+past, _ = create_project(organizer, "Autumn 2020", "2020-10-01", "2020-10-03", ["2020-10-02"])
+act(organizer, past, "status", target="open")
+_, page = organizer.get(f"{DASHBOARD}&orchestra_project={past}")
+check("The project ended on" in text(page) and "Complete the project" in page,
+      "organizers are told to complete projects that are over")
+_, page = organizer.get(DASHBOARD)
+check("Ended, please complete" in text(page), "the project list marks projects that are over for organizers")
+_, page = conductor.get(f"{DASHBOARD}&orchestra_project={past}")
+check("The project ended on" not in text(page), "only organizers are told to complete projects")
+_, page = act(organizer, past, "complete")
+check(projects_api(f"echo json_encode($p->project({past})->status->value);") == "completed"
+      and "The project ended on" not in text(page), "organizers complete a project that is over in one step")
+summer_status = projects_api(f"echo json_encode($p->project({summer})->status->value);")
+_, page = act(organizer, summer, "complete")
+check("not over yet" in text(page)
+      and projects_api(f"echo json_encode($p->project({summer})->status->value);") == summer_status,
+      "projects that are not over cannot be completed in one step")
+wp("post", "delete", str(past), "--force")
 
 # --- Privacy and deleted users --------------------------------------------------------------
 export = wp_json(

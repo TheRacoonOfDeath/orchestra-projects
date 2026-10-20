@@ -29,4 +29,34 @@ final class Project
 
         return $lastConcert ?? $this->endDate ?? $this->startDate;
     }
+
+    /**
+     * The last day of the project: the latest of its end date, its concerts and its start date.
+     */
+    public function lastDay(): ?string
+    {
+        $days = \array_filter([$this->startDate, $this->endDate, ...$this->concertDates], \is_string(...));
+
+        return $days === [] ? null : \max($days);
+    }
+
+    /**
+     * Whether the project is over on the given day (Y-m-d); projects without dates never are.
+     */
+    public function endedBefore(string $today): bool
+    {
+        $lastDay = $this->lastDay();
+
+        return $lastDay !== null && $lastDay < $today;
+    }
+
+    /**
+     * Whether organizers should be told to complete the project: it is over, but still open or in
+     * preparation. Drafts are left alone, because opening them would ask the members to respond.
+     */
+    public function waitsForCompletion(string $today): bool
+    {
+        return $this->endedBefore($today)
+            && \in_array($this->status, [ProjectStatus::Open, ProjectStatus::Preparation], true);
+    }
 }

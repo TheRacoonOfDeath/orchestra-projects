@@ -43,7 +43,11 @@ final class ProgramView
 
         return $items === ''
             ? '<p class="orchestra-muted">'
-                . \esc_html__('The program has not been published yet.', 'orchestra-projects') . '</p>'
+                . \esc_html__(
+                    'The program has not been published yet. The pieces appear here once the conductors have'
+                        . ' chosen them.',
+                    'orchestra-projects'
+                ) . '</p>'
             : '<ol class="orchestra-program">' . $items . '</ol>';
     }
 

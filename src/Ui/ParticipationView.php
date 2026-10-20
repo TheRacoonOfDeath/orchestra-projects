@@ -60,7 +60,10 @@ final class ParticipationView
             }
         }
         if ($names === []) {
-            return Html::empty(\__('Nobody has accepted yet.', 'orchestra-projects'));
+            return Html::empty(\__(
+                'Nobody has accepted yet. Everyone who registers for the project is listed here.',
+                'orchestra-projects'
+            ));
         }
         \natcasesort($names);
 
@@ -108,7 +111,7 @@ final class ParticipationView
 
             $headings = [
                 \__('Member', 'orchestra-projects'),
-                \__('Responded', 'orchestra-projects'),
+                \__('Last change', 'orchestra-projects'),
                 \__('Assignments', 'orchestra-projects'),
             ];
             if ($canManage) {
@@ -119,7 +122,7 @@ final class ParticipationView
                 $count = $participation->userId === null ? 0 : ($assignmentCounts[$participation->userId] ?? 0);
                 $row = [
                     \esc_html($this->names->of($participation->userId)),
-                    \esc_html($participation->respondedAt === null ? '—' : Dates::fromGmt($participation->respondedAt)),
+                    $this->lastChange($participation),
                     (string) $count,
                 ];
                 if ($canManage) {
@@ -179,5 +182,27 @@ final class ParticipationView
             . '<select name="status" aria-label="' . \esc_attr__('New status', 'orchestra-projects')
             . '" style="width:auto">'
             . $options . '</select>' . Form::submit(\__('Change', 'orchestra-projects'), 'small') . '</form>';
+    }
+
+    /**
+     * When the status was changed last, and by whom if it was not the member: e.g. an organizer
+     * who registered them.
+     */
+    private function lastChange(Participation $participation): string
+    {
+        if ($participation->changedAt === null) {
+            return '—';
+        }
+
+        $html = \esc_html(Dates::fromGmt($participation->changedAt));
+        if ($participation->changedBy !== null && $participation->changedBy !== $participation->userId) {
+            $html .= '<br><span class="orchestra-muted">' . \esc_html(\sprintf(
+                /* translators: %s: name of the organizer */
+                \__('entered by %s', 'orchestra-projects'),
+                $this->names->of($participation->changedBy)
+            )) . '</span>';
+        }
+
+        return $html;
     }
 }

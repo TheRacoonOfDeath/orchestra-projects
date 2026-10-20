@@ -55,6 +55,26 @@ final class MemberProjectView
         return $html;
     }
 
+    /**
+     * Tells members who take part that their parts are still to come.
+     */
+    private function noPartsYet(Project $project): string
+    {
+        $participation = $this->participations->findFor($project->id, \get_current_user_id());
+        if (
+            $participation?->status !== ParticipationStatus::Accepted
+            || !$project->status->assignmentsEditable()
+            || $this->program->pieceIds($project->id) === []
+        ) {
+            return '';
+        }
+
+        return '<p class="orchestra-muted">' . \esc_html__(
+            'Your parts appear here once the conductors have assigned them.',
+            'orchestra-projects'
+        ) . '</p>';
+    }
+
     public function parts(Project $project): string
     {
         if (!\current_user_can(Capabilities::ASSIGNMENT_READ)) {
@@ -62,7 +82,7 @@ final class MemberProjectView
         }
         $assignments = $this->assignments->forProjectAndUser($project->id, \get_current_user_id());
         if ($assignments === []) {
-            return '';
+            return $this->noPartsYet($project);
         }
 
         $order = \array_flip($this->program->pieceIds($project->id));

@@ -156,6 +156,8 @@ final class ParticipationRepository
             Row::nullableInt($row, 'user_id'),
             ParticipationStatus::tryFrom(Row::string($row, 'status')) ?? ParticipationStatus::Open,
             ($row['responded_at'] ?? null) === null ? null : Row::string($row, 'responded_at'),
+            Row::nullableInt($row, 'changed_by'),
+            ($row['changed_at'] ?? null) === null ? null : Row::string($row, 'changed_at'),
         );
     }
 

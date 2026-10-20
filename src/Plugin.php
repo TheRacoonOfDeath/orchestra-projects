@@ -267,10 +267,21 @@ final class Plugin
      */
     public static function registerMenuItem(Menu $menu): void
     {
+        // The menu is built for the current user, so the description fits what they do with projects.
+        $plans = \current_user_can(Capabilities::PROGRAM_MANAGE);
+        $plays = \current_user_can(Capabilities::PARTICIPATION_RESPOND_OWN);
+        $description = match (true) {
+            $plans && $plays => \__(
+                'Plan projects, respond to them and download your sheet music.',
+                'orchestra-projects'
+            ),
+            $plans => \__('Plan projects: program, participation, parts and seating.', 'orchestra-projects'),
+            default => \__('Respond to projects, see your parts and download your sheet music.', 'orchestra-projects'),
+        };
         $menu->add(new MenuItem(
             ProjectsShortcode::TAG,
             \__('Projects', 'orchestra-projects'),
-            \__('Respond to projects, see your parts and download your sheet music.', 'orchestra-projects'),
+            $description,
             static fn (int $userId): bool => \user_can($userId, Capabilities::PROJECT_READ)
                 || \user_can($userId, Capabilities::PROGRAM_MANAGE),
             20

@@ -39,7 +39,10 @@ final class AssignmentsView
     {
         $pieceIds = $this->program->pieceIds($project->id);
         if ($pieceIds === []) {
-            return Html::empty(\__('Add pieces to the program first.', 'orchestra-projects'));
+            return Html::empty(\__(
+                'Add pieces to the program first. Their parts can then be assigned here.',
+                'orchestra-projects'
+            ));
         }
 
         $html = AssignmentsPdfController::available()
@@ -172,6 +175,11 @@ final class AssignmentsView
             return '<span class="orchestra-muted">—</span>';
         }
 
+        // By name, like the PDF.
+        \usort($assigned, fn (Assignment $a, Assignment $b): int => \strnatcasecmp(
+            $this->names->of($a->userId),
+            $this->names->of($b->userId)
+        ));
         $items = '';
         foreach ($assigned as $assignment) {
             $remove = $editable

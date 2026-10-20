@@ -37,6 +37,14 @@ final class Dates
     }
 
     /**
+     * Today in the site's time zone (Y-m-d).
+     */
+    public static function today(): string
+    {
+        return \current_time('Y-m-d');
+    }
+
+    /**
      * A date (Y-m-d) in the site's date format, with translated month names.
      */
     public static function format(?string $date): string

@@ -100,6 +100,7 @@ final class ProjectView
                 . Badges::project($project->status)
                 . '</h2>' . $edit . '</div>';
         }
+        $html .= self::completionNotice($project);
         if (\count($tabs) > 1) {
             $html .= Html::tabs($tabs, $tab, static fn (string $key): string => $urls->project($project->id, $key));
         }
@@ -114,6 +115,32 @@ final class ProjectView
             self::OVERVIEW => $this->overview($project, !$withHeading),
             default => self::pluginTab($project, $tab, $urls),
         };
+    }
+
+    /**
+     * Tells organizers that the project is over and offers to complete it.
+     */
+    private static function completionNotice(Project $project): string
+    {
+        if (!\current_user_can(Capabilities::PROJECT_MANAGE) || !$project->waitsForCompletion(Dates::today())) {
+            return '';
+        }
+
+        return '<div class="orchestra-notice orchestra-notice--warning"><p>' . \esc_html(\sprintf(
+            /* translators: %s: date */
+            \__('The project ended on %s. Complete it to move it to the completed projects.', 'orchestra-projects'),
+            Dates::format($project->lastDay())
+        )) . '</p>' . ProjectForms::button(
+            $project->id,
+            'complete',
+            \__('Complete the project', 'orchestra-projects'),
+            [],
+            \__(
+                'Complete the project? Its program, participation and parts can no longer be changed.',
+                'orchestra-projects'
+            ),
+            'primary small'
+        ) . '</div>';
     }
 
     /**

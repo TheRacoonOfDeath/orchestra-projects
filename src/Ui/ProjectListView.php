@@ -49,8 +49,14 @@ final class ProjectListView
         );
         if ($projects === []) {
             return $html . Html::empty($completed
-                ? \__('There are no completed projects yet.', 'orchestra-projects')
-                : \__('There are no current projects.', 'orchestra-projects'));
+                ? \__(
+                    'There are no completed projects yet. Projects move here once the organizers complete them.',
+                    'orchestra-projects'
+                )
+                : \__(
+                    'There are no current projects. New projects appear here as soon as the organizers open them.',
+                    'orchestra-projects'
+                ));
         }
 
         // Completed projects stay newest first, as the repository sorts them. Active ones show the
@@ -61,6 +67,8 @@ final class ProjectListView
         }
 
         Assets::enqueue();
+        $manager = \current_user_can(Capabilities::PROJECT_MANAGE);
+        $today = Dates::today();
         $html .= '<div class="orchestra-cards">';
         foreach ($projects as $project) {
             // The concerts are on the project page; the list stays short.
@@ -69,8 +77,11 @@ final class ProjectListView
                 $meta .= '<span>' . \esc_html($this->participationView->summary($project)) . '</span>';
             }
 
+            $ended = $manager && $project->waitsForCompletion($today)
+                ? ' ' . Html::badge(\__('Ended, please complete', 'orchestra-projects'), 'warning')
+                : '';
             $html .= '<article class="orchestra-card orchestra-projects-card"><div>'
-                . Badges::project($project->status) . '</div>'
+                . Badges::project($project->status) . $ended . '</div>'
                 . '<h3 class="orchestra-card__title"><a href="' . \esc_url($urls->project($project->id)) . '">'
                 . \esc_html($project->title) . '</a></h3><div class="orchestra-card__meta">' . $meta . '</div>'
                 . $this->memberView->participation($project, false) . $this->memberView->parts($project)
