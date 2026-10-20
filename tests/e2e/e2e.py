@@ -300,7 +300,11 @@ check(projects_api(f'echo json_encode($p->project({spring})->description);') == 
 check(projects_api(f'echo json_encode($p->project({spring})->concertDates);') == ["2027-05-09"],
       "removed concerts are deleted")
 _, page = organizer.get(DASHBOARD)
-check("Concert: May 9, 2027" in text(page), "the project list shows the concert")
+check("May 9, 2027" not in text(page), "the project list leaves out the concerts")
+check(re.search(r'orchestra-badge[^"]*">[^<]*</span></div><h3 class="orchestra-card__title">', page) is not None,
+      "the project list shows the status on its own line above the title")
+_, page = organizer.get(f"{DASHBOARD}&orchestra_project={spring}")
+check("May 9, 2027" in text(page), "the project page shows the concert")
 
 _, page = mia.get(DASHBOARD)
 check("Spring Concert 2027" not in page, "draft projects are hidden from members")
@@ -458,8 +462,10 @@ check("Mia*" in pdf_html and "* plays this part for the first time" in pdf_html,
 # --- Sheet music download -------------------------------------------------------------------
 _, page = mia.get(DASHBOARD)
 plain = text(page)
-check("Your parts" in plain and "Pirates of the Caribbean Horn 1" in plain and "Lord of the Dance Violin 1" in plain,
-      "members see their parts on the dashboard")
+check("Your parts" in plain and "Pirates of the Caribbean (Klaus Badelt) Horn 1" in plain
+      and "Lord of the Dance (Ronan Hardiman) Violin 1" in plain, "members see their parts on the dashboard")
+check('</div><div class="orchestra-actions"><strong>Horn 1</strong>' in page,
+      "the part, its label and its download are on a line below the piece and its composer")
 check(page.count(NEW_BADGE) == 2, "members see which of their parts they play for the first time")
 match = re.search(r'href="([^"]*orchestra_library_download_bundle[^"]*)"', page)
 check(match is not None, "the dashboard offers the sheet music download")

@@ -80,7 +80,7 @@ views in **Projects** in wp-admin (views in `src/Ui`, shared by both).
 
 | View | Who | Content |
 |------|-----|---------|
-| Project list | everyone | members: current projects with response, parts and download; staff: all projects; organizers: "New project" |
+| Project list | everyone | a card per project: the status above the title, the dates (the concerts only on the project page); members: response, and per part the piece with its composer, below it the part with "new" and the download; staff: all projects; organizers: "New project" |
 | Project → Overview | everyone who may see the project | details, staff, description, own response and parts; email buttons and status changes for staff |
 | Project → Who accepted | members | the names of everyone who accepted (conductors and organizers see them on the Participation tab) |
 | Project → Program | everyone who may see the project | members: the ordered list of pieces; conductors and organizers: add, order and remove pieces |

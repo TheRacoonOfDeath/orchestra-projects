@@ -85,10 +85,13 @@ final class MemberProjectView
             if ($file !== null) {
                 $partIds[] = $part->id;
             }
-            $items .= '<li><span>' . \esc_html($piece->title) . ' <strong>' . \esc_html($part->name)
-                . '</strong>'
-                . (isset($new[$assignment->id]) ? ' ' . Html::badge(AssignmentService::newPartLabel(), 'info') : '')
-                . '</span>'
+            // The piece with its composer on the first line, the part with its download on the second.
+            $items .= '<li><div class="orchestra-cell"><div>' . \esc_html($piece->title)
+                . ($piece->composer === ''
+                    ? ''
+                    : ' <span class="orchestra-muted">(' . \esc_html($piece->composer) . ')</span>')
+                . '</div><div class="orchestra-actions"><strong>' . \esc_html($part->name) . '</strong>'
+                . (isset($new[$assignment->id]) ? Html::badge(AssignmentService::newPartLabel(), 'info') : '')
                 . ($file === null
                     ? '<span class="orchestra-muted">' . \esc_html__('No sheet music yet', 'orchestra-projects')
                         . '</span>'
@@ -97,7 +100,7 @@ final class MemberProjectView
                         \__('Download', 'orchestra-projects'),
                         'small'
                     ))
-                . '</li>';
+                . '</div></div></li>';
         }
         if ($items === '') {
             return '';

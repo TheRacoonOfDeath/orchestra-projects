@@ -62,18 +62,15 @@ final class ProjectListView
 
         $html .= '<div class="orchestra-cards">';
         foreach ($projects as $project) {
+            // The concerts are on the project page; the list stays short.
             $meta = '<span>' . \esc_html(Dates::range($project)) . '</span>';
-            if ($project->concertDates !== []) {
-                $meta .= '<span>' . \esc_html(Dates::concertsLabel($project)) . ': '
-                    . \esc_html(Dates::concerts($project)) . '</span>';
-            }
             if ($staff) {
                 $meta .= '<span>' . \esc_html($this->participationView->summary($project)) . '</span>';
             }
 
-            $html .= '<article class="orchestra-card"><div class="orchestra-toolbar"><h3 class="orchestra-card__title">'
-                . '<a href="' . \esc_url($urls->project($project->id)) . '">' . \esc_html($project->title) . '</a></h3>'
-                . Badges::project($project->status) . '</div><div class="orchestra-card__meta">' . $meta . '</div>'
+            $html .= '<article class="orchestra-card"><div>' . Badges::project($project->status) . '</div>'
+                . '<h3 class="orchestra-card__title"><a href="' . \esc_url($urls->project($project->id)) . '">'
+                . \esc_html($project->title) . '</a></h3><div class="orchestra-card__meta">' . $meta . '</div>'
                 . $this->memberView->participation($project, false) . $this->memberView->parts($project)
                 . '</article>';
         }
