@@ -662,8 +662,10 @@ _, _, raw = organizer.request(EMAIL, review, files=[("attachments[]", pdf, "Plan
 page = raw.decode()
 send_form = next((f for f in re.findall(r"<form.*?</form>", page, flags=re.S) if "orchestra_email_send" in f), "")
 fields = hidden_fields(send_form)
-check("<strong>Bold</strong>" in page and "<script>alert" not in page and "Plan.pdf" in text(page)
-      and len(fields.get("attachment_ids[]", [])) == 3, "the review shows the formatted text and the attachments")
+preview = html.unescape(re.search(r'srcdoc="([^"]*)"', page).group(1)) if 'srcdoc="' in page else ""
+check("<strong>Bold</strong>" in preview and "<script" not in preview and "<script>alert" not in page
+      and "Plan.pdf" in text(page) and len(fields.get("attachment_ids[]", [])) == 3,
+      "the review shows a preview of the formatted text, and the attachments")
 STORED = 'glob(WP_CONTENT_DIR . "/uploads/orchestra-email-*/*-*-*-*-*")'
 uploads = wp_json(f'echo json_encode(array_map(fn ($f) => basename($f), {STORED}));')
 check(len(uploads) == 3 and all(re.fullmatch(r"[0-9a-f-]{36}", f) for f in uploads),
