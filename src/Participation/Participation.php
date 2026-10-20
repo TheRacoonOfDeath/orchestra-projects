@@ -18,6 +18,10 @@ final class Participation
         public readonly ?int $changedBy = null,
         /** When the status was changed last (UTC, Y-m-d H:i:s) */
         public readonly ?string $changedAt = null,
+        /** The member's comment, e.g. on which concerts they can play; for the member and organizers */
+        public readonly ?string $memberComment = null,
+        /** The organizers' note on the member's participation; only for organizers */
+        public readonly ?string $organizerNote = null,
     ) {
     }
 }

@@ -12,6 +12,7 @@ use Orchestra\Projects\Capabilities;
 use Orchestra\Projects\Export\ParticipantsExportController;
 use Orchestra\Projects\Participation\Participation;
 use Orchestra\Projects\Participation\ParticipationRepository;
+use Orchestra\Projects\Participation\ParticipationRules;
 use Orchestra\Projects\Participation\ParticipationStatus;
 use Orchestra\Projects\Project\Project;
 use Orchestra\Projects\Project\ProjectStatus;
@@ -115,6 +116,8 @@ final class ParticipationView
                 \__('Assignments', 'orchestra-projects'),
             ];
             if ($canManage) {
+                // The members' comments and the notes are for organizers only, not for conductors.
+                $headings[] = \__('Comment and note', 'orchestra-projects');
                 $headings[] = \__('Change', 'orchestra-projects');
             }
             $rows = [];
@@ -126,6 +129,7 @@ final class ParticipationView
                     (string) $count,
                 ];
                 if ($canManage) {
+                    $row[] = self::notes($project, $participation);
                     $row[] = $this->changeForm($project, $participation, $count);
                 }
                 $rows[] = $row;
@@ -154,6 +158,33 @@ final class ParticipationView
             \__('Export accepted participants (CSV)', 'orchestra-projects'),
             'small'
         ) . '</div>';
+    }
+
+    /**
+     * The member's comment and the organizers' note, which organizers change here.
+     */
+    private static function notes(Project $project, Participation $participation): string
+    {
+        $comment = $participation->memberComment === null
+            ? '<span class="orchestra-muted">' . \esc_html__('No comment', 'orchestra-projects') . '</span>'
+            : '<span>' . \nl2br(\esc_html($participation->memberComment)) . '</span>';
+        $note = $participation->organizerNote;
+        $id = 'orchestra-projects-note-' . $participation->id;
+
+        return '<div class="orchestra-cell">' . $comment . '<details class="orchestra-disclosure"><summary>'
+            . ($note === null
+                ? \esc_html__('Add a note', 'orchestra-projects')
+                : \esc_html__('Note:', 'orchestra-projects') . ' ' . \esc_html($note))
+            . '</summary>'
+            . ProjectForms::open($project->id, 'participation_note', ['participation' => $participation->id], [
+                'class' => 'orchestra-stack',
+            ])
+            . '<textarea id="' . \esc_attr($id) . '" name="note" rows="2"'
+            . ' aria-label="' . \esc_attr__('Note for the organizers', 'orchestra-projects') . '" maxlength="'
+            . ParticipationRules::NOTE_MAX_LENGTH . '">' . \esc_textarea($note ?? '') . '</textarea>'
+            . '<span class="orchestra-muted">' . \esc_html__('Only organizers see the note.', 'orchestra-projects')
+            . '</span><div class="orchestra-actions">' . Form::submit(\__('Save note', 'orchestra-projects'), 'small')
+            . '</div></form></details></div>';
     }
 
     private function changeForm(Project $project, Participation $participation, int $assignmentCount): string

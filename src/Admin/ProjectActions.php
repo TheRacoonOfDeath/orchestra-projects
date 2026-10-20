@@ -71,7 +71,7 @@ final class ProjectActions
         $capability = match ($operation) {
             'status', 'complete' => Capabilities::PROJECT_MANAGE,
             'program_add', 'program_remove', 'program_up', 'program_down' => Capabilities::PROGRAM_MANAGE,
-            'participation' => Capabilities::PARTICIPATION_MANAGE,
+            'participation', 'participation_note' => Capabilities::PARTICIPATION_MANAGE,
             'assign', 'assign_last', 'unassign' => Capabilities::ASSIGNMENT_MANAGE,
             default => null,
         };
@@ -152,6 +152,7 @@ final class ProjectActions
             'program_up' => $this->program->move($project, self::int('piece'), -1),
             'program_down' => $this->program->move($project, self::int('piece'), 1),
             'participation' => $this->changeParticipation($project, $userId),
+            'participation_note' => $this->changeNote($project),
             'unassign' => $this->assignments->unassign($project, self::int('assignment')),
             default => null,
         };
@@ -197,6 +198,18 @@ final class ProjectActions
         return $target === null
             ? \__('Unknown status.', 'orchestra-projects')
             : $this->status->change($project, $target);
+    }
+
+    private function changeNote(Project $project): ?string
+    {
+        $participation = $this->participations->find(self::int('participation'));
+        if ($participation === null || $participation->projectId !== $project->id) {
+            return \__('The participation does not exist.', 'orchestra-projects');
+        }
+        $note = \is_string($_POST['note'] ?? null) ? \wp_unslash($_POST['note']) : '';
+        $this->participation->note($participation, $note);
+
+        return null;
     }
 
     private function changeParticipation(Project $project, int $organizerId): ?string

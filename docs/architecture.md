@@ -12,7 +12,7 @@ active status, only through their public services.
 | Project status and dates | post meta `orchestra_projects_status`, `_start_date`, `_end_date` (Y-m-d); `_concert_date` once per concert |
 | Conductors and organizers of a project | table `orchestra_projects_staff` |
 | Program | table `orchestra_projects_program` (project, piece, position) |
-| Participation | table `orchestra_projects_participation` (project, user, status, responded at, changed by) |
+| Participation | table `orchestra_projects_participation` (project, user, status, responded at, changed by and at, member's comment, organizers' note; schema version 2) |
 | Assignments | table `orchestra_projects_assignments` (project, piece, part, user) |
 
 - The project status replaces the WordPress post status: saved projects are always published.
@@ -40,6 +40,13 @@ active status, only through their public services.
   of these roles while a project is open receive one as well.
 - Members respond once; the decision is final. Organizers change any decision at any time. Leaving
   Accepted removes the member's assignments in the project, after a confirmation.
+- Members add an optional comment when responding (on the project page; the cards of the project
+  list only have the buttons) and change it while the project is open or in preparation
+  (`response=comment`, at most 500 characters, plain text). Organizers write a note per
+  participation on the Participation tab (`op=participation_note`, at most 1000 characters). Both
+  need `orchestra_projects_participation_manage` to be seen, which only organizers have; the member
+  sees their own comment, never the note. Both are in the CSV export, the member's comment in the
+  personal data export, and both are cleared when the account is deleted.
 - Assignments need an accepted participation and a part of a piece in the program. A member plays
   at most one part per piece. The assignments tab offers only accepted members without a part in
   the piece; to move a member, remove their assignment first. The handler still moves a member
@@ -86,7 +93,7 @@ views in **Projects** in wp-admin (views in `src/Ui`, shared by both).
 | Project → Overview | everyone who may see the project | details, staff, description, own response and parts; email buttons and status changes for staff |
 | Project → Who accepted | members | the names of everyone who accepted (conductors and organizers see them on the Participation tab) |
 | Project → Program | everyone who may see the project | members: the ordered list of pieces; conductors and organizers: add, order and remove pieces |
-| Project → Participation | conductors (read), organizers | accepted, pending, declined; organizers change decisions and export the accepted participants |
+| Project → Participation | conductors (read), organizers | accepted, pending, declined, with the last change and who entered it; organizers see the members' comments, write notes, change decisions and export the accepted participants |
 | Project → Assignments | conductors, organizers | parts with assigned members; conductors and organizers assign |
 | Project form | organizers | name, description, dates, staff (in wp-admin: the WordPress editor with the same fields) |
 
@@ -109,8 +116,9 @@ after their name, explained below the last piece. It is created by orchestra-cor
 Organizers download the accepted participants of a project as a CSV file from the Participation
 tab (`admin-post.php?action=orchestra_projects_export_participants&project=ID`). It has one column
 each for last name, first name and email address, then one per profile field of orchestra-members
-in their order; checkboxes are exported as "Yes" or "No". Users without first and last name get
-their display name as last name. Rows are ordered by last and first name.
+in their order; checkboxes are exported as "Yes" or "No"; then the member's comment and the
+organizers' note. Users without first and last name get their display name as last name. Rows are
+ordered by last and first name.
 
 - Requires `orchestra_projects_participation_export` and, for every participant,
   `orchestra_members_profile_read`, because the profiles are sensitive.

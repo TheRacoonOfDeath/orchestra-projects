@@ -48,4 +48,24 @@ final class ParticipationRulesTest extends TestCase
             ParticipationStatus::Open
         ));
     }
+
+    public function testCommentsCanBeChangedWhileTheProjectIsOpenOrInPreparation(): void
+    {
+        foreach (ProjectStatus::cases() as $status) {
+            $this->assertSame(
+                \in_array($status, [ProjectStatus::Open, ProjectStatus::Preparation], true),
+                ParticipationRules::commentsOpen($status)
+            );
+        }
+    }
+
+    public function testCommentsArePlainTextWithLineBreaksAndALimit(): void
+    {
+        $this->assertSame("Only from the 27th\n\nby train", ParticipationRules::text(
+            "  <b>Only</b> from the 27th\r\n\r\n\r\n\r\nby train ",
+            100
+        ));
+        $this->assertNull(ParticipationRules::text("  \n ", 100));
+        $this->assertSame('Grüß', ParticipationRules::text('Grüße', 4));
+    }
 }

@@ -123,18 +123,37 @@ final class ParticipationRepository
         $this->wpdb->update($this->schema->participationTable(), $data, ['id' => $participationId]);
     }
 
+    public function setMemberComment(int $participationId, ?string $comment): void
+    {
+        $this->wpdb->update(
+            $this->schema->participationTable(),
+            ['member_comment' => $comment],
+            ['id' => $participationId]
+        );
+    }
+
+    public function setOrganizerNote(int $participationId, ?string $note): void
+    {
+        $this->wpdb->update(
+            $this->schema->participationTable(),
+            ['organizer_note' => $note],
+            ['id' => $participationId]
+        );
+    }
+
     public function deleteForProject(int $projectId): void
     {
         $this->wpdb->delete($this->schema->participationTable(), ['project_id' => $projectId]);
     }
 
     /**
-     * Keeps the records for the history but removes the reference to the user.
+     * Keeps the records for the history but removes the reference to the user, and the comment and
+     * note about them, which are personal.
      */
     public function anonymizeUser(int $userId): void
     {
         $this->execute($this->wpdb->prepare(
-            'UPDATE %i SET user_id = NULL WHERE user_id = %d',
+            'UPDATE %i SET user_id = NULL, member_comment = NULL, organizer_note = NULL WHERE user_id = %d',
             $this->schema->participationTable(),
             $userId
         ));
@@ -158,6 +177,8 @@ final class ParticipationRepository
             ($row['responded_at'] ?? null) === null ? null : Row::string($row, 'responded_at'),
             Row::nullableInt($row, 'changed_by'),
             ($row['changed_at'] ?? null) === null ? null : Row::string($row, 'changed_at'),
+            ($row['member_comment'] ?? null) === null ? null : Row::string($row, 'member_comment'),
+            ($row['organizer_note'] ?? null) === null ? null : Row::string($row, 'organizer_note'),
         );
     }
 

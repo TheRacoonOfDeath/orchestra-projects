@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Orchestra\Projects\Ui;
 
 use Orchestra\Core\Ui\Form;
+use Orchestra\Core\Ui\Html;
 use Orchestra\Library\LibraryService;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\AssignmentService;
@@ -41,18 +42,94 @@ final class MemberProjectView
         $html = '<div class="orchestra-actions"><span>' . \esc_html__('Your participation:', 'orchestra-projects')
             . '</span> ' . Badges::participation($participation->status) . '</div>';
         if ($this->canRespond($project, $participation)) {
-            $html .= '<div class="orchestra-actions">'
-                . self::responseButton($participation, ParticipationStatus::Accepted)
-                . self::responseButton($participation, ParticipationStatus::Declined) . '</div>';
-            if ($explain) {
-                $html .= '<p class="orchestra-muted">' . \esc_html__(
+            // The project page has room for a comment; the cards of the project list do not.
+            return $html . ($explain
+                ? self::responseForm($participation) . '<p class="orchestra-muted">' . \esc_html__(
                     'Your decision is final. To change it later, contact an organizer.',
                     'orchestra-projects'
-                ) . '</p>';
-            }
+                ) . '</p>'
+                : '<div class="orchestra-actions">'
+                    . self::responseButton($participation, ParticipationStatus::Accepted)
+                    . self::responseButton($participation, ParticipationStatus::Declined) . '</div>');
+        }
+        if ($explain && $participation->userId === \get_current_user_id()) {
+            $html .= self::commentForm($project, $participation);
         }
 
         return $html;
+    }
+
+    /**
+     * Accept or decline, with an optional comment for the organizers.
+     */
+    private static function responseForm(Participation $participation): string
+    {
+        $id = 'orchestra-projects-comment-' . $participation->id;
+
+        return Form::open(
+            ResponseController::ACTION,
+            ResponseController::nonceAction($participation->id),
+            ['participation' => $participation->id],
+            ['class' => 'orchestra-stack']
+        ) . self::commentField($id, $participation->memberComment)
+            . '<div class="orchestra-actions">'
+            . self::responseSubmit(ParticipationStatus::Accepted)
+            . self::responseSubmit(ParticipationStatus::Declined) . '</div></form>';
+    }
+
+    /**
+     * The member's comment after responding: shown, and changeable while the project is open or in
+     * preparation.
+     */
+    private static function commentForm(Project $project, Participation $participation): string
+    {
+        $comment = $participation->memberComment;
+        $shown = $comment === null ? '' : '<p><span class="orchestra-muted">'
+            . \esc_html__('Your comment:', 'orchestra-projects') . '</span> '
+            . \nl2br(\esc_html($comment)) . '</p>';
+        $open = $participation->status === ParticipationStatus::Open;
+        if ($open || !ParticipationRules::commentsOpen($project->status)) {
+            return $shown;
+        }
+
+        return $shown . '<details class="orchestra-disclosure"><summary>' . \esc_html($comment === null
+            ? \__('Add a comment for the organizers', 'orchestra-projects')
+            : \__('Change your comment', 'orchestra-projects')) . '</summary>'
+            . Form::open(
+                ResponseController::ACTION,
+                ResponseController::nonceAction($participation->id),
+                ['participation' => $participation->id, 'response' => ResponseController::ONLY_COMMENT],
+                ['class' => 'orchestra-stack']
+            ) . self::commentField('orchestra-projects-comment-' . $participation->id, $comment)
+            . '<div class="orchestra-actions">' . Form::submit(\__('Save comment', 'orchestra-projects'), 'small')
+            . '</div></form></details>';
+    }
+
+    private static function commentField(string $id, ?string $comment): string
+    {
+        return Html::field(
+            $id,
+            \__('Comment for the organizers (optional)', 'orchestra-projects'),
+            '<textarea id="' . \esc_attr($id) . '" name="' . ResponseController::FIELD_COMMENT . '" rows="2"'
+                . ' maxlength="' . ParticipationRules::COMMENT_MAX_LENGTH . '">' . \esc_textarea($comment ?? '')
+                . '</textarea>',
+            \__('E.g. if you can only come to some of the concerts. Only the organizers see it.', 'orchestra-projects')
+        );
+    }
+
+    private static function responseSubmit(ParticipationStatus $response): string
+    {
+        $accept = $response === ParticipationStatus::Accepted;
+
+        $confirm = $accept
+            ? \__('Accept to participate? Your decision is final.', 'orchestra-projects')
+            : \__('Decline to participate? Your decision is final.', 'orchestra-projects');
+
+        return '<button type="submit" class="orchestra-button' . ($accept ? ' orchestra-button--primary' : '') . '"'
+            . ' name="response" value="' . \esc_attr($response->value) . '"'
+            . ' data-orchestra-confirm="' . \esc_attr($confirm) . '">'
+            . \esc_html($accept ? \__('Accept', 'orchestra-projects') : \__('Decline', 'orchestra-projects'))
+            . '</button>';
     }
 
     /**

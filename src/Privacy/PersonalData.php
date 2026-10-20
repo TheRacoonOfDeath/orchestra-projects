@@ -88,6 +88,10 @@ final class PersonalData
                     ],
                     ['name' => \__('Participation', 'orchestra-projects'), 'value' => $participation->status->label()],
                     ['name' => \__('Responded', 'orchestra-projects'), 'value' => $participation->respondedAt ?? ''],
+                    [
+                        'name' => \__('Your comment', 'orchestra-projects'),
+                        'value' => $participation->memberComment ?? '',
+                    ],
                 ],
             ];
         }
@@ -149,6 +153,11 @@ final class PersonalData
 
         $sentences = [
             \__('For each project, we store whether members accepted or declined.', 'orchestra-projects'),
+            \__(
+                'Members can add a comment for the organizers, and organizers can add a note; only organizers'
+                    . ' see them.',
+                'orchestra-projects'
+            ),
             \__('We store which parts members play in each project, to plan future projects.', 'orchestra-projects'),
             \__('It is kept after members leave and anonymized when accounts are deleted.', 'orchestra-projects'),
         ];

@@ -78,6 +78,43 @@ final class ParticipationService
     }
 
     /**
+     * The member's own comment on their participation.
+     *
+     * @return string|null An error message, or null on success
+     */
+    public function comment(Participation $participation, int $userId, string $comment): ?string
+    {
+        $project = $this->projects->find($participation->projectId);
+        if ($project === null || $participation->userId !== $userId) {
+            return \__('This comment is not possible.', 'orchestra-projects');
+        }
+        if (!ParticipationRules::commentsOpen($project->status)) {
+            return \__(
+                'Comments can only be changed while the project is open or in preparation.',
+                'orchestra-projects'
+            );
+        }
+
+        $this->participations->setMemberComment(
+            $participation->id,
+            ParticipationRules::text($comment, ParticipationRules::COMMENT_MAX_LENGTH)
+        );
+
+        return null;
+    }
+
+    /**
+     * The organizers' note on a participation, which only organizers see.
+     */
+    public function note(Participation $participation, string $note): void
+    {
+        $this->participations->setOrganizerNote(
+            $participation->id,
+            ParticipationRules::text($note, ParticipationRules::NOTE_MAX_LENGTH)
+        );
+    }
+
+    /**
      * An organizer changes a decision. Leaving Accepted removes the member's assignments in the
      * project, which must be confirmed.
      *

@@ -12,11 +12,15 @@ use Orchestra\Projects\Participation\ParticipationService;
 use Orchestra\Projects\Participation\ParticipationStatus;
 
 /**
- * Stores a member's response (admin-post.php?action=orchestra_projects_respond).
+ * Stores a member's response and their comment (admin-post.php?action=orchestra_projects_respond).
+ * `response` is accepted or declined, with an optional `comment`; `response=comment` only changes
+ * the comment.
  */
 final class ResponseController
 {
     public const ACTION = 'orchestra_projects_respond';
+    public const FIELD_COMMENT = 'comment';
+    public const ONLY_COMMENT = 'comment';
 
     public function __construct(
         private readonly ParticipationRepository $participations,
@@ -44,16 +48,31 @@ final class ResponseController
         \check_admin_referer(self::nonceAction($participationId));
 
         $participation = $this->participations->find($participationId);
-        $response = ParticipationStatus::tryFrom(\is_string($_POST['response'] ?? null) ? $_POST['response'] : '');
+        $value = \is_string($_POST['response'] ?? null) ? $_POST['response'] : '';
+        $response = ParticipationStatus::tryFrom($value);
+        $onlyComment = $value === self::ONLY_COMMENT;
         if (
             $participation === null
-            || $response === null
+            || ($response === null && !$onlyComment)
             || !\current_user_can(Capabilities::PARTICIPATION_RESPOND, $participationId)
         ) {
             \wp_die(\esc_html__('You are not allowed to do this.', 'orchestra-projects'), 403);
         }
 
-        $error = $this->participation->respond($participation, \get_current_user_id(), $response);
+        $comment = \is_string($_POST[self::FIELD_COMMENT] ?? null) ? \wp_unslash($_POST[self::FIELD_COMMENT]) : '';
+        $userId = \get_current_user_id();
+        if ($onlyComment) {
+            $error = $this->participation->comment($participation, $userId, $comment);
+            $error === null
+                ? Notices::success(\__('Your comment has been saved.', 'orchestra-projects'))
+                : Notices::error($error);
+            Redirect::back();
+        }
+
+        $error = $this->participation->respond($participation, $userId, $response);
+        if ($error === null && \trim($comment) !== '') {
+            $error = $this->participation->comment($participation, $userId, $comment);
+        }
         if ($error === null) {
             Notices::success($response === ParticipationStatus::Accepted
                 ? \__('Thank you! You have accepted to participate.', 'orchestra-projects')

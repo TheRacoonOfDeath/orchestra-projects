@@ -119,7 +119,8 @@ def admin_url(project, tab="overview"):
     return f"/wp-admin/admin.php?page=orchestra-projects&project={project}&tab={tab}"
 
 
-TAB_OF = {"status": "overview", "complete": "overview", "participation": "participation", "assign": "assignments", "unassign": "assignments",
+TAB_OF = {"status": "overview", "complete": "overview", "participation": "participation",
+          "participation_note": "participation", "assign": "assignments", "unassign": "assignments",
           "assign_last": "assignments"}
 nonces = {}
 
@@ -189,7 +190,7 @@ NEW_BADGE = 'class="orchestra-projects-new">new</span>'
 def participation_of(project, login):
     return wp_json(
         f'$u = get_user_by("login", "{login}")->ID; global $wpdb;'
-        f'$r = $wpdb->get_row($wpdb->prepare("SELECT id, status FROM {{$wpdb->prefix}}orchestra_projects_participation'
+        f'$r = $wpdb->get_row($wpdb->prepare("SELECT id, status, member_comment, organizer_note FROM {{$wpdb->prefix}}orchestra_projects_participation'
         f' WHERE project_id = %d AND user_id = %d", {project}, $u), ARRAY_A); echo json_encode($r);'
     )
 
@@ -213,10 +214,10 @@ def response_nonce(page, participation_id):
     return None
 
 
-def respond(session, participation_id, response, nonce_page):
+def respond(session, participation_id, response, nonce_page, **extra):
     return session.post("/wp-admin/admin-post.php", {
         "action": "orchestra_projects_respond", "participation": str(participation_id), "response": response,
-        "_wpnonce": response_nonce(nonce_page, participation_id) or "missing", "redirect_to": DASHBOARD,
+        "_wpnonce": response_nonce(nonce_page, participation_id) or "missing", "redirect_to": DASHBOARD, **extra,
     })
 
 
@@ -351,7 +352,9 @@ check("Spring Concert 2027" in page and "Accept" in page and "Pending" in page,
 mia_participation = participation_of(spring, "mia")["id"]
 max_participation = participation_of(spring, "max")["id"]
 mia_open_page = page
-_, page = respond(mia, mia_participation, "accepted", mia_open_page)
+_, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}")
+check('name="comment"' in page and 'value="accepted"' in page, "the project page asks for an optional comment")
+_, page = respond(mia, mia_participation, "accepted", mia_open_page, comment="Only from the <b>27th</b>")
 check("You have accepted" in text(page) and participation_of(spring, "mia")["status"] == "accepted", "member accepts")
 _, page = respond(mia, mia_participation, "declined", mia_open_page)
 check("already responded" in text(page) and participation_of(spring, "mia")["status"] == "accepted",
@@ -386,6 +389,26 @@ program = page.split('<ol class="orchestra-program">', 1)[1].split("</ol>", 1)[0
 check(program.index("Pirates of the Caribbean") < program.index("Lord of the Dance") and "program_up" not in page,
       "members see the ordered program as a list, without changing it")
 
+_, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}")
+check("Your comment: Only from the 27th" in text(page) and "<b>27th" not in page and "Change your comment" in page,
+      "members see their comment as plain text and can change it")
+respond(mia, mia_participation, "comment", page, comment="Only from the 28th")
+check(participation_of(spring, "mia")["member_comment"] == "Only from the 28th", "members change their comment")
+status, _ = respond(mia, max_participation, "comment", page, comment="Max is ill")
+check(status == 403 and participation_of(spring, "max")["member_comment"] is None,
+      "members cannot comment for others")
+act(organizer, spring, "participation_note", participation=mia_participation, note="Room booked from the 28th")
+check(participation_of(spring, "mia")["organizer_note"] == "Room booked from the 28th", "organizers write a note")
+_, page = organizer.get(manage_url(spring, "participation"))
+check("Only from the 28th" in text(page) and "Room booked from the 28th" in text(page),
+      "organizers see comments and notes on the participation tab")
+_, page = conductor.get(manage_url(spring, "participation"))
+check("Only from the 28th" not in page and "Room booked" not in page, "conductors see neither comments nor notes")
+status, _ = act(conductor, spring, "participation_note", participation=mia_participation, note="x")
+check(status == 403, "conductors cannot write notes")
+_, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}")
+check("Room booked" not in page, "members do not see the organizers' note")
+
 _, page = conductor.get(manage_url(spring, "participation"))
 check("Mia" in page and "Max" in page and 'name="status"' not in page,
       "conductors see the participation without changing it")
@@ -410,9 +433,9 @@ check(status == 200 and headers.get("content-type") == "text/csv; charset=UTF-8"
       "organizers download the participants as a CSV file")
 check(body.startswith(b"\xef\xbb\xbf") and csv.endswith("\r\n"), "the export is UTF-8 with BOM and Windows line endings")
 check(csv.lstrip("﻿").split("\r\n")[:3] == [
-    '"Last name","First name","Email address","Financial support","Dietary restrictions"',
-    '"Müller","Mia","mia@example.com","Yes","\'=1+1, ""vegan""\nno nuts"',
-    '"Olga","","organizer@example.com","No",""',
+    '"Last name","First name","Email address","Financial support","Dietary restrictions","Comment","Organizer note"',
+    '"Müller","Mia","mia@example.com","Yes","\'=1+1, ""vegan""\nno nuts","Only from the 28th","Room booked from the 28th"',
+    '"Olga","","organizer@example.com","No","","",""',
 ] and "max@example.com" not in csv, "one column per property and profile field, accepted participants only, no formulas")
 wp("option", "update", "orchestra_core_language", "de_DE")
 _, _, body = organizer.request(EXPORT)
