@@ -141,6 +141,17 @@ final class ParticipationRepository
         );
     }
 
+    public function setFeePaid(int $participationId, bool $paid): void
+    {
+        $this->wpdb->update(
+            $this->schema->participationTable(),
+            ['fee_paid' => $paid ? 1 : 0],
+            ['id' => $participationId],
+            ['%d'],
+            ['%d']
+        );
+    }
+
     public function deleteForProject(int $projectId): void
     {
         $this->wpdb->delete($this->schema->participationTable(), ['project_id' => $projectId]);
@@ -179,6 +190,7 @@ final class ParticipationRepository
             ($row['changed_at'] ?? null) === null ? null : Row::string($row, 'changed_at'),
             ($row['member_comment'] ?? null) === null ? null : Row::string($row, 'member_comment'),
             ($row['organizer_note'] ?? null) === null ? null : Row::string($row, 'organizer_note'),
+            Row::int($row, 'fee_paid') === 1,
         );
     }
 

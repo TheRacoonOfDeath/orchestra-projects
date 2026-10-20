@@ -24,14 +24,16 @@ final class ParticipantsExportTest extends TestCase
                 new Profile(1, true, ['financial_support' => '1', 'diet' => 'vegan']),
                 'Only from the 27th',
                 'Room booked from the 27th',
+                true,
             ],
             [
                 self::member(2, 'Anna', 'Muster'),
                 new Profile(2, true, ['financial_support' => '', 'diet' => '']),
                 '',
                 '',
+                false,
             ],
-            [self::member(3, 'Ben', 'Albers'), null, '', ''],
+            [self::member(3, 'Ben', 'Albers'), null, '', '', false],
         ];
 
         $this->assertSame([
@@ -47,9 +49,23 @@ final class ParticipantsExportTest extends TestCase
 
     public function testUsesTheDisplayNameWithoutFirstAndLastName(): void
     {
-        $rows = ParticipantsExport::table([], [[self::member(4, '', '', 'Conny'), null, '', '']]);
+        $rows = ParticipantsExport::table([], [[self::member(4, '', '', 'Conny'), null, '', '', false]]);
 
         $this->assertSame(['Conny', '', 'user4@example.com', '', ''], $rows[1]);
+    }
+
+    public function testHasAColumnForTheFeeIfTheProjectHasOne(): void
+    {
+        $rows = ParticipantsExport::table([], [
+            [self::member(1, 'Mia', 'Muster'), null, '', '', true],
+            [self::member(2, 'Ben', 'Albers'), null, '', '', false],
+        ], true);
+
+        $this->assertSame(
+            ['Last name', 'First name', 'Email address', 'Fee paid', 'Comment', 'Organizer note'],
+            $rows[0]
+        );
+        $this->assertSame(['Yes', 'No'], [$rows[2][3], $rows[1][3]]);
     }
 
     private static function member(int $id, string $firstName, string $lastName, string $displayName = ''): Member

@@ -16,6 +16,8 @@ final class Project
         public readonly ?string $endDate,
         /** @var list<string> Y-m-d, in chronological order; projects may have no concert */
         public readonly array $concertDates = [],
+        /** The fee as free text, shown to everyone who sees the project; empty without a fee */
+        public readonly string $fee = '',
     ) {
     }
 

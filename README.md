@@ -11,6 +11,7 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
 - Projects with dates, conductors and organizers, moving through Draft → Open for Participation →
   Preparation → Completed; the project list has tabs for the active and the completed projects
 - An ordered program of pieces from the library
+- An optional fee per project; organizers mark who has paid, next to who asked for financial support
 - Participation: opening a project asks every active member and organizer to accept or decline;
   the decision is final, organizers can change it
 - Assignments of members to parts, with hints who played the part last time or in a completed

@@ -62,10 +62,28 @@ final class ProjectFormView
                 \__('Shown to all members, e.g. rehearsal times and places.', 'orchestra-projects')
             )
             . $this->dateFields($project)
+            . $this->feeField($project)
             . '</div>'
             . '<div class="orchestra-card orchestra-stack">' . $this->staffFields($projectId) . '</div>'
             . '<div class="orchestra-actions">' . Form::submit(\__('Save', 'orchestra-projects'), 'primary')
             . Form::link($back, \__('Cancel', 'orchestra-projects')) . '</div></form>';
+    }
+
+    /**
+     * The project fee as free text; also a meta box in wp-admin.
+     */
+    public function feeField(?Project $project): string
+    {
+        return Html::field(
+            'orchestra-projects-fee',
+            \__('Fee', 'orchestra-projects'),
+            '<input type="text" id="orchestra-projects-fee" name="' . ProjectPostType::META_FEE . '" maxlength="'
+                . ProjectFormHandler::FEE_MAX_LENGTH . '" value="' . \esc_attr($project->fee ?? '') . '">',
+            \__(
+                'Optional, e.g. "120 €, reduced 80 €, by bank transfer until 1 October". Shown to all members.',
+                'orchestra-projects'
+            )
+        );
     }
 
     public function dateFields(?Project $project): string

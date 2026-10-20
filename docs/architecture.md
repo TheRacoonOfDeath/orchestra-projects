@@ -10,9 +10,10 @@ active status, only through their public services.
 |------|---------|
 | Project: name, description | custom post type `orchestra_project` (title, content) |
 | Project status and dates | post meta `orchestra_projects_status`, `_start_date`, `_end_date` (Y-m-d); `_concert_date` once per concert |
+| Project fee | post meta `orchestra_projects_fee` (free text, at most 300 characters; none without a fee) |
 | Conductors and organizers of a project | table `orchestra_projects_staff` |
 | Program | table `orchestra_projects_program` (project, piece, position) |
-| Participation | table `orchestra_projects_participation` (project, user, status, responded at, changed by and at, member's comment, organizers' note; schema version 2) |
+| Participation | table `orchestra_projects_participation` (project, user, status, responded at, changed by and at, member's comment, organizers' note, fee paid; schema version 3) |
 | Assignments | table `orchestra_projects_assignments` (project, piece, part, user) |
 
 - The project status replaces the WordPress post status: saved projects are always published.
@@ -38,6 +39,12 @@ active status, only through their public services.
 - Opening a project creates Open participation records for all active users with the role
   member or organizer who have none yet. New accounts, reactivated members and users who get one
   of these roles while a project is open receive one as well.
+- A project can have a fee as free text (e.g. "120 €, reduced 80 €"), shown to everyone who sees
+  the project. Organizers mark per accepted participant whether it is paid
+  (`op=participation_paid`) on the Participation tab, which also shows the profile field
+  `financial_support` of orchestra-members when it is ticked. Payments are for organizers only
+  (`orchestra_projects_participation_manage`); they are in the CSV export and the personal data
+  export.
 - Members respond once; the decision is final. Organizers change any decision at any time, also
   for several people at once (checkboxes per group, `op=participation_bulk`; each change follows the
   same rules). Leaving Accepted removes the member's assignments in the project, after a

@@ -71,7 +71,8 @@ final class ProjectActions
         $capability = match ($operation) {
             'status', 'complete' => Capabilities::PROJECT_MANAGE,
             'program_add', 'program_remove', 'program_up', 'program_down' => Capabilities::PROGRAM_MANAGE,
-            'participation', 'participation_note', 'participation_bulk' => Capabilities::PARTICIPATION_MANAGE,
+            'participation', 'participation_note', 'participation_bulk', 'participation_paid'
+                => Capabilities::PARTICIPATION_MANAGE,
             'assign', 'assign_last', 'unassign' => Capabilities::ASSIGNMENT_MANAGE,
             default => null,
         };
@@ -154,6 +155,7 @@ final class ProjectActions
             'participation' => $this->changeParticipation($project, $userId),
             'participation_note' => $this->changeNote($project),
             'participation_bulk' => $this->changeMany($project, $userId),
+            'participation_paid' => $this->changePaid($project),
             'unassign' => $this->assignments->unassign($project, self::int('assignment')),
             default => null,
         };
@@ -226,6 +228,17 @@ final class ProjectActions
         }
 
         return $errors === [] ? null : \implode(' ', \array_unique($errors));
+    }
+
+    private function changePaid(Project $project): ?string
+    {
+        $participation = $this->participations->find(self::int('participation'));
+        if ($participation === null || $participation->projectId !== $project->id) {
+            return \__('The participation does not exist.', 'orchestra-projects');
+        }
+        $this->participations->setFeePaid($participation->id, self::flag('paid'));
+
+        return null;
     }
 
     private function changeNote(Project $project): ?string

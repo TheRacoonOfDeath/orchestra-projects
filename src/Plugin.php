@@ -212,7 +212,8 @@ final class Plugin
             $this->participations,
             $this->assignments,
             $names,
-            $exportAvailable
+            $exportAvailable,
+            $members
         );
         $listView = new ProjectListView($this->projectRepository, $memberView, $participationView);
         $formView = new ProjectFormView($this->staff, $members);
@@ -237,7 +238,7 @@ final class Plugin
         if ($exportAvailable) {
             (new ParticipantsExportController(
                 $this->projectRepository,
-                new ParticipantsExport($this->participations, $members)
+                new ParticipantsExport($this->participations, $members, $this->projectRepository)
             ))->register();
         }
         (new AssignmentsPdfController(

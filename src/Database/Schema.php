@@ -15,7 +15,7 @@ use wpdb;
 final class Schema
 {
     /** Increase whenever a table definition changes; dbDelta() applies the difference. */
-    public const VERSION = 2;
+    public const VERSION = 3;
 
     public const OPTION_VERSION = 'orchestra_projects_schema_version';
 
@@ -109,6 +109,7 @@ final class Schema
   changed_at datetime DEFAULT NULL,
   member_comment text DEFAULT NULL,
   organizer_note text DEFAULT NULL,
+  fee_paid tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY  (id),
   UNIQUE KEY project_user (project_id,user_id),
   KEY user_id (user_id)

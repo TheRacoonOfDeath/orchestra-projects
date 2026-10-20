@@ -6,6 +6,8 @@ namespace Orchestra\Projects\Ui;
 
 use Orchestra\Core\Ui\Form;
 use Orchestra\Core\Ui\Html;
+use Orchestra\Members\Capabilities as MembersCapabilities;
+use Orchestra\Members\MembersService;
 use Orchestra\Projects\Admin\Names;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Capabilities;
@@ -22,11 +24,15 @@ use Orchestra\Projects\Project\ProjectStatus;
  */
 final class ParticipationView
 {
+    /** The profile field of orchestra-members in which members ask for financial support. */
+    private const FINANCIAL_SUPPORT_FIELD = 'financial_support';
+
     public function __construct(
         private readonly ParticipationRepository $participations,
         private readonly AssignmentRepository $assignments,
         private readonly Names $names,
         private readonly bool $exportAvailable,
+        private readonly MembersService $members,
     ) {
     }
 
@@ -120,6 +126,11 @@ final class ParticipationView
             if ($canManage) {
                 \array_unshift($headings, \__('Select', 'orchestra-projects'));
             }
+            // Only who takes part pays the fee; payments are for organizers only.
+            $withFee = $canManage && $project->fee !== '' && $status === ParticipationStatus::Accepted;
+            if ($withFee) {
+                $headings[] = \__('Fee', 'orchestra-projects');
+            }
             if ($canManage) {
                 // The members' comments and the notes are for organizers only, not for conductors.
                 $headings[] = \__('Comment and note', 'orchestra-projects');
@@ -140,6 +151,9 @@ final class ParticipationView
                             \__('Select %s', 'orchestra-projects'),
                             $this->names->of($participation->userId)
                         )) . '">');
+                }
+                if ($withFee) {
+                    $row[] = $this->feeCell($project, $participation);
                 }
                 if ($canManage) {
                     $row[] = self::notes($project, $participation);
@@ -218,6 +232,37 @@ final class ParticipationView
             . '<select name="status" aria-label="' . \esc_attr__('New status', 'orchestra-projects')
             . '" style="width:auto">' . $options . '</select>'
             . Form::submit(\__('Change selected', 'orchestra-projects'), 'small') . '</form>';
+    }
+
+    /**
+     * Whether the member paid the fee, which organizers tick here, and whether they asked for
+     * financial support in their profile (the profile field `financial_support` of orchestra-members).
+     */
+    private function feeCell(Project $project, Participation $participation): string
+    {
+        $support = '';
+        $userId = $participation->userId;
+        if (
+            $userId !== null
+            && \current_user_can(MembersCapabilities::PROFILE_READ, $userId)
+            && $this->members->profile($userId)?->value(self::FINANCIAL_SUPPORT_FIELD) === '1'
+        ) {
+            $support = Html::badge(\__('Financial support', 'orchestra-projects'), 'warning');
+        }
+        $paid = $participation->feePaid;
+
+        $label = $paid ? \__('Paid', 'orchestra-projects') : \__('Not paid', 'orchestra-projects');
+
+        return '<div class="orchestra-cell">' . Html::badge($label, $paid ? 'success' : '')
+            . $support
+            . ProjectForms::button(
+                $project->id,
+                'participation_paid',
+                $paid ? \__('Mark as not paid', 'orchestra-projects') : \__('Mark as paid', 'orchestra-projects'),
+                ['participation' => $participation->id, 'paid' => $paid ? 0 : 1],
+                null,
+                'link small'
+            ) . '</div>';
     }
 
     /**

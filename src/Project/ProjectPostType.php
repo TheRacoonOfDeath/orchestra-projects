@@ -20,6 +20,8 @@ final class ProjectPostType
     public const META_STATUS = 'orchestra_projects_status';
     public const META_START_DATE = 'orchestra_projects_start_date';
     public const META_END_DATE = 'orchestra_projects_end_date';
+    /** Free text, e.g. "120 €, reduced 80 €, by bank transfer until 1 Oct"; empty without a fee. */
+    public const META_FEE = 'orchestra_projects_fee';
     /** One entry per concert; the name is kept from the time projects had one concert. */
     public const META_CONCERT_DATE = 'orchestra_projects_concert_date';
 
