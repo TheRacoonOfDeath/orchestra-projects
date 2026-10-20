@@ -96,7 +96,7 @@ views in **Projects** in wp-admin (views in `src/Ui`, shared by both).
 | Project → Who accepted | members | the names of everyone who accepted (conductors and organizers see them on the Participation tab) |
 | Project → Program | everyone who may see the project | members: the ordered list of pieces; conductors and organizers: add, order and remove pieces |
 | Project → Participation | conductors (read), organizers | accepted, pending, declined, with the last change and who entered it; organizers see the members' comments, write notes, change decisions and export the accepted participants |
-| Project → Assignments | conductors, organizers | parts with assigned members; conductors and organizers assign |
+| Project → Assignments | conductors, organizers | "By piece": parts with assigned members, where conductors and organizers assign; "By member" (`&orchestra_assignments_view=members`): a read-only table with a row per member and a column per piece (`AssignmentMatrix`) |
 | Project form | organizers | name, description, dates, staff (in wp-admin: the WordPress editor with the same fields) |
 
 URLs on the projects page: `?orchestra_project=ID&orchestra_tab=program`, `&orchestra_edit=1`,
@@ -109,7 +109,8 @@ were sent from.
 The assignments tab has a "Download PDF" button
 (`admin-post.php?action=orchestra_projects_assignments_pdf&project=ID`) for everyone who can open
 the tab. The PDF lists every piece of the program with its composer, its parts and the assigned
-players, and the project's dates and concerts. Players of a new part (see above) have an asterisk
+players, and the project's dates and concerts; then, on a page of its own, the parts by member as in
+the "By member" view. Players of a new part (see above) have an asterisk
 after their name, explained below the last piece. It is created by orchestra-core 0.8
 (`Orchestra\Core\Pdf\Pdf`); with an older core the button is hidden.
 

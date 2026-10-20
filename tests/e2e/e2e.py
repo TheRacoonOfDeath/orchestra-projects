@@ -179,7 +179,8 @@ def assignments_pdf_html(project):
         ' new Orchestra\\Projects\\Participation\\ParticipationRepository($wpdb, $s), $pr,'
         ' new Orchestra\\Projects\\Project\\ProjectRepository(), $l);'
         ' $pdf = new Orchestra\\Projects\\Export\\AssignmentsPdf($pr, $a, $svc, $l,'
-        ' new Orchestra\\Projects\\Admin\\Names(Orchestra\\Members\\Plugin::instance()->members()));'
+        ' new Orchestra\\Projects\\Admin\\Names(Orchestra\\Members\\Plugin::instance()->members()),'
+        ' new Orchestra\\Projects\\Participation\\ParticipationRepository($wpdb, $s));'
         f' echo json_encode($pdf->html((new Orchestra\\Projects\\Project\\ProjectRepository())->find({project})));'
     )
 
@@ -481,6 +482,11 @@ check(NEW_BADGE in pirates, "the assignments mark members who play a part for th
 pdf_html = assignments_pdf_html(spring)
 check("Mia*" in pdf_html and "* plays this part for the first time" in pdf_html,
       "the PDF marks new parts with an asterisk and explains it")
+check("Parts by member" in pdf_html and "Horn 1*" in pdf_html, "the PDF also lists the parts by member")
+_, page = conductor.get(manage_url(spring, "assignments") + "&orchestra_assignments_view=members")
+mia_row = next((row for row in re.findall(r"<tr>.*?</tr>", page, flags=re.S) if ">Mia<" in row), "")
+check("By member" in page and "Horn 1" in mia_row and "Violin 1" in mia_row and 'name="users[]"' not in page,
+      "the assignments tab shows the parts by member, read-only")
 
 # --- Sheet music download -------------------------------------------------------------------
 _, page = mia.get(DASHBOARD)

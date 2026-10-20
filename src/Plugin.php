@@ -242,7 +242,14 @@ final class Plugin
         }
         (new AssignmentsPdfController(
             $this->projectRepository,
-            new AssignmentsPdf($this->program, $this->assignments, $assignmentService, $library, $names)
+            new AssignmentsPdf(
+                $this->program,
+                $this->assignments,
+                $assignmentService,
+                $library,
+                $names,
+                $this->participations
+            )
         ))->register();
         (new ProjectActions(
             $this->projectRepository,

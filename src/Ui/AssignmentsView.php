@@ -6,10 +6,12 @@ namespace Orchestra\Projects\Ui;
 
 use Orchestra\Core\Ui\Form;
 use Orchestra\Core\Ui\Html;
+use Orchestra\Core\Ui\Redirect;
 use Orchestra\Library\LibraryService;
 use Orchestra\Library\Part\Part;
 use Orchestra\Projects\Admin\Names;
 use Orchestra\Projects\Assignment\Assignment;
+use Orchestra\Projects\Assignment\AssignmentMatrix;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Assignment\HistoryMark;
@@ -25,6 +27,10 @@ use Orchestra\Projects\Project\Project;
  */
 final class AssignmentsView
 {
+    /** `?orchestra_assignments_view=members` shows the assignments by member, read-only. */
+    public const VIEW_PARAMETER = 'orchestra_assignments_view';
+    public const VIEW_MEMBERS = 'members';
+
     public function __construct(
         private readonly ProgramRepository $program,
         private readonly AssignmentRepository $assignments,
@@ -45,13 +51,16 @@ final class AssignmentsView
             ));
         }
 
-        $html = AssignmentsPdfController::available()
-            ? '<div class="orchestra-actions">' . Form::link(
-                AssignmentsPdfController::url($project->id),
-                \__('Download PDF', 'orchestra-projects'),
-                'small'
-            ) . '</div>'
-            : '';
+        $byMember = ($_GET[self::VIEW_PARAMETER] ?? null) === self::VIEW_MEMBERS;
+        $html = '<div class="orchestra-toolbar">' . self::viewSwitch($byMember)
+            . (AssignmentsPdfController::available()
+                ? Form::link(
+                    AssignmentsPdfController::url($project->id),
+                    \__('Download PDF', 'orchestra-projects'),
+                    'small'
+                )
+                : '')
+            . '</div>';
         $editable = $project->status->assignmentsEditable() && \current_user_can(Capabilities::ASSIGNMENT_MANAGE);
         if (!$project->status->assignmentsEditable()) {
             $html .= '<div class="orchestra-notice"><p>' . \esc_html__(
@@ -72,6 +81,9 @@ final class AssignmentsView
             }
         }
         \asort($players, SORT_NATURAL | SORT_FLAG_CASE);
+        if ($byMember) {
+            return $html . $this->matrix($project, $pieceIds, $players, $new);
+        }
         if ($editable && $players === []) {
             $html .= '<div class="orchestra-notice orchestra-notice--warning"><p>'
                 . \esc_html__('Nobody has accepted to participate yet.', 'orchestra-projects') . '</p></div>';
@@ -108,6 +120,64 @@ final class AssignmentsView
         $html .= '</div>';
 
         return $html;
+    }
+
+    /**
+     * "By piece" (the parts with their players, where assigning happens) or "By member".
+     */
+    private static function viewSwitch(bool $byMember): string
+    {
+        $url = Redirect::currentUrl();
+        $link = static fn (string $href, string $label, bool $current): string => '<a class="orchestra-button small'
+            . ($current ? ' orchestra-button--primary' : '') . '" href="' . \esc_url($href) . '"'
+            . ($current ? ' aria-current="page"' : '') . '>' . \esc_html($label) . '</a>';
+
+        return '<div class="orchestra-actions" role="group" aria-label="'
+            . \esc_attr__('View', 'orchestra-projects') . '">'
+            . $link(\remove_query_arg(self::VIEW_PARAMETER, $url), \__('By piece', 'orchestra-projects'), !$byMember)
+            . $link(
+                \add_query_arg(self::VIEW_PARAMETER, self::VIEW_MEMBERS, $url),
+                \__('By member', 'orchestra-projects'),
+                $byMember
+            )
+            . '</div>';
+    }
+
+    /**
+     * The assignments by member: a row per member, a column per piece.
+     *
+     * @param list<int> $pieceIds
+     * @param array<int, string> $players
+     * @param array<int, true> $new
+     */
+    private function matrix(Project $project, array $pieceIds, array $players, array $new): string
+    {
+        $partNames = [];
+        $headings = [\__('Member', 'orchestra-projects')];
+        foreach ($pieceIds as $pieceId) {
+            $headings[] = $this->library->piece($pieceId)->title ?? '#' . $pieceId;
+            foreach ($this->library->parts($pieceId) as $part) {
+                $partNames[$part->id] = $part->name;
+            }
+        }
+        $rows = AssignmentMatrix::rows(
+            $players,
+            $pieceIds,
+            $this->assignments->forProject($project->id),
+            $partNames,
+            $new,
+            fn (int $userId): string => $this->names->of($userId)
+        );
+        if ($rows === []) {
+            return Html::empty(\__('Nobody has accepted to participate yet.', 'orchestra-projects'));
+        }
+
+        return Html::table($headings, \array_map(static fn (array $row): array => [
+            '<strong>' . \esc_html($row['name']) . '</strong>',
+            ...\array_map(static fn (?array $cell): string => $cell === null
+                ? '<span class="orchestra-muted">—</span>'
+                : \esc_html($cell['part']) . ($cell['new'] ? ' ' . Badges::newPart() : ''), $row['cells']),
+        ], $rows));
     }
 
     /**
