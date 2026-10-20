@@ -795,6 +795,9 @@ mo_participation = participation_of(spring, "mo")["id"]
 check(response_nonce(mo_open_page, mo_participation) is not None, "members see the response form while open")
 respond(mo, mo_participation, "accepted", mo_open_page)
 check(participation_of(spring, "mo")["status"] == "open", "responses are rejected during preparation")
+respond(mia, mia_participation, "comment", mia_open_page, comment="Later")
+check(participation_of(spring, "mia")["member_comment"] == "Only from the 28th",
+      "comments cannot be changed once the registration is closed")
 act(conductor, spring, "assign", part=HORN2, **{"users[]": [str(ids["organizer"])]})
 check(HORN2 in assignments_of(spring).get("organizer", []), "assignments can be changed during preparation")
 act(organizer, spring, "status", target="completed")
@@ -870,6 +873,8 @@ export = wp_json(
 values = [item["value"] for group in export["data"] for item in group["data"]]
 check("Spring Concert 2027" in values and "Horn 1" in values and "Accepted" in values,
       "personal data export contains participation and parts")
+check("Only from the 28th" in values and "Room booked from the 28th" in values,
+      "the personal data export contains the member's comment and the organizers' note")
 erased = wp_json(
     '$e = apply_filters("wp_privacy_personal_data_erasers", [])["orchestra-projects"];'
     'echo json_encode(call_user_func($e["callback"], "mia@example.com", 1));'

@@ -24,7 +24,7 @@ use Orchestra\Projects\Project\ProjectStatus;
  */
 final class ParticipationView
 {
-    /** The profile field of orchestra-members in which members ask for financial support. */
+    /** The profile field for financial support before orchestra-members 0.13, where it can be chosen. */
     private const FINANCIAL_SUPPORT_FIELD = 'financial_support';
 
     public function __construct(
@@ -236,7 +236,7 @@ final class ParticipationView
 
     /**
      * Whether the member paid the fee, which organizers tick here, and whether they asked for
-     * financial support in their profile (the profile field `financial_support` of orchestra-members).
+     * financial support in their profile (the checkbox field chosen in orchestra-members).
      */
     private function feeCell(Project $project, Participation $participation): string
     {
@@ -245,7 +245,8 @@ final class ParticipationView
         if (
             $userId !== null
             && \current_user_can(MembersCapabilities::PROFILE_READ, $userId)
-            && $this->members->profile($userId)?->value(self::FINANCIAL_SUPPORT_FIELD) === '1'
+            && ($field = $this->financialSupportFieldId()) !== null
+            && $this->members->profile($userId)?->value($field) === '1'
         ) {
             $support = Html::badge(\__('Financial support', 'orchestra-projects'), 'warning');
         }
@@ -263,6 +264,16 @@ final class ParticipationView
                 null,
                 'link small'
             ) . '</div>';
+    }
+
+    /**
+     * The profile field for financial support; orchestra-members may still be older than 0.13.
+     */
+    private function financialSupportFieldId(): ?string
+    {
+        return \in_array('financialSupportField', \get_class_methods($this->members), true)
+            ? $this->members->financialSupportField()?->id
+            : self::FINANCIAL_SUPPORT_FIELD;
     }
 
     /**

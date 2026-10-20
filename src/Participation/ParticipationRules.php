@@ -16,11 +16,11 @@ final class ParticipationRules
 
     /**
      * Members comment on their participation (e.g. "only from the 27th") while the project is open
-     * or in preparation, whatever they answered.
+     * for participation, whatever they answered.
      */
     public static function commentsOpen(ProjectStatus $projectStatus): bool
     {
-        return \in_array($projectStatus, [ProjectStatus::Open, ProjectStatus::Preparation], true);
+        return $projectStatus->membersCanRespond();
     }
 
     /**

@@ -49,13 +49,10 @@ final class ParticipationRulesTest extends TestCase
         ));
     }
 
-    public function testCommentsCanBeChangedWhileTheProjectIsOpenOrInPreparation(): void
+    public function testCommentsCanBeChangedWhileTheProjectIsOpenForParticipation(): void
     {
         foreach (ProjectStatus::cases() as $status) {
-            $this->assertSame(
-                \in_array($status, [ProjectStatus::Open, ProjectStatus::Preparation], true),
-                ParticipationRules::commentsOpen($status)
-            );
+            $this->assertSame($status === ProjectStatus::Open, ParticipationRules::commentsOpen($status));
         }
     }
 

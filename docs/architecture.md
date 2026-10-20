@@ -41,8 +41,9 @@ active status, only through their public services.
   of these roles while a project is open receive one as well.
 - A project can have a fee as free text (e.g. "120 €, reduced 80 €"), shown to everyone who sees
   the project. Organizers mark per accepted participant whether it is paid
-  (`op=participation_paid`) on the Participation tab, which also shows the profile field
-  `financial_support` of orchestra-members when it is ticked. Payments are for organizers only
+  (`op=participation_paid`) on the Participation tab, which also shows when the member ticked the
+  financial support field chosen in orchestra-members (`MembersService::financialSupportField()`,
+  0.13; before, the default field `financial_support`). Payments are for organizers only
   (`orchestra_projects_participation_manage`); they are in the CSV export and the personal data
   export.
 - Members respond once; the decision is final. Organizers change any decision at any time, also
@@ -50,12 +51,13 @@ active status, only through their public services.
   same rules). Leaving Accepted removes the member's assignments in the project, after a
   confirmation.
 - Members add an optional comment when responding (on the project page; the cards of the project
-  list only have the buttons) and change it while the project is open or in preparation
+  list only have the buttons) and change it while the project is open for participation
   (`response=comment`, at most 500 characters, plain text). Organizers write a note per
   participation on the Participation tab (`op=participation_note`, at most 1000 characters). Both
   need `orchestra_projects_participation_manage` to be seen, which only organizers have; the member
-  sees their own comment, never the note. Both are in the CSV export, the member's comment in the
-  personal data export, and both are cleared when the account is deleted.
+  sees their own comment, never the note. Both are in the CSV export and in the personal data
+  export (the note too, because it is data about the member), and both are cleared when the
+  account is deleted.
 - Assignments need an accepted participation and a part of a piece in the program. A member plays
   at most one part per piece. The assignments tab offers only accepted members without a part in
   the piece; to move a member, remove their assignment first. The handler still moves a member

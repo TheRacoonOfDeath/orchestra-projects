@@ -90,7 +90,7 @@ final class ParticipationService
         }
         if (!ParticipationRules::commentsOpen($project->status)) {
             return \__(
-                'Comments can only be changed while the project is open or in preparation.',
+                'Comments can only be changed while the project is open for participation.',
                 'orchestra-projects'
             );
         }

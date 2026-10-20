@@ -98,6 +98,11 @@ final class PersonalData
                         'name' => \__('Your comment', 'orchestra-projects'),
                         'value' => $participation->memberComment ?? '',
                     ],
+                    // Not shown to the member on the site, but data about them.
+                    [
+                        'name' => \__('Organizer note', 'orchestra-projects'),
+                        'value' => $participation->organizerNote ?? '',
+                    ],
                 ],
             ];
         }
