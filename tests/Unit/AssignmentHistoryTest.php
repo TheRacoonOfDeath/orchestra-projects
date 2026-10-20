@@ -81,6 +81,21 @@ final class AssignmentHistoryTest extends TestCase
         $this->assertSame([10 => [HistoryMark::LastTime, HistoryMark::Completed]], $marks);
     }
 
+    public function testAPartIsNewIfTheMemberWasNeverAssignedToItInAnotherProject(): void
+    {
+        $assignments = [
+            new Assignment(1, 1, self::PIECE, self::PART, 10),
+            new Assignment(2, self::CURRENT, self::PIECE, self::PART, 10), // played before
+            new Assignment(3, 1, self::PIECE, self::PART, 11),
+            new Assignment(4, self::CURRENT, self::PIECE, self::OTHER_PART, 11), // another part before
+            new Assignment(5, self::CURRENT, self::PIECE, self::PART, 12), // never played the piece
+            new Assignment(6, 1, self::PIECE, self::OTHER_PART, null),
+            new Assignment(7, self::CURRENT, self::PIECE, self::OTHER_PART, null), // deleted user
+        ];
+
+        $this->assertSame([4 => true, 5 => true], AssignmentHistory::newParts(self::CURRENT, $assignments));
+    }
+
     public function testLastPartsIsThePartOfEachMembersLatestAssignmentInAnotherProject(): void
     {
         $assignments = [

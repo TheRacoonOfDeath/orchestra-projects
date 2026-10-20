@@ -167,6 +167,25 @@ def projects_api(code):
     return wp_json("$p = Orchestra\\Projects\\Plugin::instance()->projects(); " + code)
 
 
+def assignments_pdf_html(project):
+    """The HTML the assignments PDF is made of; the PDF itself stores its text in glyph codes."""
+    return wp_json(
+        'global $wpdb; $s = new Orchestra\\Projects\\Database\\Schema($wpdb);'
+        ' $a = new Orchestra\\Projects\\Assignment\\AssignmentRepository($wpdb, $s);'
+        ' $pr = new Orchestra\\Projects\\Program\\ProgramRepository($wpdb, $s);'
+        ' $l = Orchestra\\Library\\Plugin::instance()->library();'
+        ' $svc = new Orchestra\\Projects\\Assignment\\AssignmentService($a,'
+        ' new Orchestra\\Projects\\Participation\\ParticipationRepository($wpdb, $s), $pr,'
+        ' new Orchestra\\Projects\\Project\\ProjectRepository(), $l);'
+        ' $pdf = new Orchestra\\Projects\\Export\\AssignmentsPdf($pr, $a, $svc, $l,'
+        ' new Orchestra\\Projects\\Admin\\Names(Orchestra\\Members\\Plugin::instance()->members()));'
+        f' echo json_encode($pdf->html((new Orchestra\\Projects\\Project\\ProjectRepository())->find({project})));'
+    )
+
+
+NEW_BADGE = 'orchestra-badge--info">new</span>'
+
+
 def participation_of(project, login):
     return wp_json(
         f'$u = get_user_by("login", "{login}")->ID; global $wpdb;'
@@ -431,12 +450,17 @@ check(f'name="users[]" value="{ids["mia"]}"' not in pirates
 dance = page.split("<h3>Lord of the Dance", 1)[1].split("</h3>", 1)[0]
 check("At least one member has not been assigned a part yet" in dance,
       "pieces in which an accepted member has no part yet show a warning")
+check(NEW_BADGE in pirates, "the assignments mark members who play a part for the first time")
+pdf_html = assignments_pdf_html(spring)
+check("Mia*" in pdf_html and "* plays this part for the first time" in pdf_html,
+      "the PDF marks new parts with an asterisk and explains it")
 
 # --- Sheet music download -------------------------------------------------------------------
 _, page = mia.get(DASHBOARD)
 plain = text(page)
 check("Your parts" in plain and "Pirates of the Caribbean Horn 1" in plain and "Lord of the Dance Violin 1" in plain,
       "members see their parts on the dashboard")
+check(page.count(NEW_BADGE) == 2, "members see which of their parts they play for the first time")
 match = re.search(r'href="([^"]*orchestra_library_download_bundle[^"]*)"', page)
 check(match is not None, "the dashboard offers the sheet music download")
 if match:
@@ -694,6 +718,8 @@ check(summer_parts == {login: spring_parts[login] for login in accepted} and "mo
       f"members get the part they played last time, others stay unassigned: {summer_parts}")
 _, page = conductor.get(manage_url(summer, "assignments"))
 check("Assign the parts played last time" not in page, "the button is gone once there is nothing left to assign")
+check(NEW_BADGE not in page and "plays this part for the first time" not in assignments_pdf_html(summer),
+      "parts played in another project before are not new")
 check("At least one member has not been assigned a part yet" in page.split("<h3>Pirates of the Caribbean", 1)[1]
       .split("</h3>", 1)[0], "members who never played the piece leave the warning")
 

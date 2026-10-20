@@ -62,6 +62,36 @@ final class AssignmentHistory
     }
 
     /**
+     * The assignments of the project to a part the member was never assigned to in another project:
+     * the member plays a new part.
+     *
+     * @param list<Assignment> $pieceAssignments All assignments of one piece, in any project
+     * @return array<int, true> assignment ID => true
+     */
+    public static function newParts(int $currentProjectId, array $pieceAssignments): array
+    {
+        $played = [];
+        foreach ($pieceAssignments as $assignment) {
+            if ($assignment->userId !== null && $assignment->projectId !== $currentProjectId) {
+                $played[$assignment->userId][$assignment->partId] = true;
+            }
+        }
+
+        $new = [];
+        foreach ($pieceAssignments as $assignment) {
+            if (
+                $assignment->userId !== null
+                && $assignment->projectId === $currentProjectId
+                && !isset($played[$assignment->userId][$assignment->partId])
+            ) {
+                $new[$assignment->id] = true;
+            }
+        }
+
+        return $new;
+    }
+
+    /**
      * The part of each member's latest assignment of the piece in another project.
      *
      * @param list<Assignment> $pieceAssignments All assignments of one piece, in any project

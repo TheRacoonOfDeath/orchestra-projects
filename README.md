@@ -16,6 +16,8 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
 - Assignments of members to parts, with hints who played the part last time or in a completed
   project, and a button that gives everyone the part they played last time; the assignments can be
   downloaded as a PDF (with orchestra-core 0.8 or later)
+- Parts a member plays for the first time are labelled "new", for the member and on the
+  assignments; the PDF marks them with an asterisk and a legend
 - `[orchestra_projects]`: members see their projects, respond, see their parts and download the
   sheet music of each part, or all of it in one zip; organizers and conductors create projects, change their status and manage
   program, participation and assignments on the same page (or in **Projects** in wp-admin)

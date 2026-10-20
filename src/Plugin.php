@@ -200,7 +200,13 @@ final class Plugin
         (new PersonalData($this->projectRepository, $this->participations, $this->assignments, $library))->register();
 
         // The views are shared by the projects page and the wp-admin screens.
-        $memberView = new MemberProjectView($this->participations, $this->assignments, $this->program, $library);
+        $memberView = new MemberProjectView(
+            $this->participations,
+            $this->assignments,
+            $this->program,
+            $library,
+            $assignmentService
+        );
         $participationView = new ParticipationView(
             $this->participations,
             $this->assignments,
@@ -235,7 +241,7 @@ final class Plugin
         }
         (new AssignmentsPdfController(
             $this->projectRepository,
-            new AssignmentsPdf($this->program, $this->assignments, $library, $names)
+            new AssignmentsPdf($this->program, $this->assignments, $assignmentService, $library, $names)
         ))->register();
         (new ProjectActions(
             $this->projectRepository,

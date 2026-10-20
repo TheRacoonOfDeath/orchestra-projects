@@ -6,7 +6,9 @@ namespace Orchestra\Projects\Ui;
 
 use Orchestra\Core\Ui\Form;
 use Orchestra\Library\LibraryService;
+use Orchestra\Core\Ui\Html;
 use Orchestra\Projects\Assignment\AssignmentRepository;
+use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Capabilities;
 use Orchestra\Projects\Frontend\ResponseController;
 use Orchestra\Projects\Participation\Participation;
@@ -26,6 +28,7 @@ final class MemberProjectView
         private readonly AssignmentRepository $assignments,
         private readonly ProgramRepository $program,
         private readonly LibraryService $library,
+        private readonly AssignmentService $assignmentService,
     ) {
     }
 
@@ -66,6 +69,10 @@ final class MemberProjectView
         $order = \array_flip($this->program->pieceIds($project->id));
         \usort($assignments, static fn ($a, $b): int => ($order[$a->pieceId] ?? 0) <=> ($order[$b->pieceId] ?? 0));
 
+        $new = $this->assignmentService->newParts(
+            $project->id,
+            \array_map(static fn ($a): int => $a->pieceId, $assignments)
+        );
         $items = '';
         $partIds = [];
         foreach ($assignments as $assignment) {
@@ -79,7 +86,9 @@ final class MemberProjectView
                 $partIds[] = $part->id;
             }
             $items .= '<li><span>' . \esc_html($piece->title) . ' <strong>' . \esc_html($part->name)
-                . '</strong></span>'
+                . '</strong>'
+                . (isset($new[$assignment->id]) ? ' ' . Html::badge(AssignmentService::newPartLabel(), 'info') : '')
+                . '</span>'
                 . ($file === null
                     ? '<span class="orchestra-muted">' . \esc_html__('No sheet music yet', 'orchestra-projects')
                         . '</span>'

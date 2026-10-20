@@ -68,6 +68,11 @@ the piece stay unassigned; existing assignments are not changed.
 
 The marks are shown to users with `orchestra_projects_assignment_history_read` (conductors and organizers).
 
+**New parts:** an assignment to a part the member was never assigned to in another project
+(`AssignmentHistory::newParts()`) is labelled "new": on the member's own parts (project list and
+overview), next to the player on the assignments tab, and with an asterisk after the name in the
+PDF, which then ends with a legend. A member's first project makes every part new.
+
 ## Screens
 
 Everything happens on the projects page `[orchestra_projects]`; administrators can use the same
@@ -93,7 +98,8 @@ were sent from.
 The assignments tab has a "Download PDF" button
 (`admin-post.php?action=orchestra_projects_assignments_pdf&project=ID`) for everyone who can open
 the tab. The PDF lists every piece of the program with its composer, its parts and the assigned
-players, and the project's dates and concerts. It is created by orchestra-core 0.8
+players, and the project's dates and concerts. Players of a new part (see above) have an asterisk
+after their name, explained below the last piece. It is created by orchestra-core 0.8
 (`Orchestra\Core\Pdf\Pdf`); with an older core the button is hidden.
 
 ## Participants export

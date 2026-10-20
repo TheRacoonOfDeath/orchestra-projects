@@ -178,6 +178,31 @@ final class AssignmentService
         return AssignmentHistory::marks($project->id, $part->id, $statuses, $assignments, $userIds);
     }
 
+    /**
+     * The assignments of the project in which the member plays a part for the first time, see
+     * {@see AssignmentHistory::newParts()}.
+     *
+     * @param list<int> $pieceIds the pieces to look at
+     * @return array<int, true> assignment ID => true
+     */
+    public function newParts(int $projectId, array $pieceIds): array
+    {
+        $new = [];
+        foreach (\array_unique($pieceIds) as $pieceId) {
+            $new += AssignmentHistory::newParts($projectId, $this->assignments->forPiece($pieceId));
+        }
+
+        return $new;
+    }
+
+    /**
+     * The label next to a part the member plays for the first time.
+     */
+    public static function newPartLabel(): string
+    {
+        return \__('new', 'orchestra-projects');
+    }
+
     private function refusal(Project $project, ?Part $part): ?string
     {
         if (!$project->status->assignmentsEditable()) {

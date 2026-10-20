@@ -61,6 +61,7 @@ final class AssignmentsView
         foreach ($this->assignments->forProject($project->id) as $assignment) {
             $byPart[$assignment->partId][] = $assignment;
         }
+        $new = $this->assignmentService->newParts($project->id, $pieceIds);
         $players = [];
         foreach ($this->participations->forProject($project->id, ParticipationStatus::Accepted) as $participation) {
             if ($participation->userId !== null) {
@@ -99,7 +100,7 @@ final class AssignmentsView
         // The columns of all pieces line up.
         $html .= '<div class="orchestra-aligned-tables orchestra-stack">';
         foreach ($pieceIds as $pieceId) {
-            $html .= $this->piece($project, $pieceId, $byPart, $players, $editable);
+            $html .= $this->piece($project, $pieceId, $byPart, $players, $new, $editable);
         }
         $html .= '</div>';
 
@@ -109,9 +110,16 @@ final class AssignmentsView
     /**
      * @param array<int, list<Assignment>> $byPart
      * @param array<int, string> $players user ID => name of the accepted participants
+     * @param array<int, true> $new IDs of the assignments to a part the member plays for the first time
      */
-    private function piece(Project $project, int $pieceId, array $byPart, array $players, bool $editable): string
-    {
+    private function piece(
+        Project $project,
+        int $pieceId,
+        array $byPart,
+        array $players,
+        array $new,
+        bool $editable,
+    ): string {
         $piece = $this->library->piece($pieceId);
         $parts = $this->library->parts($pieceId);
         $title = \esc_html($piece->title ?? '#' . $pieceId);
@@ -144,7 +152,7 @@ final class AssignmentsView
         foreach ($parts as $part) {
             $assigned = $byPart[$part->id] ?? [];
             $row = ['<strong>' . \esc_html($part->name)
-                . '</strong>', $this->assignedList($project, $assigned, $editable)];
+                . '</strong>', $this->assignedList($project, $assigned, $new, $editable)];
             if ($editable) {
                 $row[] = $this->assignForm($project, $part, $unassigned);
             }
@@ -156,8 +164,9 @@ final class AssignmentsView
 
     /**
      * @param list<Assignment> $assigned
+     * @param array<int, true> $new IDs of the assignments to a part the member plays for the first time
      */
-    private function assignedList(Project $project, array $assigned, bool $editable): string
+    private function assignedList(Project $project, array $assigned, array $new, bool $editable): string
     {
         if ($assigned === []) {
             return '<span class="orchestra-muted">—</span>';
@@ -175,8 +184,9 @@ final class AssignmentsView
                     'link danger'
                 )
                 : '';
-            $items .= '<li class="orchestra-actions">' . \esc_html($this->names->of($assignment->userId)) . $remove
-                . '</li>';
+            $items .= '<li class="orchestra-actions"><span>' . \esc_html($this->names->of($assignment->userId))
+                . (isset($new[$assignment->id]) ? ' ' . Html::badge(AssignmentService::newPartLabel(), 'info') : '')
+                . '</span>' . $remove . '</li>';
         }
 
         return '<ul>' . $items . '</ul>';
