@@ -71,7 +71,7 @@ final class ProjectActions
         $capability = match ($operation) {
             'status', 'complete' => Capabilities::PROJECT_MANAGE,
             'program_add', 'program_remove', 'program_up', 'program_down' => Capabilities::PROGRAM_MANAGE,
-            'participation', 'participation_note' => Capabilities::PARTICIPATION_MANAGE,
+            'participation', 'participation_note', 'participation_bulk' => Capabilities::PARTICIPATION_MANAGE,
             'assign', 'assign_last', 'unassign' => Capabilities::ASSIGNMENT_MANAGE,
             default => null,
         };
@@ -153,6 +153,7 @@ final class ProjectActions
             'program_down' => $this->program->move($project, self::int('piece'), 1),
             'participation' => $this->changeParticipation($project, $userId),
             'participation_note' => $this->changeNote($project),
+            'participation_bulk' => $this->changeMany($project, $userId),
             'unassign' => $this->assignments->unassign($project, self::int('assignment')),
             default => null,
         };
@@ -198,6 +199,33 @@ final class ProjectActions
         return $target === null
             ? \__('Unknown status.', 'orchestra-projects')
             : $this->status->change($project, $target);
+    }
+
+    /**
+     * Changes the status of several participations; each one follows the rules of a single change.
+     */
+    private function changeMany(Project $project, int $organizerId): ?string
+    {
+        $status = ParticipationStatus::tryFrom(self::string('status'));
+        $ids = self::ints('participations');
+        if ($status === null || $ids === []) {
+            return \__('Select at least one member and a status.', 'orchestra-projects');
+        }
+
+        $errors = [];
+        foreach ($ids as $id) {
+            $participation = $this->participations->find($id);
+            if ($participation === null || $participation->projectId !== $project->id) {
+                $errors[] = \__('The participation does not exist.', 'orchestra-projects');
+                continue;
+            }
+            $error = $this->participation->change($participation, $status, $organizerId, self::flag('confirm'));
+            if ($error !== null) {
+                $errors[] = $error;
+            }
+        }
+
+        return $errors === [] ? null : \implode(' ', \array_unique($errors));
     }
 
     private function changeNote(Project $project): ?string

@@ -825,6 +825,22 @@ check("not over yet" in text(page)
       "projects that are not over cannot be completed in one step")
 wp("post", "delete", str(past), "--force")
 
+bulk, _ = create_project(organizer, "Bulk 2029", "2029-01-01", "2029-01-02")
+act(organizer, bulk, "status", target="open")
+selected = [str(participation_of(bulk, login)["id"]) for login in ("mia", "max")]
+_, page = organizer.get(manage_url(bulk, "participation"))
+check('name="participations[]"' in page and "Change selected" in page, "organizers select several participants")
+_, page = conductor.get(manage_url(bulk, "participation"))
+check('name="participations[]"' not in page, "conductors cannot select participants")
+status, _ = act(conductor, bulk, "participation_bulk", status="accepted", **{"participations[]": selected})
+check(status == 403 and participation_of(bulk, "mia")["status"] == "open", "conductors cannot change several at once")
+act(organizer, bulk, "participation_bulk", status="accepted", **{"participations[]": selected})
+check([participation_of(bulk, login)["status"] for login in ("mia", "max", "mo")] == ["accepted", "accepted", "open"],
+      "organizers change the status of the selected participants at once")
+_, page = act(organizer, bulk, "participation_bulk", status="declined")
+check("Select at least one member" in text(page), "changing nobody shows an error")
+wp("post", "delete", str(bulk), "--force")
+
 # --- Privacy and deleted users --------------------------------------------------------------
 export = wp_json(
     '$e = apply_filters("wp_privacy_personal_data_exporters", [])["orchestra-projects"];'

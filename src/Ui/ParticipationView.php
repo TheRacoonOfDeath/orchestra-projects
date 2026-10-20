@@ -115,6 +115,11 @@ final class ParticipationView
                 \__('Last change', 'orchestra-projects'),
                 \__('Assignments', 'orchestra-projects'),
             ];
+            // The checkboxes belong to the form below the table, which changes the selected people.
+            $bulkForm = 'orchestra-projects-bulk-' . $status->value;
+            if ($canManage) {
+                \array_unshift($headings, \__('Select', 'orchestra-projects'));
+            }
             if ($canManage) {
                 // The members' comments and the notes are for organizers only, not for conductors.
                 $headings[] = \__('Comment and note', 'orchestra-projects');
@@ -129,12 +134,23 @@ final class ParticipationView
                     (string) $count,
                 ];
                 if ($canManage) {
+                    \array_unshift($row, '<input type="checkbox" name="participations[]" value="' . $participation->id
+                        . '" form="' . $bulkForm . '" aria-label="' . \esc_attr(\sprintf(
+                            /* translators: %s: member name */
+                            \__('Select %s', 'orchestra-projects'),
+                            $this->names->of($participation->userId)
+                        )) . '">');
+                }
+                if ($canManage) {
                     $row[] = self::notes($project, $participation);
                     $row[] = $this->changeForm($project, $participation, $count);
                 }
                 $rows[] = $row;
             }
             $html .= Html::table($headings, $rows);
+            if ($canManage) {
+                $html .= $this->bulkForm($project, $status, $bulkForm, $group, $assignmentCounts);
+            }
         }
 
         return $html . '</div>';
@@ -158,6 +174,50 @@ final class ParticipationView
             \__('Export accepted participants (CSV)', 'orchestra-projects'),
             'small'
         ) . '</div>';
+    }
+
+    /**
+     * Changes the status of the selected people of a group at once. Like a single change, leaving
+     * Accepted removes their assignments, after a confirmation.
+     *
+     * @param list<Participation> $group
+     * @param array<int, int> $assignmentCounts user ID => number of assignments in the project
+     */
+    private function bulkForm(
+        Project $project,
+        ParticipationStatus $current,
+        string $formId,
+        array $group,
+        array $assignmentCounts,
+    ): string {
+        $attributes = ['id' => $formId, 'class' => 'orchestra-actions'];
+        $fields = [];
+        $withAssignments = \array_filter(
+            $group,
+            static fn (Participation $p): bool => ($assignmentCounts[$p->userId ?? 0] ?? 0) > 0
+        );
+        if ($current === ParticipationStatus::Accepted && $withAssignments !== []) {
+            $fields['confirm'] = 1;
+            $attributes['data-orchestra-confirm'] = \__(
+                'Selected members who are no longer accepted lose their parts in this project. Continue?',
+                'orchestra-projects'
+            );
+            $attributes['data-orchestra-confirm-field'] = 'status';
+            $attributes['data-orchestra-confirm-unless'] = ParticipationStatus::Accepted->value;
+        }
+
+        $options = '';
+        foreach (ParticipationStatus::cases() as $status) {
+            if ($status !== $current) {
+                $options .= '<option value="' . $status->value . '">' . \esc_html($status->label()) . '</option>';
+            }
+        }
+
+        return ProjectForms::open($project->id, 'participation_bulk', $fields, $attributes)
+            . '<span>' . \esc_html__('Selected:', 'orchestra-projects') . '</span>'
+            . '<select name="status" aria-label="' . \esc_attr__('New status', 'orchestra-projects')
+            . '" style="width:auto">' . $options . '</select>'
+            . Form::submit(\__('Change selected', 'orchestra-projects'), 'small') . '</form>';
     }
 
     /**

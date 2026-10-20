@@ -38,8 +38,10 @@ active status, only through their public services.
 - Opening a project creates Open participation records for all active users with the role
   member or organizer who have none yet. New accounts, reactivated members and users who get one
   of these roles while a project is open receive one as well.
-- Members respond once; the decision is final. Organizers change any decision at any time. Leaving
-  Accepted removes the member's assignments in the project, after a confirmation.
+- Members respond once; the decision is final. Organizers change any decision at any time, also
+  for several people at once (checkboxes per group, `op=participation_bulk`; each change follows the
+  same rules). Leaving Accepted removes the member's assignments in the project, after a
+  confirmation.
 - Members add an optional comment when responding (on the project page; the cards of the project
   list only have the buttons) and change it while the project is open or in preparation
   (`response=comment`, at most 500 characters, plain text). Organizers write a note per

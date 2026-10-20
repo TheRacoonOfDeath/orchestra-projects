@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 18:30+0200\n"
+"POT-Creation-Date: 2026-10-20 18:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,24 +52,29 @@ msgstr ""
 msgid "The project has been saved."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:175
+#: src/Admin/ProjectActions.php:176
 msgid ""
 "Nobody was assigned: no member without a part has played one of these pieces "
 "before."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:182
+#: src/Admin/ProjectActions.php:183
 #, php-format
 msgid "%d part was assigned to the member who played it last time."
 msgid_plural "%d parts were assigned to the members who played them last time."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Admin/ProjectActions.php:199
+#: src/Admin/ProjectActions.php:200
 msgid "Unknown status."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:207 src/Admin/ProjectActions.php:220
+#: src/Admin/ProjectActions.php:212
+msgid "Select at least one member and a status."
+msgstr ""
+
+#: src/Admin/ProjectActions.php:219 src/Admin/ProjectActions.php:235
+#: src/Admin/ProjectActions.php:248
 msgid "The participation does not exist."
 msgstr ""
 
@@ -640,54 +645,78 @@ msgstr ""
 msgid "Last change"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:120
+#: src/Ui/ParticipationView.php:121
+msgid "Select"
+msgstr ""
+
+#: src/Ui/ParticipationView.php:125
 msgid "Comment and note"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:121 src/Ui/ParticipationView.php:215
+#: src/Ui/ParticipationView.php:126 src/Ui/ParticipationView.php:275
 msgid "Change"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:158
+#. translators: %s: member name
+#: src/Ui/ParticipationView.php:140
+#, php-format
+msgid "Select %s"
+msgstr ""
+
+#: src/Ui/ParticipationView.php:174
 msgid "Export accepted participants (CSV)"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:169
+#: src/Ui/ParticipationView.php:202
+msgid ""
+"Selected members who are no longer accepted lose their parts in this "
+"project. Continue?"
+msgstr ""
+
+#: src/Ui/ParticipationView.php:217
+msgid "Selected:"
+msgstr ""
+
+#: src/Ui/ParticipationView.php:218 src/Ui/ParticipationView.php:273
+msgid "New status"
+msgstr ""
+
+#: src/Ui/ParticipationView.php:220
+msgid "Change selected"
+msgstr ""
+
+#: src/Ui/ParticipationView.php:229
 msgid "No comment"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:176
+#: src/Ui/ParticipationView.php:236
 msgid "Add a note"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:177
+#: src/Ui/ParticipationView.php:237
 msgid "Note:"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:183
+#: src/Ui/ParticipationView.php:243
 msgid "Note for the organizers"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:185
+#: src/Ui/ParticipationView.php:245
 msgid "Only organizers see the note."
 msgstr ""
 
-#: src/Ui/ParticipationView.php:186
+#: src/Ui/ParticipationView.php:246
 msgid "Save note"
 msgstr ""
 
 #. translators: %d: number of assignments
-#: src/Ui/ParticipationView.php:198
+#: src/Ui/ParticipationView.php:258
 #, php-format
 msgid "The member's %d assignments in this project will be removed. Continue?"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:213
-msgid "New status"
-msgstr ""
-
 #. translators: %s: name of the organizer
-#: src/Ui/ParticipationView.php:232
+#: src/Ui/ParticipationView.php:292
 #, php-format
 msgid "entered by %s"
 msgstr ""

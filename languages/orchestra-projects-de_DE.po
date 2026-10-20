@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 18:30+0200\n"
+"POT-Creation-Date: 2026-10-20 18:33+0200\n"
 "PO-Revision-Date: 2026-10-16 00:00+0000\n"
 "Last-Translator: Julian Nickerl\n"
 "Language-Team: German\n"
@@ -47,7 +47,7 @@ msgstr "Bitte gib einen Namen ein."
 msgid "The project has been saved."
 msgstr "Das Projekt wurde gespeichert."
 
-#: src/Admin/ProjectActions.php:175
+#: src/Admin/ProjectActions.php:176
 msgid ""
 "Nobody was assigned: no member without a part has played one of these pieces "
 "before."
@@ -55,18 +55,23 @@ msgstr ""
 "Niemand wurde eingeteilt: Kein Mitglied ohne Stimme hat eines dieser Stücke "
 "schon einmal gespielt."
 
-#: src/Admin/ProjectActions.php:182
+#: src/Admin/ProjectActions.php:183
 #, php-format
 msgid "%d part was assigned to the member who played it last time."
 msgid_plural "%d parts were assigned to the members who played them last time."
 msgstr[0] "%d Mitglied wurde in die zuletzt gespielte Stimme eingeteilt."
 msgstr[1] "%d Einteilungen in die zuletzt gespielte Stimme wurden vorgenommen."
 
-#: src/Admin/ProjectActions.php:199
+#: src/Admin/ProjectActions.php:200
 msgid "Unknown status."
 msgstr "Unbekannter Status."
 
-#: src/Admin/ProjectActions.php:207 src/Admin/ProjectActions.php:220
+#: src/Admin/ProjectActions.php:212
+msgid "Select at least one member and a status."
+msgstr "Wähle mindestens ein Mitglied und einen Status aus."
+
+#: src/Admin/ProjectActions.php:219 src/Admin/ProjectActions.php:235
+#: src/Admin/ProjectActions.php:248
 msgid "The participation does not exist."
 msgstr "Die Teilnahme existiert nicht."
 
@@ -361,7 +366,9 @@ msgstr ""
 msgid ""
 "Members can add a comment for the organizers, and organizers can add a note; "
 "only organizers see them."
-msgstr "Mitglieder können einen Kommentar für die Organisatoren hinterlassen, und Organisatoren können eine Notiz hinzufügen; nur Organisatoren sehen sie."
+msgstr ""
+"Mitglieder können einen Kommentar für die Organisatoren hinterlassen, und "
+"Organisatoren können eine Notiz hinzufügen; nur Organisatoren sehen sie."
 
 #: src/Privacy/PersonalData.php:161
 msgid ""
@@ -678,56 +685,80 @@ msgstr "Mitglied"
 msgid "Last change"
 msgstr "Letzte Änderung"
 
-#: src/Ui/ParticipationView.php:120
+#: src/Ui/ParticipationView.php:121
+msgid "Select"
+msgstr "Auswählen"
+
+#: src/Ui/ParticipationView.php:125
 msgid "Comment and note"
 msgstr "Kommentar und Notiz"
 
-#: src/Ui/ParticipationView.php:121 src/Ui/ParticipationView.php:215
+#: src/Ui/ParticipationView.php:126 src/Ui/ParticipationView.php:275
 msgid "Change"
 msgstr "Ändern"
 
-#: src/Ui/ParticipationView.php:158
+#. translators: %s: member name
+#: src/Ui/ParticipationView.php:140
+#, php-format
+msgid "Select %s"
+msgstr "%s auswählen"
+
+#: src/Ui/ParticipationView.php:174
 msgid "Export accepted participants (CSV)"
 msgstr "Angemeldete exportieren (CSV)"
 
-#: src/Ui/ParticipationView.php:169
+#: src/Ui/ParticipationView.php:202
+msgid ""
+"Selected members who are no longer accepted lose their parts in this "
+"project. Continue?"
+msgstr "Ausgewählte Mitglieder, die nicht mehr angemeldet sind, verlieren ihre Stimmen in diesem Projekt. Fortfahren?"
+
+#: src/Ui/ParticipationView.php:217
+msgid "Selected:"
+msgstr "Ausgewählte:"
+
+#: src/Ui/ParticipationView.php:218 src/Ui/ParticipationView.php:273
+msgid "New status"
+msgstr "Neuer Status"
+
+#: src/Ui/ParticipationView.php:220
+msgid "Change selected"
+msgstr "Ausgewählte ändern"
+
+#: src/Ui/ParticipationView.php:229
 msgid "No comment"
 msgstr "Kein Kommentar"
 
-#: src/Ui/ParticipationView.php:176
+#: src/Ui/ParticipationView.php:236
 msgid "Add a note"
 msgstr "Notiz hinzufügen"
 
-#: src/Ui/ParticipationView.php:177
+#: src/Ui/ParticipationView.php:237
 msgid "Note:"
 msgstr "Notiz:"
 
-#: src/Ui/ParticipationView.php:183
+#: src/Ui/ParticipationView.php:243
 msgid "Note for the organizers"
 msgstr "Notiz für die Organisatoren"
 
-#: src/Ui/ParticipationView.php:185
+#: src/Ui/ParticipationView.php:245
 msgid "Only organizers see the note."
 msgstr "Nur Organisatoren sehen die Notiz."
 
-#: src/Ui/ParticipationView.php:186
+#: src/Ui/ParticipationView.php:246
 msgid "Save note"
 msgstr "Notiz speichern"
 
 #. translators: %d: number of assignments
-#: src/Ui/ParticipationView.php:198
+#: src/Ui/ParticipationView.php:258
 #, php-format
 msgid "The member's %d assignments in this project will be removed. Continue?"
 msgstr ""
 "Die %d Einteilungen des Mitglieds in diesem Projekt werden entfernt. "
 "Fortfahren?"
 
-#: src/Ui/ParticipationView.php:213
-msgid "New status"
-msgstr "Neuer Status"
-
 #. translators: %s: name of the organizer
-#: src/Ui/ParticipationView.php:232
+#: src/Ui/ParticipationView.php:292
 #, php-format
 msgid "entered by %s"
 msgstr "eingetragen von %s"
