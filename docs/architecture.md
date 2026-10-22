@@ -139,7 +139,8 @@ ordered by last and first name.
 ## Email groups
 
 When orchestra-email is active, orchestra-projects registers groups for every project that is
-open or in preparation, listed under the project's name. Emailing them requires
+open or in preparation, listed under the project's name, the next project (by start date) first.
+Projects that are over but not completed yet keep their groups. Emailing them requires
 `orchestra_projects_email_send`, checked with the project ID.
 
 | Group ID | Recipients |

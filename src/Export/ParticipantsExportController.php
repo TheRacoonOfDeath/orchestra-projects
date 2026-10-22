@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Orchestra\Projects\Export;
 
+use Orchestra\Core\Ui\LoginPageRedirect;
 use Orchestra\Members\Capabilities as MembersCapabilities;
 use Orchestra\Projects\Capabilities;
 use Orchestra\Projects\Project\ProjectRepository;
@@ -27,7 +28,7 @@ final class ParticipantsExportController
     public function register(): void
     {
         \add_action('admin_post_' . self::ACTION, [$this, 'handle']);
-        \add_action('admin_post_nopriv_' . self::ACTION, 'auth_redirect');
+        \add_action('admin_post_nopriv_' . self::ACTION, [LoginPageRedirect::class, 'requireLogin']);
     }
 
     public static function url(int $projectId): string

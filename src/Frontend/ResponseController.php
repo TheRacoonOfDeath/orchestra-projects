@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Orchestra\Projects\Frontend;
 
+use Orchestra\Core\Ui\LoginPageRedirect;
 use Orchestra\Core\Ui\Notices;
 use Orchestra\Core\Ui\Redirect;
 use Orchestra\Projects\Capabilities;
@@ -31,7 +32,7 @@ final class ResponseController
     public function register(): void
     {
         \add_action('admin_post_' . self::ACTION, [$this, 'handle']);
-        \add_action('admin_post_nopriv_' . self::ACTION, 'auth_redirect');
+        \add_action('admin_post_nopriv_' . self::ACTION, [LoginPageRedirect::class, 'requireLogin']);
     }
 
     public static function nonceAction(int $participationId): string

@@ -16,8 +16,8 @@ use Orchestra\Projects\Project\ProjectRepository;
 
 /**
  * The project recipient groups for the email service of orchestra-email: the accepted and pending
- * participants of the projects that are open or in preparation. There are no groups per piece or
- * part.
+ * participants of the projects that are open or in preparation (also when they are over but not
+ * completed yet), the next project first. There are no groups per piece or part.
  */
 final class ProjectEmailGroups
 {
@@ -46,11 +46,25 @@ final class ProjectEmailGroups
      */
     public function registerGroups(EmailGroupRegistry $registry): void
     {
-        foreach ($this->projects->all() as $project) {
+        foreach (self::byStartDate($this->projects->all()) as $project) {
             if ($project->status->current()) {
                 $this->registerProject($registry, $project);
             }
         }
+    }
+
+    /**
+     * The next project first, projects without a start date last.
+     *
+     * @param list<Project> $projects
+     * @return list<Project>
+     */
+    public static function byStartDate(array $projects): array
+    {
+        \usort($projects, static fn (Project $a, Project $b): int => [$a->startDate ?? '9999', $a->id]
+            <=> [$b->startDate ?? '9999', $b->id]);
+
+        return $projects;
     }
 
     private function registerProject(EmailGroupRegistry $registry, Project $project): void
