@@ -468,6 +468,21 @@ check(len(blockers) == 1, "assigned parts cannot be deleted in the library")
 _, page = act(conductor, spring, "assign", part=HORN2)
 check("Select at least one member" in text(page), "assigning nobody shows an error")
 
+# Other plugins (orchestra-seating) set a member's part in a piece through ProjectsService::setPart()
+def set_part(user, piece, part):
+    return wp_eval(f'echo Orchestra\\Projects\\Plugin::instance()->projects()->setPart({spring}, {piece},'
+                   f' {ids[user]}, {"null" if part is None else part}, 1) ?? "ok";')
+
+
+check(set_part("mia", PIRATES, HORN2) == "ok" and sorted(assignments_of(spring)["mia"]) == sorted([HORN2, VIOLIN1]),
+      "setPart replaces the part in the piece")
+check(set_part("mia", PIRATES, None) == "ok" and assignments_of(spring)["mia"] == [VIOLIN1],
+      "setPart without a part removes the part in the piece only")
+check("has not accepted" in set_part("max", PIRATES, HORN1), "setPart follows the rules of the assignments tab")
+check("does not belong" in set_part("mia", DANCE, HORN1), "setPart refuses a part of another piece")
+set_part("mia", PIRATES, HORN1)
+check(sorted(assignments_of(spring)["mia"]) == sorted([HORN1, VIOLIN1]), "setPart assigns a member without a part")
+
 _, page = conductor.get(manage_url(spring, "assignments"))
 check("Horn 1" in page and "Mia" in page and "data-current" not in page.split("Horn 1", 1)[0],
       "the assignments tab lists parts and members")

@@ -13,6 +13,7 @@ use Orchestra\Library\File\FileService;
 use Orchestra\Library\File\FileStorage;
 use Orchestra\Library\File\UploadedFile;
 use Orchestra\Library\Part\PartRepository;
+use Orchestra\Library\Part\Voice;
 use Orchestra\Library\Piece\PieceRepository;
 
 global $wpdb;
@@ -40,7 +41,7 @@ foreach ($pieces as $key => [$title, $composer, $partNames]) {
     $pieceRepository->setComposer($pieceId, $composer);
     $ids[$key] = $pieceId;
     foreach ($partNames as $position => $name) {
-        $part = $parts->insert($pieceId, $name, '', $position);
+        $part = $parts->insert($pieceId, new Voice(0, false, 0, $name), $name, '', $position);
         $ids[$key . ':' . $name] = $part->id;
         $temporary = (string) tempnam(sys_get_temp_dir(), 'orchestra');
         file_put_contents($temporary, "%PDF-1.4\n% {$title} {$name}\n%%EOF\n");

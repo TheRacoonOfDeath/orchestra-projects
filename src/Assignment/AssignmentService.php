@@ -83,6 +83,35 @@ final class AssignmentService
     }
 
     /**
+     * Gives a member the part in a piece, replacing the part they had in it, or removes their part
+     * in the piece (`$partId` null). Used by orchestra-seating through {@see \Orchestra\Projects\ProjectsService}.
+     *
+     * @return string|null An error message, or null on success
+     */
+    public function setPart(Project $project, int $pieceId, int $userId, ?int $partId, int $actorId): ?string
+    {
+        if ($partId === null) {
+            if (!$project->status->assignmentsEditable()) {
+                return self::lockedMessage();
+            }
+            foreach ($this->assignments->forProjectAndUser($project->id, $userId) as $assignment) {
+                if ($assignment->pieceId === $pieceId) {
+                    $this->assignments->delete($assignment->id);
+                }
+            }
+
+            return null;
+        }
+
+        $part = $this->library->part($partId);
+        if ($part !== null && $part->pieceId !== $pieceId) {
+            return \__('The part does not belong to a piece of the program.', 'orchestra-projects');
+        }
+
+        return $this->assign($project, $partId, [$userId], true, $actorId)[0] ?? null;
+    }
+
+    /**
      * The assignments that give every accepted member the part they played last time, in each piece
      * of the program in which they have no part yet. Members who never played the piece are left out.
      *

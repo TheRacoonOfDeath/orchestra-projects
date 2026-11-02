@@ -6,7 +6,7 @@ $projects = \Orchestra\Projects\Plugin::instance()->projects();
 
 Check that the plugin is active first, e.g. with `class_exists(\Orchestra\Projects\Plugin::class)`
 on `plugins_loaded` or later. The service does not check permissions. Do not access the tables or
-meta of orchestra-projects directly.
+meta of orchestra-projects directly. It only reads, except for `setPart()`.
 
 ## `ProjectsService`
 
@@ -18,6 +18,7 @@ meta of orchestra-projects directly.
 | `participantIds(int $projectId, ?ParticipationStatus $status = null): list<int>` | Users with a participation record, optionally only with the status |
 | `assignedUserIds(int $projectId, ?array $partIds = null): list<int>` | Users assigned in the project, optionally only to the given parts |
 | `assignments(int $projectId): list<Assignment>` | All assignments of the project |
+| `setPart(int $projectId, int $pieceId, int $userId, ?int $partId, int $actorId): ?string` | Since 0.27: gives the member the part in the piece, replacing their part in it, or removes it (`$partId` null). The rules of the assignments tab apply (status open or in preparation, piece in the program, part of that piece, accepted participation). Returns an error message or null. The caller checks `orchestra_projects_assignment_manage`. orchestra-seating uses it for the voices in the seating editor. |
 
 `Project` has `id`, `title`, `description`, `status` (`ProjectStatus`), `startDate` and `endDate`
 (Y-m-d or null), and `concertDates` (list of Y-m-d in chronological order, empty if the project has

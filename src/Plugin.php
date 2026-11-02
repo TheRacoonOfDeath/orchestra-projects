@@ -81,7 +81,14 @@ final class Plugin
             $this->projectRepository,
             $this->program,
             $this->participations,
-            $this->assignments
+            $this->assignments,
+            fn (): AssignmentService => new AssignmentService(
+                $this->assignments,
+                $this->participations,
+                $this->program,
+                $this->projectRepository,
+                LibraryPlugin::instance()->library()
+            )
         );
     }
 

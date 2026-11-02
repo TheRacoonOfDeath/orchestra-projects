@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Orchestra\Projects;
 
 use Orchestra\Projects\Assignment\Assignment;
+use Closure;
 use Orchestra\Projects\Assignment\AssignmentRepository;
+use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Participation\Participation;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationStatus;
@@ -15,7 +17,8 @@ use Orchestra\Projects\Project\ProjectRepository;
 use Orchestra\Projects\Project\ProjectStatus;
 
 /**
- * The public, read-only API of orchestra-projects for other plugins, e.g. the email groups.
+ * The public API of orchestra-projects for other plugins, e.g. the email groups. It reads, and
+ * changes nothing but a member's part in a piece ({@see setPart()}).
  *
  *     $projects = \Orchestra\Projects\Plugin::instance()->projects();
  *
@@ -42,6 +45,8 @@ final class ProjectsService
         private readonly ProgramRepository $program,
         private readonly ParticipationRepository $participations,
         private readonly AssignmentRepository $assignments,
+        /** @var Closure(): AssignmentService Created on first use, once orchestra-library is loaded. */
+        private readonly Closure $assignmentService,
     ) {
     }
 
@@ -100,5 +105,24 @@ final class ProjectsService
     public function assignments(int $projectId): array
     {
         return $this->assignments->forProject($projectId);
+    }
+
+    /**
+     * Gives the member the part in the piece, replacing the part they had in it, or removes their
+     * part in the piece (`$partId` null). The rules of the assignments tab apply: the project is
+     * open for participation or in preparation, the piece is in the program, the part belongs to
+     * it and the member has accepted. The caller checks that the user may manage assignments
+     * (`orchestra_projects_assignment_manage`). Since 0.27.
+     *
+     * @return string|null An error message, or null on success
+     */
+    public function setPart(int $projectId, int $pieceId, int $userId, ?int $partId, int $actorId): ?string
+    {
+        $project = $this->projects->find($projectId);
+        if ($project === null) {
+            return \__('The project does not exist.', 'orchestra-projects');
+        }
+
+        return ($this->assignmentService)()->setPart($project, $pieceId, $userId, $partId, $actorId);
     }
 }
