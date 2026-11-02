@@ -297,6 +297,24 @@ final class AssignmentsView
     }
 
     /**
+     * Green for the part the member played last time, yellow for a part they played before that,
+     * in any other project.
+     *
+     * @param list<HistoryMark> $history
+     */
+    private static function playedClass(array $history): string
+    {
+        if (\in_array(HistoryMark::LastTime, $history, true)) {
+            return ' orchestra-projects-played orchestra-projects-played--last';
+        }
+
+        // Without "never played", the member played the part before.
+        return \in_array(HistoryMark::Never, $history, true)
+            ? ''
+            : ' orchestra-projects-played orchestra-projects-played--earlier';
+    }
+
+    /**
      * @param list<Assignment> $assigned
      * @param array<int, true> $new IDs of the assignments to a part the member plays for the first time
      */
@@ -344,12 +362,16 @@ final class AssignmentsView
         $marks = \current_user_can(Capabilities::ASSIGNMENT_HISTORY_READ)
             ? $this->assignmentService->historyMarks($project, $part, \array_keys($candidates))
             : [];
+        if ($marks !== []) {
+            Assets::enqueue();
+        }
 
         $boxes = '';
         foreach ($candidates as $userId => $name) {
             $history = $marks[$userId] ?? [];
             $notes = \array_map(static fn (HistoryMark $mark): string => $mark->label(), $history);
-            $boxes .= '<label class="orchestra-checkbox"><input type="checkbox" name="users[]" value="' . $userId . '"'
+            $boxes .= '<label class="orchestra-checkbox' . ($marks === [] ? '' : self::playedClass($history)) . '">'
+                . '<input type="checkbox" name="users[]" value="' . $userId . '"'
                 . ($history === [] ? '' : ' data-history="' . \esc_attr(\implode(' ', \array_map(
                     static fn (HistoryMark $mark): string => $mark->value,
                     $history

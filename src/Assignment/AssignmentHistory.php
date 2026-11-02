@@ -62,6 +62,28 @@ final class AssignmentHistory
     }
 
     /**
+     * The parts of the piece each member played in other projects, for coloring them where voices
+     * are given: `true` for the part of their latest assignment of the piece, `false` for the parts
+     * they played before that.
+     *
+     * @param list<Assignment> $pieceAssignments All assignments of one piece, in any project
+     * @return array<int, array<int, bool>> user ID => part ID => whether it is the latest
+     */
+    public static function playedParts(int $currentProjectId, array $pieceAssignments): array
+    {
+        $latest = self::lastParts($currentProjectId, $pieceAssignments);
+        $played = [];
+        foreach ($pieceAssignments as $assignment) {
+            $userId = $assignment->userId;
+            if ($userId !== null && $assignment->projectId !== $currentProjectId) {
+                $played[$userId][$assignment->partId] = $latest[$userId] === $assignment->partId;
+            }
+        }
+
+        return $played;
+    }
+
+    /**
      * The assignments of the project to a part the member was never assigned to in another project:
      * the member plays a new part.
      *

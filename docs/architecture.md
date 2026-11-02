@@ -95,6 +95,11 @@ no part in a piece yet the part of their latest assignment of that piece. Member
 the piece stay unassigned; existing assignments are not changed.
 
 The marks are shown to users with `orchestra_projects_assignment_history_read` (conductors and organizers).
+Since 0.30, the members in the form of a part are also colored: green for the part they played
+last time, yellow for a part they played before that in any other project (also a running one),
+no color if they never played it (`assets/orchestra-projects.css`, `orchestra-projects-played--last`
+and `--earlier`). orchestra-seating colors the parts in its voice dropdowns the same way
+(`ProjectsService::playedParts()`).
 
 **New parts:** an assignment to a part the member was never assigned to in another project
 (`AssignmentHistory::newParts()`) is labelled "new", as a yellow starburst (`Ui\Badges::newPart()`;

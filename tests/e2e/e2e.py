@@ -790,6 +790,29 @@ check("Mia — played last time" in horn1_row and "Olga — never played" in hor
       "conductors see who played the part last time")
 horn2_row = text(page.split("orchestra-projects-part-" + str(HORN2), 1)[1].split("</details>", 1)[0])
 check("Olga — played last time" in horn2_row, "history is per part")
+
+
+def played_class(page, part, name):
+    """The coloring class of a member's checkbox row in the form of a part, or "" without one."""
+    form = page.split("orchestra-projects-part-" + str(part), 1)[1].split("</details>", 1)[0]
+    label = next((l for l in re.findall(r"<label[^>]*>.*?</label>", form, flags=re.S) if f"<span>{name}" in l), "")
+    match = re.search(r"orchestra-projects-played--(\w+)", label.split(">", 1)[0])
+    return match.group(1) if match else ""
+
+
+# Mo played Horn 2 and later Horn 1 of the piece in two other projects.
+wp_eval('$r = new Orchestra\\Projects\\Assignment\\AssignmentRepository($GLOBALS["wpdb"],'
+        ' new Orchestra\\Projects\\Database\\Schema($GLOBALS["wpdb"]));'
+        f' $r->insert(999998, {PIRATES}, {HORN2}, {ids["mo"]}, 1); $r->insert(999999, {PIRATES}, {HORN1}, {ids["mo"]}, 1);')
+_, page = conductor.get(manage_url(summer, "assignments"))
+check(played_class(page, HORN1, "Mia") == "last" and played_class(page, HORN1, "Mo") == "last"
+      and played_class(page, HORN2, "Mo") == "earlier" and played_class(page, HORN1, "Olga") == ""
+      and "assets/orchestra-projects.css" in page,
+      "members are green for the part they played last time, yellow for a part they played before")
+check(projects_api(f"echo json_encode($p->playedParts({summer}, {PIRATES})[{ids['mo']}]);")
+      == {str(HORN2): False, str(HORN1): True}, "other plugins get the parts played before")
+wp_eval('global $wpdb; $wpdb->query("DELETE FROM {$wpdb->prefix}orchestra_projects_assignments'
+        ' WHERE project_id IN (999998, 999999)");')
 check('type="checkbox" name="users[]"' in page and "<select multiple" not in page,
       "members are assigned with checkboxes, not a multiple selection")
 wp("option", "update", "orchestra_core_language", "de_DE")

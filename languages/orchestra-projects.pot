@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-02 21:19+0100\n"
+"POT-Creation-Date: 2026-11-02 21:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgid "%s (inactive)"
 msgstr ""
 
 #: src/Admin/ProjectActions.php:68 src/Admin/ProjectsPage.php:104
-#: src/ProjectsService.php:123 src/Ui/ProjectsShortcode.php:85
+#: src/ProjectsService.php:136 src/Ui/ProjectsShortcode.php:85
 msgid "The project does not exist."
 msgstr ""
 
@@ -546,7 +546,7 @@ msgstr ""
 msgid "Assigned"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:249 src/Ui/AssignmentsView.php:369
+#: src/Ui/AssignmentsView.php:249 src/Ui/AssignmentsView.php:391
 msgid "Assign"
 msgstr ""
 
@@ -569,16 +569,16 @@ msgstr ""
 msgid "Take over"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:320 src/Ui/ProgramView.php:97
+#: src/Ui/AssignmentsView.php:338 src/Ui/ProgramView.php:97
 #: src/Ui/ProjectFormView.php:118
 msgid "Remove"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:364
+#: src/Ui/AssignmentsView.php:386
 msgid "Assign members"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:368
+#: src/Ui/AssignmentsView.php:390
 msgid "Members"
 msgstr ""
 

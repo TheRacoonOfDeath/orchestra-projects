@@ -6,6 +6,7 @@ namespace Orchestra\Projects;
 
 use Orchestra\Projects\Assignment\Assignment;
 use Closure;
+use Orchestra\Projects\Assignment\AssignmentHistory;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Participation\Participation;
@@ -105,6 +106,18 @@ final class ProjectsService
     public function assignments(int $projectId): array
     {
         return $this->assignments->forProject($projectId);
+    }
+
+    /**
+     * The parts of the piece the members played in other projects: `true` for the part of their
+     * latest assignment of the piece, `false` for parts they played before. orchestra-seating
+     * colors the voices with it. Since 0.30.
+     *
+     * @return array<int, array<int, bool>> user ID => part ID => whether it is the latest
+     */
+    public function playedParts(int $projectId, int $pieceId): array
+    {
+        return AssignmentHistory::playedParts($projectId, $this->assignments->forPiece($pieceId));
     }
 
     /**

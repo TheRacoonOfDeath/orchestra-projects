@@ -45,3 +45,21 @@
         transform: rotate(12deg) scale(1.15);
     }
 }
+
+/*
+ * Where members are assigned to a part: green for the part a member played last time, yellow for a
+ * part they played before that.
+ */
+.orchestra .orchestra-projects-played {
+    border-radius: var(--orchestra-radius-small, 6px);
+    margin-inline: -0.3rem;
+    padding: 0.15rem 0.3rem;
+}
+
+.orchestra .orchestra-projects-played--last {
+    background: color-mix(in srgb, var(--orchestra-success) 22%, transparent);
+}
+
+.orchestra .orchestra-projects-played--earlier {
+    background: color-mix(in srgb, var(--orchestra-warning) 22%, transparent);
+}

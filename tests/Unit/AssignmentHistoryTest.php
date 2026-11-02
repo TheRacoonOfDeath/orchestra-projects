@@ -111,4 +111,19 @@ final class AssignmentHistoryTest extends TestCase
             AssignmentHistory::lastParts(self::CURRENT, $assignments)
         );
     }
+
+    public function testPlayedPartsMarkTheLatestPartAndTheEarlierOnes(): void
+    {
+        $assignments = [
+            new Assignment(1, 1, self::PIECE, self::PART, 10),
+            new Assignment(2, 2, self::PIECE, self::OTHER_PART, 10), // user 10: latest is the other part
+            new Assignment(3, 1, self::PIECE, self::PART, 11),
+            new Assignment(4, self::CURRENT, self::PIECE, self::OTHER_PART, 12), // this project: not history
+        ];
+
+        $this->assertSame(
+            [10 => [self::PART => false, self::OTHER_PART => true], 11 => [self::PART => true]],
+            AssignmentHistory::playedParts(self::CURRENT, $assignments)
+        );
+    }
 }
