@@ -24,16 +24,16 @@
     color: #422006;
     display: inline-flex;
     flex: none;
-    font-size: 0.62rem;
+    font-size: 0.55rem;
     font-weight: 800;
-    height: 3.7em;
+    height: 3.4em;
     justify-content: center;
     letter-spacing: 0.04em;
     line-height: 1;
     text-transform: uppercase;
     transform: rotate(-12deg);
     vertical-align: middle;
-    width: 3.7em;
+    width: 3.4em;
 }
 
 @media (prefers-reduced-motion: no-preference) {
