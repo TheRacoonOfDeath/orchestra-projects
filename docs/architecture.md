@@ -98,7 +98,8 @@ The marks are shown to users with `orchestra_projects_assignment_history_read` (
 Since 0.30, the members in the form of a part are also colored: green for the part they played
 last time, yellow for a part they played before that in any other project (also a running one),
 no color if they never played it (`assets/orchestra-projects.css`, `orchestra-projects-played--last`
-and `--earlier`). orchestra-seating colors the parts in its voice dropdowns the same way
+and `--earlier`). The members are listed green first, then yellow, then the others, each group by
+name (since 0.31); the marks in words ("played last time", …) are only read out by screen readers. orchestra-seating colors the parts in its voice dropdowns the same way
 (`ProjectsService::playedParts()`).
 
 **New parts:** an assignment to a part the member was never assigned to in another project

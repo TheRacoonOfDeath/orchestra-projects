@@ -809,6 +809,19 @@ check(played_class(page, HORN1, "Mia") == "last" and played_class(page, HORN1, "
       and played_class(page, HORN2, "Mo") == "earlier" and played_class(page, HORN1, "Olga") == ""
       and "assets/orchestra-projects.css" in page,
       "members are green for the part they played last time, yellow for a part they played before")
+
+
+def candidates(page, part):
+    """The names in the form of a part, in their order."""
+    form = page.split("orchestra-projects-part-" + str(part), 1)[1].split("</details>", 1)[0]
+    return re.findall(r'name="users\[\]"[^>]*> <span>([^<]+)', form)
+
+
+check(candidates(page, HORN2) == ["Olga", "Mo", "Mia"] and candidates(page, HORN1) == ["Mia", "Mo", "Olga"],
+      f"green members come first, then yellow ones, then the others, each by name: {candidates(page, HORN2)}")
+check('orchestra-muted">— played' not in page and 'orchestra-muted">— never' not in page
+      and 'class="screen-reader-text"> — played last time' in page,
+      "the history is shown by the colors; its words are left for screen readers")
 check(projects_api(f"echo json_encode($p->playedParts({summer}, {PIRATES})[{ids['mo']}]);")
       == {str(HORN2): False, str(HORN1): True}, "other plugins get the parts played before")
 wp_eval('global $wpdb; $wpdb->query("DELETE FROM {$wpdb->prefix}orchestra_projects_assignments'

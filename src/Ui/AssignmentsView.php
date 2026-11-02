@@ -297,21 +297,28 @@ final class AssignmentsView
     }
 
     /**
-     * Green for the part the member played last time, yellow for a part they played before that,
-     * in any other project.
+     * "last" (green) for the part the member played last time, "earlier" (yellow) for a part they
+     * played before that, in any other project, null if they never played it.
      *
      * @param list<HistoryMark> $history
      */
-    private static function playedClass(array $history): string
+    private static function played(array $history): ?string
     {
         if (\in_array(HistoryMark::LastTime, $history, true)) {
-            return ' orchestra-projects-played orchestra-projects-played--last';
+            return 'last';
         }
 
         // Without "never played", the member played the part before.
-        return \in_array(HistoryMark::Never, $history, true)
-            ? ''
-            : ' orchestra-projects-played orchestra-projects-played--earlier';
+        return \in_array(HistoryMark::Never, $history, true) ? null : 'earlier';
+    }
+
+    private static function rank(?string $played): int
+    {
+        return match ($played) {
+            'last' => 0,
+            'earlier' => 1,
+            default => 2,
+        };
     }
 
     /**
@@ -366,11 +373,22 @@ final class AssignmentsView
             Assets::enqueue();
         }
 
+        // Green first, then yellow, then the others; by name within each group.
+        $played = [];
+        foreach (\array_keys($candidates) as $userId) {
+            $played[$userId] = $marks === [] ? null : self::played($marks[$userId] ?? []);
+        }
+        \uksort($candidates, static fn (int $a, int $b): int => self::rank($played[$a]) <=> self::rank($played[$b])
+            ?: \strnatcasecmp($candidates[$a], $candidates[$b]));
+
         $boxes = '';
         foreach ($candidates as $userId => $name) {
             $history = $marks[$userId] ?? [];
+            // The color says it; the marks remain for screen readers.
             $notes = \array_map(static fn (HistoryMark $mark): string => $mark->label(), $history);
-            $boxes .= '<label class="orchestra-checkbox' . ($marks === [] ? '' : self::playedClass($history)) . '">'
+            $state = $played[$userId];
+            $boxes .= '<label class="orchestra-checkbox'
+                . ($state === null ? '' : ' orchestra-projects-played orchestra-projects-played--' . $state) . '">'
                 . '<input type="checkbox" name="users[]" value="' . $userId . '"'
                 . ($history === [] ? '' : ' data-history="' . \esc_attr(\implode(' ', \array_map(
                     static fn (HistoryMark $mark): string => $mark->value,
@@ -379,7 +397,7 @@ final class AssignmentsView
                 . '> <span>' . \esc_html($name)
                 . ($notes === []
                     ? ''
-                    : ' <span class="orchestra-muted">— ' . \esc_html(\implode(', ', $notes)) . '</span>')
+                    : '<span class="screen-reader-text"> — ' . \esc_html(\implode(', ', $notes)) . '</span>')
                 . '</span></label>';
         }
 

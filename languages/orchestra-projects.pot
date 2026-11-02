@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-02 21:38+0100\n"
+"POT-Creation-Date: 2026-11-02 22:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -546,7 +546,7 @@ msgstr ""
 msgid "Assigned"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:249 src/Ui/AssignmentsView.php:391
+#: src/Ui/AssignmentsView.php:249 src/Ui/AssignmentsView.php:409
 msgid "Assign"
 msgstr ""
 
@@ -569,16 +569,16 @@ msgstr ""
 msgid "Take over"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:338 src/Ui/ProgramView.php:97
+#: src/Ui/AssignmentsView.php:345 src/Ui/ProgramView.php:97
 #: src/Ui/ProjectFormView.php:118
 msgid "Remove"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:386
+#: src/Ui/AssignmentsView.php:404
 msgid "Assign members"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:390
+#: src/Ui/AssignmentsView.php:408
 msgid "Members"
 msgstr ""
 

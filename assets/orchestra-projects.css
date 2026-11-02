@@ -63,3 +63,16 @@
 .orchestra .orchestra-projects-played--earlier {
     background: color-mix(in srgb, var(--orchestra-warning) 22%, transparent);
 }
+
+/* The history in words, for screen readers only; not every theme hides .screen-reader-text. */
+.orchestra .orchestra-checklist .screen-reader-text {
+    border: 0;
+    clip-path: inset(50%);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
