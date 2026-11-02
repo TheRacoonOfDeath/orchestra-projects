@@ -27,12 +27,13 @@ final class ProjectEndTest extends TestCase
         $this->assertFalse(self::project(ProjectStatus::Open, null, null)->endedBefore('2030-01-01'));
     }
 
-    public function testOnlyOpenAndPreparingProjectsWaitForCompletion(): void
+    public function testOnlyRunningProjectsWaitForCompletion(): void
     {
+        $running = [ProjectStatus::Open, ProjectStatus::Preparation, ProjectStatus::PartsAssigned];
         foreach (ProjectStatus::cases() as $status) {
             $waits = self::project($status, '2026-10-08', '2026-10-10')->waitsForCompletion('2026-10-20');
 
-            $this->assertSame(\in_array($status, [ProjectStatus::Open, ProjectStatus::Preparation], true), $waits);
+            $this->assertSame(\in_array($status, $running, true), $waits);
         }
     }
 

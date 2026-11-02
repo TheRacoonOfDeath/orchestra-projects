@@ -110,7 +110,7 @@ final class ProjectsService
     /**
      * Gives the member the part in the piece, replacing the part they had in it, or removes their
      * part in the piece (`$partId` null). The rules of the assignments tab apply: the project is
-     * open for participation or in preparation, the piece is in the program, the part belongs to
+     * neither a draft nor completed, the piece is in the program, the part belongs to
      * it and the member has accepted. The caller checks that the user may manage assignments
      * (`orchestra_projects_assignment_manage`). Since 0.27.
      *

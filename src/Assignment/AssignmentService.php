@@ -254,7 +254,7 @@ final class AssignmentService
     private static function lockedMessage(): string
     {
         return \__(
-            'Assignments can only be changed while the project is open for participation or in preparation.',
+            'Assignments cannot be changed in drafts and completed projects.',
             'orchestra-projects'
         );
     }

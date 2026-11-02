@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-02 20:17+0100\n"
+"POT-Creation-Date: 2026-11-02 20:42+0100\n"
 "PO-Revision-Date: 2026-10-16 00:00+0000\n"
 "Last-Translator: Julian Nickerl\n"
 "Language-Team: German\n"
@@ -135,13 +135,9 @@ msgstr "Die Einteilung existiert nicht."
 msgid "new"
 msgstr "neu"
 
-#: src/Assignment/AssignmentService.php:257 src/Ui/AssignmentsView.php:68
-msgid ""
-"Assignments can only be changed while the project is open for participation "
-"or in preparation."
-msgstr ""
-"Einteilungen können nur geändert werden, solange das Projekt offen für "
-"Anmeldungen ist oder die Anmeldung geschlossen ist."
+#: src/Assignment/AssignmentService.php:257 src/Ui/AssignmentsView.php:90
+msgid "Assignments cannot be changed in drafts and completed projects."
+msgstr "In Entwürfen und abgeschlossenen Projekten können die Einteilungen nicht geändert werden."
 
 #: src/Assignment/HistoryMark.php:16
 msgid "played last time"
@@ -171,12 +167,12 @@ msgstr "Unentschlossene Teilnehmer (noch keine Antwort)"
 msgid "The program has no pieces yet."
 msgstr "Das Programm hat noch keine Stücke."
 
-#: src/Export/AssignmentsPdf.php:66 src/Ui/AssignmentsView.php:202
+#: src/Export/AssignmentsPdf.php:66 src/Ui/AssignmentsView.php:224
 msgid "The piece has no parts."
 msgstr "Das Stück hat keine Stimmen."
 
 #: src/Export/AssignmentsPdf.php:78 src/Privacy/PersonalData.php:118
-#: src/Ui/AssignmentsView.php:222
+#: src/Ui/AssignmentsView.php:244
 msgid "Part"
 msgstr "Stimme"
 
@@ -194,7 +190,7 @@ msgstr "* spielt diese Stimme zum ersten Mal"
 msgid "Assignments: %s"
 msgstr "Stimmverteilung: %s"
 
-#: src/Export/AssignmentsPdf.php:132 src/Ui/AssignmentsView.php:157
+#: src/Export/AssignmentsPdf.php:132 src/Ui/AssignmentsView.php:179
 #: src/Ui/ParticipationView.php:114
 msgid "Member"
 msgstr "Mitglied"
@@ -472,19 +468,23 @@ msgstr "Keine Projekte gefunden."
 msgid "No projects found in Trash."
 msgstr "Keine Projekte im Papierkorb gefunden."
 
-#: src/Project/ProjectStatus.php:28
+#: src/Project/ProjectStatus.php:30
 msgid "Draft"
 msgstr "Entwurf"
 
-#: src/Project/ProjectStatus.php:29
+#: src/Project/ProjectStatus.php:31
 msgid "Open for Participation"
 msgstr "Offen für Anmeldungen"
 
-#: src/Project/ProjectStatus.php:30
+#: src/Project/ProjectStatus.php:32
 msgid "Preparation"
 msgstr "Anmeldung geschlossen"
 
-#: src/Project/ProjectStatus.php:31 src/Ui/ProjectListView.php:46
+#: src/Project/ProjectStatus.php:33
+msgid "Parts assigned"
+msgstr "Stimmverteilung abgeschlossen"
+
+#: src/Project/ProjectStatus.php:34 src/Ui/ProjectListView.php:46
 msgid "Completed"
 msgstr "Abgeschlossen"
 
@@ -493,10 +493,8 @@ msgid "The project cannot be moved to this status."
 msgstr "Das Projekt kann nicht in diesen Status wechseln."
 
 #: src/Project/ProjectStatusService.php:49
-msgid "Only open projects and projects in preparation can be completed."
-msgstr ""
-"Nur offene Projekte und Projekte mit geschlossener Anmeldung können "
-"abgeschlossen werden."
+msgid "Only running projects can be completed."
+msgstr "Nur laufende Projekte können abgeschlossen werden."
 
 #: src/Project/ProjectStatusService.php:52
 msgid "The project is not over yet. Change its status step by step instead."
@@ -504,25 +502,29 @@ msgstr ""
 "Das Projekt ist noch nicht vorbei. Ändere seinen Status stattdessen Schritt "
 "für Schritt."
 
-#: src/Ui/AssignmentsView.php:49
+#: src/Ui/AssignmentsView.php:59
+msgid "The parts have not been assigned yet."
+msgstr "Stimmverteilung noch nicht abgeschlossen"
+
+#: src/Ui/AssignmentsView.php:71
 msgid "Add pieces to the program first. Their parts can then be assigned here."
 msgstr ""
 "Füge zuerst Stücke zum Programm hinzu. Ihre Stimmen können dann hier "
 "verteilt werden."
 
-#: src/Ui/AssignmentsView.php:59
+#: src/Ui/AssignmentsView.php:81
 msgid "Download PDF"
 msgstr "PDF herunterladen"
 
-#: src/Ui/AssignmentsView.php:90 src/Ui/AssignmentsView.php:173
+#: src/Ui/AssignmentsView.php:112 src/Ui/AssignmentsView.php:195
 msgid "Nobody has accepted to participate yet."
 msgstr "Noch niemand hat sich angemeldet."
 
-#: src/Ui/AssignmentsView.php:98
+#: src/Ui/AssignmentsView.php:120
 msgid "Assign the parts played last time"
 msgstr "In die zuletzt gespielten Stimmen einteilen"
 
-#: src/Ui/AssignmentsView.php:105
+#: src/Ui/AssignmentsView.php:127
 #, php-format
 msgid ""
 "Assigns %d part: members who are not assigned in a piece yet get the part "
@@ -539,40 +541,40 @@ msgstr[1] ""
 "die zuletzt gespielte. Wer das Stück noch nie gespielt hat, wird nicht "
 "eingeteilt."
 
-#: src/Ui/AssignmentsView.php:137
+#: src/Ui/AssignmentsView.php:159
 msgid "View"
 msgstr "Ansicht"
 
-#: src/Ui/AssignmentsView.php:138
+#: src/Ui/AssignmentsView.php:160
 msgid "By piece"
 msgstr "Nach Stücken"
 
-#: src/Ui/AssignmentsView.php:141
+#: src/Ui/AssignmentsView.php:163
 msgid "By member"
 msgstr "Nach Mitgliedern"
 
-#: src/Ui/AssignmentsView.php:216
+#: src/Ui/AssignmentsView.php:238
 msgid "At least one member has not been assigned a part yet"
 msgstr "Mindestens ein Mitglied hat noch keine Stimme"
 
-#: src/Ui/AssignmentsView.php:222
+#: src/Ui/AssignmentsView.php:244
 msgid "Assigned"
 msgstr "Eingeteilt"
 
-#: src/Ui/AssignmentsView.php:224 src/Ui/AssignmentsView.php:310
+#: src/Ui/AssignmentsView.php:246 src/Ui/AssignmentsView.php:332
 msgid "Assign"
 msgstr "Einteilen"
 
-#: src/Ui/AssignmentsView.php:261 src/Ui/ProgramView.php:97
+#: src/Ui/AssignmentsView.php:283 src/Ui/ProgramView.php:97
 #: src/Ui/ProjectFormView.php:118
 msgid "Remove"
 msgstr "Entfernen"
 
-#: src/Ui/AssignmentsView.php:305
+#: src/Ui/AssignmentsView.php:327
 msgid "Assign members"
 msgstr "Mitglieder einteilen"
 
-#: src/Ui/AssignmentsView.php:309
+#: src/Ui/AssignmentsView.php:331
 msgid "Members"
 msgstr "Mitglieder"
 
@@ -625,43 +627,43 @@ msgstr ""
 "Z. B. wenn du nur bei einigen Konzerten dabei sein kannst. Nur die "
 "Organisatoren sehen ihn."
 
-#: src/Ui/MemberProjectView.php:125 src/Ui/MemberProjectView.php:230
+#: src/Ui/MemberProjectView.php:125 src/Ui/MemberProjectView.php:236
 msgid "Accept to participate? Your decision is final."
 msgstr "Anmelden? Deine Entscheidung ist endgültig."
 
-#: src/Ui/MemberProjectView.php:126 src/Ui/MemberProjectView.php:231
+#: src/Ui/MemberProjectView.php:126 src/Ui/MemberProjectView.php:237
 msgid "Decline to participate? Your decision is final."
 msgstr "Teilnahme absagen? Deine Entscheidung ist endgültig."
 
-#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:227
+#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:233
 msgid "Accept"
 msgstr "Anmelden"
 
-#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:227
+#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:233
 msgid "Decline"
 msgstr "Absagen"
 
-#: src/Ui/MemberProjectView.php:158
-msgid "No part assigned yet"
-msgstr "Noch keine Stimme zugeteilt"
-
-#: src/Ui/MemberProjectView.php:159
-msgid "No part"
-msgstr "Keine Stimme"
-
-#: src/Ui/MemberProjectView.php:185
-msgid "No sheet music yet"
-msgstr "Noch keine Noten"
-
-#: src/Ui/MemberProjectView.php:188
-msgid "Download"
-msgstr "Herunterladen"
-
-#: src/Ui/MemberProjectView.php:197
+#: src/Ui/MemberProjectView.php:154 src/Ui/MemberProjectView.php:203
 msgid "Your parts"
 msgstr "Deine Stimmen"
 
-#: src/Ui/MemberProjectView.php:202
+#: src/Ui/MemberProjectView.php:164
+msgid "No part assigned yet"
+msgstr "Noch keine Stimme zugeteilt"
+
+#: src/Ui/MemberProjectView.php:165
+msgid "No part"
+msgstr "Keine Stimme"
+
+#: src/Ui/MemberProjectView.php:191
+msgid "No sheet music yet"
+msgstr "Noch keine Noten"
+
+#: src/Ui/MemberProjectView.php:194
+msgid "Download"
+msgstr "Herunterladen"
+
+#: src/Ui/MemberProjectView.php:208
 msgid "Download all as a zip file"
 msgstr "Alle als ZIP-Datei herunterladen"
 
@@ -1037,6 +1039,13 @@ msgstr "Du darfst die Projekte nicht sehen."
 #~ msgstr "Archiviert"
 
 #~ msgid ""
+#~ "Assignments can only be changed while the project is open for "
+#~ "participation or in preparation."
+#~ msgstr ""
+#~ "Einteilungen können nur geändert werden, solange das Projekt offen für "
+#~ "Anmeldungen ist oder die Anmeldung geschlossen ist."
+
+#~ msgid ""
 #~ "Comments can only be changed while the project is open or in preparation."
 #~ msgstr ""
 #~ "Kommentare können nur geändert werden, solange die Anmeldung offen oder "
@@ -1081,6 +1090,11 @@ msgstr "Du darfst die Projekte nicht sehen."
 
 #~ msgid "Not paid"
 #~ msgstr "Nicht bezahlt"
+
+#~ msgid "Only open projects and projects in preparation can be completed."
+#~ msgstr ""
+#~ "Nur offene Projekte und Projekte mit geschlossener Anmeldung können "
+#~ "abgeschlossen werden."
 
 #~ msgid "Open"
 #~ msgstr "Öffnen"

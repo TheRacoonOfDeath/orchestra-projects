@@ -16,24 +16,30 @@ final class ProjectStatusTest extends TestCase
         $this->assertFalse(ProjectStatus::Draft->canMoveTo(ProjectStatus::Preparation));
         $this->assertFalse(ProjectStatus::Open->canMoveTo(ProjectStatus::Open));
         $this->assertNull(ProjectStatus::Completed->next());
+        $this->assertSame(ProjectStatus::PartsAssigned, ProjectStatus::Preparation->next());
+        $this->assertSame(ProjectStatus::PartsAssigned, ProjectStatus::Completed->previous());
+        $this->assertFalse(ProjectStatus::Preparation->canMoveTo(ProjectStatus::Completed));
+        $this->assertTrue(ProjectStatus::PartsAssigned->programEditable());
         $this->assertNull(ProjectStatus::Draft->previous());
     }
 
     public function testFollowsTheStatusTableOfTheDomainModel(): void
     {
         $table = [
-            // visible, respond, assignments
-            'draft' => [false, false, false],
-            'open' => [true, true, true],
-            'preparation' => [true, false, true],
-            'completed' => [true, false, false],
+            // visible, respond, assignments changed, assignments shown to members
+            'draft' => [false, false, false, false],
+            'open' => [true, true, true, false],
+            'preparation' => [true, false, true, false],
+            'parts_assigned' => [true, false, true, true],
+            'completed' => [true, false, false, true],
         ];
 
-        foreach ($table as $value => [$visible, $respond, $assignments]) {
+        foreach ($table as $value => [$visible, $respond, $assignments, $shown]) {
             $status = ProjectStatus::from($value);
             $this->assertSame($visible, $status->visibleToMembers(), $value);
             $this->assertSame($respond, $status->membersCanRespond(), $value);
             $this->assertSame($assignments, $status->assignmentsEditable(), $value);
+            $this->assertSame($shown, $status->assignmentsVisibleToMembers(), $value);
         }
     }
 
@@ -42,9 +48,12 @@ final class ProjectStatusTest extends TestCase
         $current = \array_filter(ProjectStatus::cases(), static fn (ProjectStatus $s): bool => $s->current());
         $active = \array_filter(ProjectStatus::cases(), static fn (ProjectStatus $s): bool => $s->active());
 
-        $this->assertSame([ProjectStatus::Open, ProjectStatus::Preparation], \array_values($current));
         $this->assertSame(
-            [ProjectStatus::Draft, ProjectStatus::Open, ProjectStatus::Preparation],
+            [ProjectStatus::Open, ProjectStatus::Preparation, ProjectStatus::PartsAssigned],
+            \array_values($current)
+        );
+        $this->assertSame(
+            [ProjectStatus::Draft, ProjectStatus::Open, ProjectStatus::Preparation, ProjectStatus::PartsAssigned],
             \array_values($active)
         );
     }

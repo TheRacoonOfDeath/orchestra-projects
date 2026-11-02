@@ -16,6 +16,7 @@ final class Badges
         return Html::badge($status->label(), match ($status) {
             ProjectStatus::Open => 'info',
             ProjectStatus::Preparation => 'warning',
+            ProjectStatus::PartsAssigned => 'success',
             ProjectStatus::Completed => 'success',
             ProjectStatus::Draft => '',
         });

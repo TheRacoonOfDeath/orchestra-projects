@@ -12,6 +12,8 @@ enum ProjectStatus: string
     case Draft = 'draft';
     case Open = 'open';
     case Preparation = 'preparation';
+    /** The parts are assigned and shown to the members; the project is still running (since 0.28). */
+    case PartsAssigned = 'parts_assigned';
     case Completed = 'completed';
 
     /**
@@ -28,6 +30,7 @@ enum ProjectStatus: string
             self::Draft => \__('Draft', 'orchestra-projects'),
             self::Open => \__('Open for Participation', 'orchestra-projects'),
             self::Preparation => \__('Preparation', 'orchestra-projects'),
+            self::PartsAssigned => \__('Parts assigned', 'orchestra-projects'),
             self::Completed => \__('Completed', 'orchestra-projects'),
         };
     }
@@ -43,7 +46,7 @@ enum ProjectStatus: string
      */
     public function current(): bool
     {
-        return $this === self::Open || $this === self::Preparation;
+        return $this === self::Open || $this === self::Preparation || $this === self::PartsAssigned;
     }
 
     /** In the list of active projects, including drafts for conductors and organizers. */
@@ -59,13 +62,22 @@ enum ProjectStatus: string
 
     public function assignmentsEditable(): bool
     {
-        return $this === self::Open || $this === self::Preparation;
+        return $this === self::Open || $this === self::Preparation || $this === self::PartsAssigned;
+    }
+
+    /**
+     * Whether members see the assignments (the assignments tab, their own parts and their sheet
+     * music) and, in orchestra-seating, the seating. Conductors and organizers always see them.
+     */
+    public function assignmentsVisibleToMembers(): bool
+    {
+        return $this === self::PartsAssigned || $this === self::Completed;
     }
 
     /** Completed programs are history and stay unchanged. */
     public function programEditable(): bool
     {
-        return $this === self::Draft || $this === self::Open || $this === self::Preparation;
+        return $this !== self::Completed;
     }
 
     public function next(): ?self
@@ -73,7 +85,8 @@ enum ProjectStatus: string
         return match ($this) {
             self::Draft => self::Open,
             self::Open => self::Preparation,
-            self::Preparation => self::Completed,
+            self::Preparation => self::PartsAssigned,
+            self::PartsAssigned => self::Completed,
             self::Completed => null,
         };
     }
@@ -84,7 +97,8 @@ enum ProjectStatus: string
             self::Draft => null,
             self::Open => self::Draft,
             self::Preparation => self::Open,
-            self::Completed => self::Preparation,
+            self::PartsAssigned => self::Preparation,
+            self::Completed => self::PartsAssigned,
         };
     }
 

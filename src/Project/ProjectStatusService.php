@@ -45,8 +45,8 @@ final class ProjectStatusService
      */
     public function complete(Project $project, string $today): ?string
     {
-        if (!\in_array($project->status, [ProjectStatus::Open, ProjectStatus::Preparation], true)) {
-            return \__('Only open projects and projects in preparation can be completed.', 'orchestra-projects');
+        if (!$project->status->current()) {
+            return \__('Only running projects can be completed.', 'orchestra-projects');
         }
         if (!$project->endedBefore($today)) {
             return \__('The project is not over yet. Change its status step by step instead.', 'orchestra-projects');

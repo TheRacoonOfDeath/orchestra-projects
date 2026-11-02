@@ -16,8 +16,8 @@ use Orchestra\Projects\Project\ProjectRepository;
 
 /**
  * The project recipient groups for the email service of orchestra-email: the accepted and pending
- * participants of the projects that are open or in preparation (also when they are over but not
- * completed yet), the next project first. There are no groups per piece or part.
+ * participants of the running projects: open, in preparation or with the parts assigned (also
+ * when they are over but not completed yet), the next project first. There are no groups per piece or part.
  */
 final class ProjectEmailGroups
 {

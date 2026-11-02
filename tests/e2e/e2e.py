@@ -494,6 +494,15 @@ dance = page.split("<h3>Lord of the Dance", 1)[1].split("</h3>", 1)[0]
 check("At least one member has not been assigned a part yet" in dance,
       "pieces in which an accepted member has no part yet show a warning")
 check(NEW_BADGE in pirates, "the assignments mark members who play a part for the first time")
+_, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}&orchestra_tab=assignments")
+check("The parts have not been assigned yet." in text(page) and "Horn 1" not in text(page),
+      "members do not see the assignments before the parts are assigned")
+_, page = mia.get(DASHBOARD)
+check("The parts have not been assigned yet." in text(page) and "Horn 1" not in text(page)
+      and "orchestra_library_download" not in page, "members see neither their parts nor their sheet music yet")
+_, page = organizer.get(f"{DASHBOARD}&orchestra_project={spring}")
+check("Horn 2" in text(page), "organizers who play see their parts before the parts are assigned")
+wp("post", "meta", "update", str(spring), "orchestra_projects_status", "parts_assigned")
 _, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}")
 check("orchestra_tab=assignments" in page, "members have the assignments tab")
 _, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}&orchestra_tab=assignments")
@@ -534,6 +543,7 @@ if files:
           "members download the sheet music of a single part")
 _, page = mo.get(DASHBOARD)
 check("orchestra_library_download" not in page, "members without assignments have no download")
+wp("post", "meta", "update", str(spring), "orchestra_projects_status", "open")
 
 # --- Organizers change participation --------------------------------------------------------
 _, page = act(organizer, spring, "participation", participation=mia_participation, status="declined")
@@ -781,7 +791,9 @@ check(summer_parts == {login: spring_parts[login] for login in accepted} and "mo
       f"members get the part they played last time, others stay unassigned: {summer_parts}")
 _, page = conductor.get(manage_url(summer, "assignments"))
 check("Assign the parts played last time" not in page, "the button is gone once there is nothing left to assign")
+wp("post", "meta", "update", str(summer), "orchestra_projects_status", "parts_assigned")
 _, mo_page = mo.get(f"{DASHBOARD}&orchestra_project={summer}")
+wp("post", "meta", "update", str(summer), "orchestra_projects_status", "open")
 mo_parts = text(mo_page).split("Your parts", 1)[1] if "Your parts" in text(mo_page) else ""
 check("Pirates of the Caribbean" in mo_parts and "No part assigned yet" in mo_parts,
       "members who take part see every piece, also those without a part yet")
@@ -813,9 +825,25 @@ check(participation_of(spring, "mia")["member_comment"] == "Only from the 28th",
       "comments cannot be changed once the registration is closed")
 act(conductor, spring, "assign", part=HORN2, **{"users[]": [str(ids["organizer"])]})
 check(HORN2 in assignments_of(spring).get("organizer", []), "assignments can be changed during preparation")
+_, page = act(organizer, spring, "status", target="completed")
+check(projects_api(f"echo json_encode($p->project({spring})->status->value);") == "preparation",
+      "projects cannot skip \"Parts assigned\"")
+act(organizer, spring, "status", target="parts_assigned")
+act(conductor, spring, "assign", part=VIOLIN1, **{"users[]": [str(ids["organizer"])]})
+check(VIOLIN1 in assignments_of(spring).get("organizer", []), "assignments can still be changed once the parts are assigned")
+act(conductor, spring, "unassign", assignment=next(a for a in projects_api(
+    f"echo json_encode(array_map(fn($a) => [$a->id, $a->partId, $a->userId], $p->assignments({spring})));")
+    if a[1] == VIOLIN1 and a[2] == ids["organizer"])[0])
+_, page = mia.get(DASHBOARD)
+check("Spring Concert 2027" in page and "Parts assigned" in text(page) and "Horn 1" in text(page),
+      "projects with the parts assigned are still active, and members see their parts")
+_, page = organizer.get(COMPOSE)
+check("Spring Concert 2027" in page, "projects with the parts assigned keep their email groups")
+_, page = organizer.get(f"{DASHBOARD}&orchestra_project={spring}")
+check('Back to &quot;Preparation&quot;' in page or 'Back to "Preparation"' in page, "organizers can go back to preparation")
 act(organizer, spring, "status", target="completed")
 _, page = act(conductor, spring, "assign", part=VIOLIN1, **{"users[]": [str(ids["organizer"])]})
-check("can only be changed while" in text(page), "assignments are locked in completed projects")
+check("cannot be changed in drafts and completed projects" in text(page), "assignments are locked in completed projects")
 _, page = act(conductor, spring, "program_add", piece=DANCE)
 check("cannot be changed" in text(page), "programs are locked in completed projects")
 act(conductor, summer, "program_add", piece=PIRATES)

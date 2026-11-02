@@ -41,8 +41,30 @@ final class AssignmentsView
     ) {
     }
 
+    /**
+     * Members see the assignments once the parts are assigned (status Parts assigned or Completed);
+     * conductors and organizers, who make them, always.
+     */
+    public static function hiddenFromMembers(Project $project): bool
+    {
+        return !$project->status->assignmentsVisibleToMembers()
+            && !\current_user_can(Capabilities::ASSIGNMENT_MANAGE);
+    }
+
+    /**
+     * What members see instead of the assignments before the parts are assigned.
+     */
+    public static function notAssignedYet(): string
+    {
+        return \__('The parts have not been assigned yet.', 'orchestra-projects');
+    }
+
     public function render(Project $project): string
     {
+        if (self::hiddenFromMembers($project)) {
+            return Html::empty(self::notAssignedYet());
+        }
+
         $pieceIds = $this->program->pieceIds($project->id);
         if ($pieceIds === []) {
             return Html::empty(\__(
@@ -65,7 +87,7 @@ final class AssignmentsView
         $manager = \current_user_can(Capabilities::ASSIGNMENT_MANAGE);
         if ($manager && !$project->status->assignmentsEditable()) {
             $html .= '<div class="orchestra-notice"><p>' . \esc_html__(
-                'Assignments can only be changed while the project is open for participation or in preparation.',
+                'Assignments cannot be changed in drafts and completed projects.',
                 'orchestra-projects'
             ) . '</p></div>';
         }

@@ -51,12 +51,11 @@ final class Project
     }
 
     /**
-     * Whether organizers should be told to complete the project: it is over, but still open or in
-     * preparation. Drafts are left alone, because opening them would ask the members to respond.
+     * Whether organizers should be told to complete the project: it is over, but still running.
+     * Drafts are left alone, because opening them would ask the members to respond.
      */
     public function waitsForCompletion(string $today): bool
     {
-        return $this->endedBefore($today)
-            && \in_array($this->status, [ProjectStatus::Open, ProjectStatus::Preparation], true);
+        return $this->endedBefore($today) && $this->status->current();
     }
 }

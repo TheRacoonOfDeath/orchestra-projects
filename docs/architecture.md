@@ -31,12 +31,23 @@ active status, only through their public services.
 | Draft | | Active (staff only) | | | ✓ | |
 | Open for Participation | ✓ | Active | ✓ | ✓ | ✓ | ✓ |
 | Preparation | ✓ | Active | | ✓ | ✓ | ✓ |
+| Parts assigned | ✓ | Active | | ✓ | ✓ | ✓ |
 | Completed | ✓ | Completed | | | | |
 
 - The project list has two tabs, **Active** and **Completed** (`?orchestra_completed=1`).
 - Versions before 0.8 had an Archived status after Completed; such projects count as completed.
 
 - Projects move one step forward or back, e.g. back to Open for late responses.
+- **Parts assigned** (since 0.28, German "Stimmverteilung abgeschlossen", stored as
+  `parts_assigned`) comes between Preparation and Completed. The project is still running: it is
+  listed as active, keeps its email groups, and assignments and program can still be changed.
+  "Complete the project" for projects that are over moves through it.
+- **Members see the assignments only from Parts assigned on**
+  (`ProjectStatus::assignmentsVisibleToMembers()`): before, the assignments tab and "Your parts"
+  on the project list and overview only say "The parts have not been assigned yet." ("Stimmverteilung
+  noch nicht abgeschlossen"), without parts or sheet music downloads. Conductors and organizers
+  (`orchestra_projects_assignment_manage`) always see them, also organizers who play.
+  orchestra-seating hides the seating from members in the same phases.
 - Opening a project creates Open participation records for all active users with the role
   member or organizer who have none yet. New accounts, reactivated members and users who get one
   of these roles while a project is open receive one as well.

@@ -134,7 +134,8 @@ final class MemberProjectView
 
     /**
      * The member's part in every piece of the program, with the sheet music; pieces in which they
-     * have no part yet say so. Shown to members who take part or have parts.
+     * have no part yet say so. Shown to members who take part or have parts. Until the parts are
+     * assigned, members only learn that ({@see AssignmentsView::hiddenFromMembers()}).
      */
     public function parts(Project $project): string
     {
@@ -147,6 +148,11 @@ final class MemberProjectView
         $pieceIds = $this->program->pieceIds($project->id);
         if ($pieceIds === [] || ($assignments === [] && $participation?->status !== ParticipationStatus::Accepted)) {
             return '';
+        }
+
+        if (AssignmentsView::hiddenFromMembers($project)) {
+            return '<h4>' . \esc_html__('Your parts', 'orchestra-projects') . '</h4><p class="orchestra-muted">'
+                . \esc_html(AssignmentsView::notAssignedYet()) . '</p>';
         }
 
         $byPiece = [];
