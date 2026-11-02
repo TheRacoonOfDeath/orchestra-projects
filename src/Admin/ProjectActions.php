@@ -72,7 +72,7 @@ final class ProjectActions
             'status', 'complete' => Capabilities::PROJECT_MANAGE,
             'program_add', 'program_remove', 'program_up', 'program_down' => Capabilities::PROGRAM_MANAGE,
             'participation', 'participation_note', 'participation_bulk' => Capabilities::PARTICIPATION_MANAGE,
-            'assign', 'assign_last', 'unassign' => Capabilities::ASSIGNMENT_MANAGE,
+            'assign', 'assign_last', 'unassign', 'copy_assignments' => Capabilities::ASSIGNMENT_MANAGE,
             default => null,
         };
         if ($capability === null || !\current_user_can($capability)) {
@@ -81,6 +81,9 @@ final class ProjectActions
 
         if ($operation === 'assign_last') {
             $this->assignLastParts($project);
+        }
+        if ($operation === 'copy_assignments') {
+            $this->copyAssignments($project);
         }
 
         $errors = $this->execute($project, $operation);
@@ -182,6 +185,32 @@ final class ProjectActions
                 \_n(
                     '%d part was assigned to the member who played it last time.',
                     '%d parts were assigned to the members who played them last time.',
+                    $result,
+                    'orchestra-projects'
+                ),
+                $result
+            ));
+        }
+
+        Redirect::back();
+    }
+
+    private function copyAssignments(Project $project): never
+    {
+        $result = $this->assignments->copyAssignments(
+            $project,
+            self::int('piece'),
+            self::int('from'),
+            \get_current_user_id()
+        );
+        if (\is_string($result)) {
+            Notices::error($result);
+        } else {
+            Notices::success(\sprintf(
+                /* translators: %d: number of assigned parts */
+                \_n(
+                    'The assignment was taken over: %d part was assigned.',
+                    'The assignment was taken over: %d parts were assigned.',
                     $result,
                     'orchestra-projects'
                 ),

@@ -69,6 +69,11 @@ active status, only through their public services.
   when the request asks for it (`move=1`) and refuses otherwise.
 - While the assignments can be changed, a piece in which an accepted member has no part yet shows
   a warning badge next to its title.
+- **Take over the assignment** ("Verteilung übernehmen", `op=copy_assignments`, since 0.29):
+  below the title of every piece, conductors and organizers choose another piece of the program.
+  After a confirmation, all assignments of the piece are removed, and every accepted member gets
+  the part whose name is exactly the name of their part in the chosen piece; members whose part
+  has no namesake are left without a part.
 - Removing a piece from the program removes its assignments, after a confirmation.
 - Archived and unpublished pieces cannot be added to programs.
 - orchestra-library refuses to delete pieces in a program and parts with assignments

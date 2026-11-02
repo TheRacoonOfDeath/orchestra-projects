@@ -138,7 +138,7 @@ final class AssignmentsView
         // The columns of all pieces line up.
         $html .= '<div class="orchestra-aligned-tables orchestra-stack">';
         foreach ($pieceIds as $pieceId) {
-            $html .= $this->piece($project, $pieceId, $byPart, $players, $new, $editable);
+            $html .= $this->piece($project, $pieceId, $byPart, $players, $new, $editable, $pieceIds);
         }
         $html .= '</div>';
 
@@ -207,6 +207,7 @@ final class AssignmentsView
      * @param array<int, list<Assignment>> $byPart
      * @param array<int, string> $players user ID => name of the accepted participants
      * @param array<int, true> $new IDs of the assignments to a part the member plays for the first time
+     * @param list<int> $pieceIds the pieces of the program, whose assignments can be taken over
      */
     private function piece(
         Project $project,
@@ -215,6 +216,7 @@ final class AssignmentsView
         array $players,
         array $new,
         bool $editable,
+        array $pieceIds = [],
     ): string {
         $piece = $this->library->piece($pieceId);
         $parts = $this->library->parts($pieceId);
@@ -239,7 +241,8 @@ final class AssignmentsView
                 'warning'
             );
         }
-        $html = '<section class="orchestra-stack"><h3>' . $title . '</h3>';
+        $html = '<section class="orchestra-stack"><h3>' . $title . '</h3>'
+            . ($editable ? $this->copyForm($project, $pieceId, $pieceIds) : '');
 
         $headings = [\__('Part', 'orchestra-projects'), \__('Assigned', 'orchestra-projects')];
         if ($editable) {
@@ -257,6 +260,40 @@ final class AssignmentsView
         }
 
         return $html . Html::table($headings, $rows) . '</section>';
+    }
+
+    /**
+     * "Take over the assignment" of another piece of the program: replaces the assignments of this
+     * piece, matching the parts by their exact name.
+     *
+     * @param list<int> $pieceIds
+     */
+    private function copyForm(Project $project, int $pieceId, array $pieceIds): string
+    {
+        $options = '';
+        foreach ($pieceIds as $id) {
+            if ($id !== $pieceId) {
+                $options .= '<option value="' . $id . '">'
+                    . \esc_html($this->library->piece($id)->title ?? '#' . $id) . '</option>';
+            }
+        }
+        if ($options === '') {
+            return '';
+        }
+        $id = 'orchestra-projects-copy-' . $pieceId;
+
+        return ProjectForms::open($project->id, 'copy_assignments', ['piece' => $pieceId], [
+            'class' => 'orchestra-actions',
+        ])
+            . '<label for="' . $id . '">' . \esc_html__('Take over the assignment of', 'orchestra-projects')
+            . '</label><select id="' . $id . '" name="from" required style="width:auto">'
+            . '<option value="">' . \esc_html__('Choose a piece', 'orchestra-projects') . '</option>' . $options
+            . '</select><button type="submit" class="orchestra-button orchestra-button--small"'
+            . ' data-orchestra-confirm="' . \esc_attr__(
+                'Replace all assignments of this piece? Every member gets the part with the same name as their'
+                    . ' part in the chosen piece; members whose part does not exist here are left without a part.',
+                'orchestra-projects'
+            ) . '">' . \esc_html__('Take over', 'orchestra-projects') . '</button></form>';
     }
 
     /**

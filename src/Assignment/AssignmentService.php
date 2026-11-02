@@ -112,6 +112,58 @@ final class AssignmentService
     }
 
     /**
+     * Replaces the assignments of a piece with those of another piece of the program: every member
+     * gets the part of the piece whose name is exactly the name of their part in the source piece.
+     * Members whose part has no namesake in the piece are left without a part there.
+     *
+     * @return int|string The number of assignments made, or an error message
+     */
+    public function copyAssignments(Project $project, int $pieceId, int $sourcePieceId, int $actorId): int|string
+    {
+        if (!$project->status->assignmentsEditable()) {
+            return self::lockedMessage();
+        }
+        if (
+            $pieceId === $sourcePieceId
+            || !$this->program->contains($project->id, $pieceId)
+            || !$this->program->contains($project->id, $sourcePieceId)
+        ) {
+            return \__('Choose another piece of the program.', 'orchestra-projects');
+        }
+
+        $byName = [];
+        foreach ($this->library->parts($pieceId) as $part) {
+            $byName[$part->name] = $part->id;
+        }
+        $sourceNames = [];
+        foreach ($this->library->parts($sourcePieceId) as $part) {
+            $sourceNames[$part->id] = $part->name;
+        }
+        $accepted = [];
+        foreach ($this->participations->forProject($project->id, ParticipationStatus::Accepted) as $participation) {
+            $accepted[$participation->userId ?? 0] = true;
+        }
+
+        $this->assignments->deleteForProjectAndPiece($project->id, $pieceId);
+        $count = 0;
+        foreach ($this->assignments->forProject($project->id) as $assignment) {
+            $partId = $byName[$sourceNames[$assignment->partId] ?? ''] ?? null;
+            if (
+                $assignment->pieceId !== $sourcePieceId
+                || $assignment->userId === null
+                || !isset($accepted[$assignment->userId])
+                || $partId === null
+            ) {
+                continue;
+            }
+            $this->assignments->insert($project->id, $pieceId, $partId, $assignment->userId, $actorId);
+            $count++;
+        }
+
+        return $count;
+    }
+
+    /**
      * The assignments that give every accepted member the part they played last time, in each piece
      * of the program in which they have no part yet. Members who never played the piece are left out.
      *

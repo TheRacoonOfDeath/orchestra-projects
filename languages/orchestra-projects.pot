@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-02 20:42+0100\n"
+"POT-Creation-Date: 2026-11-02 21:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,48 +33,55 @@ msgstr ""
 msgid "The project does not exist."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:79 src/Admin/ProjectActions.php:106
+#: src/Admin/ProjectActions.php:79 src/Admin/ProjectActions.php:109
 #: src/Export/AssignmentsPdfController.php:68
 #: src/Export/ParticipantsExportController.php:85
 #: src/Frontend/ResponseController.php:60
 msgid "You are not allowed to do this."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:88
+#: src/Admin/ProjectActions.php:91
 msgid "Saved."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:115
+#: src/Admin/ProjectActions.php:118
 msgid "Please enter a name."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:134
+#: src/Admin/ProjectActions.php:137
 msgid "The project has been saved."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:176
+#: src/Admin/ProjectActions.php:179
 msgid ""
 "Nobody was assigned: no member without a part has played one of these pieces "
 "before."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:183
+#: src/Admin/ProjectActions.php:186
 #, php-format
 msgid "%d part was assigned to the member who played it last time."
 msgid_plural "%d parts were assigned to the members who played them last time."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Admin/ProjectActions.php:200
+#: src/Admin/ProjectActions.php:212
+#, php-format
+msgid "The assignment was taken over: %d part was assigned."
+msgid_plural "The assignment was taken over: %d parts were assigned."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Admin/ProjectActions.php:229
 msgid "Unknown status."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:212
+#: src/Admin/ProjectActions.php:241
 msgid "Select at least one member and a status."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:219 src/Admin/ProjectActions.php:235
-#: src/Admin/ProjectActions.php:248
+#: src/Admin/ProjectActions.php:248 src/Admin/ProjectActions.php:264
+#: src/Admin/ProjectActions.php:277
 msgid "The participation does not exist."
 msgstr ""
 
@@ -126,19 +133,23 @@ msgid "%1$s is already assigned to %2$s in this piece."
 msgstr ""
 
 #: src/Assignment/AssignmentService.php:108
-#: src/Assignment/AssignmentService.php:241
+#: src/Assignment/AssignmentService.php:293
 msgid "The part does not belong to a piece of the program."
 msgstr ""
 
-#: src/Assignment/AssignmentService.php:177
+#: src/Assignment/AssignmentService.php:131
+msgid "Choose another piece of the program."
+msgstr ""
+
+#: src/Assignment/AssignmentService.php:229
 msgid "The assignment does not exist."
 msgstr ""
 
-#: src/Assignment/AssignmentService.php:232
+#: src/Assignment/AssignmentService.php:284
 msgid "new"
 msgstr ""
 
-#: src/Assignment/AssignmentService.php:257 src/Ui/AssignmentsView.php:90
+#: src/Assignment/AssignmentService.php:309 src/Ui/AssignmentsView.php:90
 msgid "Assignments cannot be changed in drafts and completed projects."
 msgstr ""
 
@@ -170,12 +181,12 @@ msgstr ""
 msgid "The program has no pieces yet."
 msgstr ""
 
-#: src/Export/AssignmentsPdf.php:66 src/Ui/AssignmentsView.php:224
+#: src/Export/AssignmentsPdf.php:66 src/Ui/AssignmentsView.php:226
 msgid "The piece has no parts."
 msgstr ""
 
 #: src/Export/AssignmentsPdf.php:78 src/Privacy/PersonalData.php:118
-#: src/Ui/AssignmentsView.php:244
+#: src/Ui/AssignmentsView.php:247
 msgid "Part"
 msgstr ""
 
@@ -527,28 +538,47 @@ msgstr ""
 msgid "By member"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:238
+#: src/Ui/AssignmentsView.php:240
 msgid "At least one member has not been assigned a part yet"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:244
+#: src/Ui/AssignmentsView.php:247
 msgid "Assigned"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:246 src/Ui/AssignmentsView.php:332
+#: src/Ui/AssignmentsView.php:249 src/Ui/AssignmentsView.php:369
 msgid "Assign"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:283 src/Ui/ProgramView.php:97
+#: src/Ui/AssignmentsView.php:288
+msgid "Take over the assignment of"
+msgstr ""
+
+#: src/Ui/AssignmentsView.php:290
+msgid "Choose a piece"
+msgstr ""
+
+#: src/Ui/AssignmentsView.php:293
+msgid ""
+"Replace all assignments of this piece? Every member gets the part with the "
+"same name as their part in the chosen piece; members whose part does not "
+"exist here are left without a part."
+msgstr ""
+
+#: src/Ui/AssignmentsView.php:296
+msgid "Take over"
+msgstr ""
+
+#: src/Ui/AssignmentsView.php:320 src/Ui/ProgramView.php:97
 #: src/Ui/ProjectFormView.php:118
 msgid "Remove"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:327
+#: src/Ui/AssignmentsView.php:364
 msgid "Assign members"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:331
+#: src/Ui/AssignmentsView.php:368
 msgid "Members"
 msgstr ""
 

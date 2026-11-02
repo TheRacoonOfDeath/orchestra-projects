@@ -483,6 +483,32 @@ check("does not belong" in set_part("mia", DANCE, HORN1), "setPart refuses a par
 set_part("mia", PIRATES, HORN1)
 check(sorted(assignments_of(spring)["mia"]) == sorted([HORN1, VIOLIN1]), "setPart assigns a member without a part")
 
+# Taking over the assignment of another piece, by exact part names
+encore = int(wp_eval(
+    '$id = wp_insert_post(["post_type" => "orchestra_piece", "post_status" => "publish", "post_title" => "Encore"]);'
+    ' $r = new Orchestra\\Library\\Part\\PartRepository($GLOBALS["wpdb"], new Orchestra\\Library\\Database\\Schema($GLOBALS["wpdb"]));'
+    ' foreach (["Horn 1", "Horn 3"] as $i => $n) { $r->insert($id, new Orchestra\\Library\\Part\\Voice(0, false, 0, $n), $n, "", $i); }'
+    ' echo $id;'))
+encore_parts = wp_json(f'echo json_encode(array_column(array_map(fn($p) => [$p->name, $p->id],'
+                       f' Orchestra\\Library\\Plugin::instance()->library()->parts({encore})), 1, 0));')
+act(conductor, spring, "program_add", piece=encore)
+act(conductor, spring, "assign", part=encore_parts["Horn 3"], **{"users[]": [str(ids["organizer"])]})
+_, page = conductor.get(manage_url(spring, "assignments"))
+encore_section = page.split("<h3>Encore", 1)[1].split("</section>", 1)[0]
+check('value="copy_assignments"' in encore_section and f'<option value="{PIRATES}">' in encore_section
+      and f'<option value="{encore}">' not in encore_section and "data-orchestra-confirm" in encore_section,
+      "every piece offers to take over the assignment of another piece, after a confirmation")
+_, page = act(conductor, spring, "copy_assignments", piece=encore, **{"from": str(PIRATES)})
+in_encore = {login: [part for part in parts if part in encore_parts.values()]
+             for login, parts in assignments_of(spring).items()}
+in_encore = {login: parts for login, parts in in_encore.items() if parts}
+check("1 part was assigned" in text(page) and in_encore == {"mia": [encore_parts["Horn 1"]]},
+      f"the assignment is taken over by exact part names and replaces the piece's assignments: {in_encore}")
+_, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}&orchestra_tab=assignments")
+check("copy_assignments" not in page, "members cannot take over assignments")
+act(conductor, spring, "program_remove", piece=encore, confirm="1")
+wp_eval(f"wp_delete_post({encore}, true);")
+
 _, page = conductor.get(manage_url(spring, "assignments"))
 check("Horn 1" in page and "Mia" in page and "data-current" not in page.split("Horn 1", 1)[0],
       "the assignments tab lists parts and members")
