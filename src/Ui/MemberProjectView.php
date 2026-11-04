@@ -151,7 +151,7 @@ final class MemberProjectView
         }
 
         if (AssignmentsView::hiddenFromMembers($project)) {
-            return '<h4>' . \esc_html__('Your parts', 'orchestra-projects') . '</h4><p class="orchestra-muted">'
+            return self::partsTitle() . '<p class="orchestra-muted">'
                 . \esc_html(AssignmentsView::notAssignedYet()) . '</p>';
         }
 
@@ -200,7 +200,7 @@ final class MemberProjectView
             return '';
         }
 
-        $html = '<h4>' . \esc_html__('Your parts', 'orchestra-projects') . '</h4><ul class="orchestra-list">' . $items
+        $html = self::partsTitle() . '<ul class="orchestra-list">' . $items
             . '</ul>';
         if (\count($partIds) > 1) {
             $html .= '<div class="orchestra-actions">' . Form::link(
@@ -211,6 +211,15 @@ final class MemberProjectView
         }
 
         return $html;
+    }
+
+    /**
+     * "Your parts": a section label, smaller than the name of the project.
+     */
+    private static function partsTitle(): string
+    {
+        return '<h4 class="orchestra-projects-section-title">' . \esc_html__('Your parts', 'orchestra-projects')
+            . '</h4>';
     }
 
     private function canRespond(Project $project, Participation $participation): bool

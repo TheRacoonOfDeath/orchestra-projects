@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-02 22:00+0100\n"
+"POT-Creation-Date: 2026-11-03 22:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -546,7 +546,7 @@ msgstr ""
 msgid "Assigned"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:249 src/Ui/AssignmentsView.php:409
+#: src/Ui/AssignmentsView.php:249 src/Ui/AssignmentsView.php:412
 msgid "Assign"
 msgstr ""
 
@@ -569,27 +569,33 @@ msgstr ""
 msgid "Take over"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:345 src/Ui/ProgramView.php:97
+#: src/Ui/AssignmentsView.php:348 src/Ui/ProgramView.php:97
 #: src/Ui/ProjectFormView.php:118
 msgid "Remove"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:404
+#. translators: %s: member name
+#: src/Ui/AssignmentsView.php:350
+#, php-format
+msgid "Remove %s"
+msgstr ""
+
+#: src/Ui/AssignmentsView.php:407
 msgid "Assign members"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:408
+#: src/Ui/AssignmentsView.php:411
 msgid "Members"
 msgstr ""
 
-#: src/Ui/Dates.php:36
+#: src/Ui/Dates.php:49
 msgid "Concert"
 msgid_plural "Concerts"
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: date format, see https://www.php.net/manual/datetime.format.php; German: j. F Y
-#: src/Ui/Dates.php:85
+#: src/Ui/Dates.php:98
 msgid "F j, Y"
 msgstr ""
 
@@ -627,24 +633,20 @@ msgid ""
 "it."
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:125 src/Ui/MemberProjectView.php:236
+#: src/Ui/MemberProjectView.php:125 src/Ui/MemberProjectView.php:245
 msgid "Accept to participate? Your decision is final."
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:126 src/Ui/MemberProjectView.php:237
+#: src/Ui/MemberProjectView.php:126 src/Ui/MemberProjectView.php:246
 msgid "Decline to participate? Your decision is final."
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:233
+#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:242
 msgid "Accept"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:233
+#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:242
 msgid "Decline"
-msgstr ""
-
-#: src/Ui/MemberProjectView.php:154 src/Ui/MemberProjectView.php:203
-msgid "Your parts"
 msgstr ""
 
 #: src/Ui/MemberProjectView.php:164
@@ -665,6 +667,10 @@ msgstr ""
 
 #: src/Ui/MemberProjectView.php:208
 msgid "Download all as a zip file"
+msgstr ""
+
+#: src/Ui/MemberProjectView.php:221
+msgid "Your parts"
 msgstr ""
 
 #. translators: 1: number accepted, 2: number declined, 3: number pending
@@ -711,70 +717,82 @@ msgstr ""
 msgid "Comment and note"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:126 src/Ui/ParticipationView.php:275
+#: src/Ui/ParticipationView.php:126 src/Ui/ParticipationView.php:290
 msgid "Change"
 msgstr ""
 
+#. translators: %d: number of parts the member plays in the project
+#: src/Ui/ParticipationView.php:137
+#, php-format
+msgid "%d part"
+msgid_plural "%d parts"
+msgstr[0] ""
+msgstr[1] ""
+
 #. translators: %s: member name
-#: src/Ui/ParticipationView.php:140
+#: src/Ui/ParticipationView.php:145
 #, php-format
 msgid "Select %s"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:174
+#: src/Ui/ParticipationView.php:156 src/Ui/ProjectView.php:98
+msgid "Edit"
+msgstr ""
+
+#: src/Ui/ParticipationView.php:186
 msgid "Export accepted participants (CSV)"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:202
+#: src/Ui/ParticipationView.php:214
 msgid ""
 "Selected members who are no longer accepted lose their parts in this "
 "project. Continue?"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:217
+#: src/Ui/ParticipationView.php:229
 msgid "Selected:"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:218 src/Ui/ParticipationView.php:273
+#: src/Ui/ParticipationView.php:230 src/Ui/ParticipationView.php:288
 msgid "New status"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:220
+#: src/Ui/ParticipationView.php:232
 msgid "Change selected"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:229
+#: src/Ui/ParticipationView.php:244
 msgid "No comment"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:236
+#: src/Ui/ParticipationView.php:251
 msgid "Add a note"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:237
+#: src/Ui/ParticipationView.php:252
 msgid "Note:"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:243
+#: src/Ui/ParticipationView.php:258
 msgid "Note for the organizers"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:245
+#: src/Ui/ParticipationView.php:260
 msgid "Only organizers see the note."
 msgstr ""
 
-#: src/Ui/ParticipationView.php:246
+#: src/Ui/ParticipationView.php:261
 msgid "Save note"
 msgstr ""
 
 #. translators: %d: number of assignments
-#: src/Ui/ParticipationView.php:258
+#: src/Ui/ParticipationView.php:273
 #, php-format
 msgid "The member's %d assignments in this project will be removed. Continue?"
 msgstr ""
 
 #. translators: %s: name of the organizer
-#: src/Ui/ParticipationView.php:292
+#: src/Ui/ParticipationView.php:309
 #, php-format
 msgid "entered by %s"
 msgstr ""
@@ -924,10 +942,6 @@ msgstr ""
 
 #: src/Ui/ProjectView.php:93
 msgid "Completed projects"
-msgstr ""
-
-#: src/Ui/ProjectView.php:98
-msgid "Edit"
 msgstr ""
 
 #. translators: %s: date

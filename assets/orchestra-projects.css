@@ -2,6 +2,26 @@
  * The styles of orchestra-projects, on top of orchestra-core's orchestra-ui.css.
  */
 
+/*
+ * The project list fills the width (up to three cards per row) and every card is as high as its
+ * content.
+ */
+.orchestra .orchestra-projects-cards {
+    align-items: start;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+}
+
+/* The name of the project is the largest text of the card; "Your parts" is a section label. */
+.orchestra .orchestra-projects-card .orchestra-card__title {
+    font-size: 1.3em;
+}
+
+.orchestra .orchestra-projects-section-title {
+    font-size: 1em;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
 /* The project list: more room between status, title, dates and parts than core's cards have. */
 .orchestra .orchestra-projects-card > * + * {
     margin-top: 0.9rem;
@@ -75,4 +95,24 @@
     position: absolute;
     white-space: nowrap;
     width: 1px;
+}
+
+/* Removing a member from a part: a quiet ×, red only on hover and focus. */
+.orchestra .orchestra-projects-remove {
+    color: var(--orchestra-muted);
+    font-size: 1.15em;
+    line-height: 1;
+    padding: 0 0.2rem;
+}
+
+.orchestra .orchestra-projects-remove:hover,
+.orchestra .orchestra-projects-remove:focus-visible {
+    color: var(--orchestra-danger);
+    text-decoration: none;
+}
+
+/* The × stays next to the name, also when the name wraps. */
+.orchestra .orchestra-projects-assigned > li {
+    align-items: baseline;
+    flex-wrap: nowrap;
 }

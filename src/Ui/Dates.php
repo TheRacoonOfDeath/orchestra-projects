@@ -17,15 +17,28 @@ final class Dates
             return '—';
         }
 
-        return self::format($project->startDate) . ' – ' . self::format($project->endDate);
+        return self::unbreakable(self::format($project->startDate)) . ' – '
+            . self::unbreakable(self::format($project->endDate));
     }
 
     /**
-     * The concert dates of a project, e.g. "May 8, 2027, May 9, 2027"; "" if it has none.
+     * The concert dates of a project, e.g. "May 8, 2027, May 9, 2027"; "" if it has none. Lines
+     * break between the dates, never inside one.
      */
     public static function concerts(Project $project): string
     {
-        return \implode(', ', \array_map([self::class, 'format'], $project->concertDates));
+        return \implode(', ', \array_map(
+            static fn (string $date): string => self::unbreakable(self::format($date)),
+            $project->concertDates
+        ));
+    }
+
+    /**
+     * Joins the words of a date with non-breaking spaces, e.g. "29. Oktober 2026".
+     */
+    public static function unbreakable(string $date): string
+    {
+        return \str_replace(' ', "\u{00A0}", $date);
     }
 
     /**

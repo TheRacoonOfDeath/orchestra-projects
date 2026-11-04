@@ -338,22 +338,25 @@ final class AssignmentsView
         ));
         $items = '';
         foreach ($assigned as $assignment) {
+            $name = $this->names->of($assignment->userId);
+            // A quiet ×, red on hover; screen readers hear "Remove …".
             $remove = $editable
-                ? ProjectForms::button(
-                    $project->id,
-                    'unassign',
-                    \__('Remove', 'orchestra-projects'),
-                    ['assignment' => $assignment->id],
-                    null,
-                    'link danger'
-                )
+                ? ProjectForms::open($project->id, 'unassign', ['assignment' => $assignment->id], [
+                    'class' => 'orchestra-inline-form',
+                ])
+                . '<button type="submit" class="orchestra-button--link orchestra-projects-remove" title="'
+                . \esc_attr__('Remove', 'orchestra-projects') . '" aria-label="' . \esc_attr(\sprintf(
+                    /* translators: %s: member name */
+                    \__('Remove %s', 'orchestra-projects'),
+                    $name
+                )) . '">×</button></form>'
                 : '';
-            $items .= '<li class="orchestra-actions"><span>' . \esc_html($this->names->of($assignment->userId))
+            $items .= '<li class="orchestra-actions"><span>' . \esc_html($name)
                 . (isset($new[$assignment->id]) ? ' ' . Badges::newPart() : '')
                 . '</span>' . $remove . '</li>';
         }
 
-        return '<ul>' . $items . '</ul>';
+        return '<ul class="orchestra-projects-assigned">' . $items . '</ul>';
     }
 
     /**

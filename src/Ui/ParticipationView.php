@@ -129,9 +129,14 @@ final class ParticipationView
             foreach ($group as $participation) {
                 $count = $participation->userId === null ? 0 : ($assignmentCounts[$participation->userId] ?? 0);
                 $row = [
-                    \esc_html($this->names->of($participation->userId)),
+                    '<span class="orchestra-compact-title">' . \esc_html($this->names->of($participation->userId))
+                        . '</span>',
                     $this->lastChange($participation),
-                    (string) $count,
+                    '<span class="orchestra-compact-meta">' . \esc_html(\sprintf(
+                        /* translators: %d: number of parts the member plays in the project */
+                        \_n('%d part', '%d parts', $count, 'orchestra-projects'),
+                        $count
+                    )) . '</span>',
                 ];
                 if ($canManage) {
                     \array_unshift($row, '<input type="checkbox" name="participations[]" value="' . $participation->id
@@ -142,12 +147,19 @@ final class ParticipationView
                         )) . '">');
                 }
                 if ($canManage) {
-                    $row[] = self::notes($project, $participation);
-                    $row[] = $this->changeForm($project, $participation, $count);
+                    // On phones, the comment, the note and the change are behind "Edit" (compact rows).
+                    $row[] = '<div class="orchestra-desktop-only">' . self::notes($project, $participation, 'desktop')
+                        . '</div>';
+                    $row[] = '<div class="orchestra-desktop-only">'
+                        . $this->changeForm($project, $participation, $count) . '</div>'
+                        . '<div class="orchestra-phone-only"><details class="orchestra-disclosure"><summary>'
+                        . \esc_html__('Edit', 'orchestra-projects') . '</summary><div class="orchestra-stack">'
+                        . self::notes($project, $participation, 'phone')
+                        . $this->changeForm($project, $participation, $count) . '</div></details></div>';
                 }
                 $rows[] = $row;
             }
-            $html .= Html::table($headings, $rows);
+            $html .= Html::table($headings, $rows, '', false, true);
             if ($canManage) {
                 $html .= $this->bulkForm($project, $status, $bulkForm, $group, $assignmentCounts);
             }
@@ -223,13 +235,16 @@ final class ParticipationView
     /**
      * The member's comment and the organizers' note, which organizers change here.
      */
-    private static function notes(Project $project, Participation $participation): string
+    /**
+     * @param string $variant Makes the IDs unique when the form is shown twice (desktop and phone)
+     */
+    private static function notes(Project $project, Participation $participation, string $variant): string
     {
         $comment = $participation->memberComment === null
             ? '<span class="orchestra-muted">' . \esc_html__('No comment', 'orchestra-projects') . '</span>'
             : '<span>' . \nl2br(\esc_html($participation->memberComment)) . '</span>';
         $note = $participation->organizerNote;
-        $id = 'orchestra-projects-note-' . $participation->id;
+        $id = 'orchestra-projects-note-' . $variant . '-' . $participation->id;
 
         return '<div class="orchestra-cell">' . $comment . '<details class="orchestra-disclosure"><summary>'
             . ($note === null
@@ -285,7 +300,9 @@ final class ParticipationView
             return '—';
         }
 
-        $html = \esc_html(Dates::fromGmt($participation->changedAt));
+        // One block, so that it stays in one place when the table is stacked or compact.
+        $html = '<div class="orchestra-compact-meta"><span>' . \esc_html(Dates::fromGmt($participation->changedAt))
+            . '</span>';
         if ($participation->changedBy !== null && $participation->changedBy !== $participation->userId) {
             $html .= '<br><span class="orchestra-muted">' . \esc_html(\sprintf(
                 /* translators: %s: name of the organizer */
@@ -294,6 +311,6 @@ final class ParticipationView
             )) . '</span>';
         }
 
-        return $html;
+        return $html . '</div>';
     }
 }

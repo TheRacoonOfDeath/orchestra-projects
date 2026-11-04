@@ -69,7 +69,7 @@ final class ProjectListView
         Assets::enqueue();
         $manager = \current_user_can(Capabilities::PROJECT_MANAGE);
         $today = Dates::today();
-        $html .= '<div class="orchestra-cards">';
+        $html .= '<div class="orchestra-cards orchestra-projects-cards">';
         foreach ($projects as $project) {
             // The concerts are on the project page; the list stays short.
             $meta = '<span>' . \esc_html(Dates::range($project)) . '</span>';
@@ -80,9 +80,11 @@ final class ProjectListView
             $ended = $manager && $project->waitsForCompletion($today)
                 ? ' ' . Html::badge(\__('Ended, please complete', 'orchestra-projects'), 'warning')
                 : '';
-            $html .= '<article class="orchestra-card orchestra-projects-card"><div>'
+            // The whole card opens the project; its buttons and downloads stay clickable.
+            $html .= '<article class="orchestra-card orchestra-card--linked orchestra-projects-card"><div>'
                 . Badges::project($project->status) . $ended . '</div>'
-                . '<h3 class="orchestra-card__title"><a href="' . \esc_url($urls->project($project->id)) . '">'
+                . '<h3 class="orchestra-card__title"><a class="orchestra-card__link" href="'
+                . \esc_url($urls->project($project->id)) . '">'
                 . \esc_html($project->title) . '</a></h3><div class="orchestra-card__meta">' . $meta . '</div>'
                 . $this->memberView->participation($project, false) . $this->memberView->parts($project)
                 . '</article>';

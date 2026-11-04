@@ -116,11 +116,11 @@ views in **Projects** in wp-admin (views in `src/Ui`, shared by both).
 
 | View | Who | Content |
 |------|-----|---------|
-| Project list | everyone | a card per project: the status above the title, the dates (the concerts only on the project page); members who take part: response, and every piece of the program with its composer, below it their part with "new" and the download, or "No part assigned yet"; staff: all projects; organizers: "New project" |
+| Project list | everyone | a card per project: the status above the title, the dates (the concerts only on the project page); members who take part: response, and every piece of the program with its composer, below it their part with "new" and the download, or "No part assigned yet"; staff: all projects; organizers: "New project". The whole card opens the project (`orchestra-card--linked` of orchestra-core 0.15; its buttons and downloads stay clickable); the cards fill the width, up to three per row, and are as high as their content |
 | Project → Overview | everyone who may see the project | details, staff, description, own response and parts; email buttons and status changes for staff |
 | Project → Who accepted | members | the names of everyone who accepted (conductors and organizers see them on the Participation tab) |
 | Project → Program | everyone who may see the project | members: the ordered list of pieces; conductors and organizers: add, order and remove pieces |
-| Project → Participation | conductors (read), organizers | accepted, pending, declined, with the last change and who entered it; organizers see the members' comments, write notes, change decisions and export the accepted participants |
+| Project → Participation | conductors (read), organizers | accepted, pending, declined, with the last change and who entered it; organizers see the members' comments, write notes, change decisions and export the accepted participants. The number of a member's parts is shown as "3 parts". On phones the rows are compact (orchestra-core 0.15): name, then the last change and the parts on one line, then "Edit" with the comment, the note and the change |
 | Project → Assignments | everyone who may see the project | "By piece": parts with assigned members; conductors and organizers assign there, members only see it (no forms, history marks, warnings or PDF); "By member" (`&orchestra_assignments_view=members`): a read-only table with a row per member and a column per piece (`AssignmentMatrix`) |
 | Project form | organizers | name, description, dates, staff (in wp-admin: the WordPress editor with the same fields) |
 
@@ -128,6 +128,10 @@ URLs on the projects page: `?orchestra_project=ID&orchestra_tab=program`, `&orch
 `?orchestra_project=new`. All forms post to `admin-post.php` with a nonce per project (or per
 participation for responses), check the capability of the operation and return to the page they
 were sent from.
+
+On the assignments tab, a member is removed from a part with a small "×" after their name (red on
+hover, read out as "Remove <name>"). Dates never break inside a date (`Dates::unbreakable()`), only
+between them.
 
 ## Assignments as PDF
 
