@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 19:27+0100\n"
+"POT-Creation-Date: 2026-11-05 22:57+0100\n"
 "PO-Revision-Date: 2026-10-16 00:00+0000\n"
 "Last-Translator: Julian Nickerl\n"
 "Language-Team: German\n"
@@ -37,7 +37,9 @@ msgstr "Du darfst das nicht tun."
 
 #: src/Admin/ProjectActions.php:94
 msgid "The changes are no longer listed. The members were not informed."
-msgstr "Die Änderungen werden nicht mehr angezeigt. Die Mitglieder wurden nicht informiert."
+msgstr ""
+"Die Änderungen werden nicht mehr angezeigt. Die Mitglieder wurden nicht "
+"informiert."
 
 #: src/Admin/ProjectActions.php:107
 msgid "Saved."
@@ -53,19 +55,24 @@ msgstr "Das Projekt wurde gespeichert."
 
 #: src/Admin/ProjectActions.php:195
 msgid "There are no changes to inform the members about."
-msgstr "Es gibt keine Änderungen, über die die Mitglieder informiert werden könnten."
+msgstr ""
+"Es gibt keine Änderungen, über die die Mitglieder informiert werden könnten."
 
 #: src/Admin/ProjectActions.php:200
 msgid ""
 "The parts changed in the meantime. Please check the changes again before "
 "informing the members."
-msgstr "Die Stimmen haben sich inzwischen geändert. Bitte prüfe die Änderungen noch einmal, bevor du die Mitglieder informierst."
+msgstr ""
+"Die Stimmen haben sich inzwischen geändert. Bitte prüfe die Änderungen noch "
+"einmal, bevor du die Mitglieder informierst."
 
 #. translators: 1: number of members emailed, 2: number of members with changes
 #: src/Admin/ProjectActions.php:211
 #, php-format
 msgid "%1$d of %2$d members with changed parts are informed by email."
-msgstr "%1$d von %2$d Mitgliedern mit geänderten Stimmen werden per E-Mail informiert."
+msgstr ""
+"%1$d von %2$d Mitgliedern mit geänderten Stimmen werden per E-Mail "
+"informiert."
 
 #: src/Admin/ProjectActions.php:225
 msgid ""
@@ -166,7 +173,7 @@ msgstr "Die Einteilung existiert nicht."
 msgid "new"
 msgstr "neu"
 
-#: src/Assignment/AssignmentService.php:309 src/Ui/AssignmentsView.php:96
+#: src/Assignment/AssignmentService.php:309 src/Ui/AssignmentsView.php:101
 msgid "Assignments cannot be changed in drafts and completed projects."
 msgstr ""
 "In Entwürfen und abgeschlossenen Projekten können die Einteilungen nicht "
@@ -192,7 +199,10 @@ msgstr "Geänderte Stimmen"
 msgid ""
 "Sent when conductors or organizers inform the members about parts changed "
 "after the parts were assigned. Every member gets only their own changes."
-msgstr "Wird verschickt, wenn Dirigenten oder Organisatoren die Mitglieder über Stimmen informieren, die nach Abschluss der Stimmverteilung geändert wurden. Jedes Mitglied bekommt nur seine eigenen Änderungen."
+msgstr ""
+"Wird verschickt, wenn Dirigenten oder Organisatoren die Mitglieder über "
+"Stimmen informieren, die nach Abschluss der Stimmverteilung geändert wurden. "
+"Jedes Mitglied bekommt nur seine eigenen Änderungen."
 
 #: src/Email/ChangedPartsEmail.php:66
 msgid "Your parts in {project} have changed"
@@ -203,7 +213,10 @@ msgid ""
 "<p>Hello {name},</p><p>your parts in {project} have changed:</p>{changes}"
 "<p>All your parts and the sheet music are on the page of the project: {link}"
 "</p>"
-msgstr "<p>Hallo {name},</p><p>deine Stimmen in {project} haben sich geändert:</p>{changes}<p>Alle deine Stimmen und die Noten findest du auf der Seite des Projekts: {link}</p>"
+msgstr ""
+"<p>Hallo {name},</p><p>deine Stimmen in {project} haben sich geändert:</"
+"p>{changes}<p>Alle deine Stimmen und die Noten findest du auf der Seite des "
+"Projekts: {link}</p>"
 
 #: src/Email/ChangedPartsEmail.php:73
 msgid "The name of the member"
@@ -269,12 +282,12 @@ msgstr "Unentschlossene Teilnehmer (noch keine Antwort)"
 msgid "The program has no pieces yet."
 msgstr "Das Programm hat noch keine Stücke."
 
-#: src/Export/AssignmentsPdf.php:66 src/Ui/AssignmentsView.php:232
+#: src/Export/AssignmentsPdf.php:66 src/Ui/AssignmentsView.php:242
 msgid "The piece has no parts."
 msgstr "Das Stück hat keine Stimmen."
 
 #: src/Export/AssignmentsPdf.php:78 src/Privacy/PersonalData.php:118
-#: src/Ui/AssignmentsView.php:253
+#: src/Ui/AssignmentsView.php:276
 msgid "Part"
 msgstr "Stimme"
 
@@ -292,7 +305,7 @@ msgstr "* spielt diese Stimme zum ersten Mal"
 msgid "Assignments: %s"
 msgstr "Stimmverteilung: %s"
 
-#: src/Export/AssignmentsPdf.php:132 src/Ui/AssignmentsView.php:185
+#: src/Export/AssignmentsPdf.php:132 src/Ui/AssignmentsView.php:194
 #: src/Ui/PartChangesView.php:131 src/Ui/ParticipationView.php:114
 msgid "Member"
 msgstr "Mitglied"
@@ -604,29 +617,29 @@ msgstr ""
 "Das Projekt ist noch nicht vorbei. Ändere seinen Status stattdessen Schritt "
 "für Schritt."
 
-#: src/Ui/AssignmentsView.php:60
+#: src/Ui/AssignmentsView.php:65
 msgid "The parts have not been assigned yet."
 msgstr "Stimmverteilung noch nicht abgeschlossen"
 
-#: src/Ui/AssignmentsView.php:72
+#: src/Ui/AssignmentsView.php:77
 msgid "Add pieces to the program first. Their parts can then be assigned here."
 msgstr ""
 "Füge zuerst Stücke zum Programm hinzu. Ihre Stimmen können dann hier "
 "verteilt werden."
 
-#: src/Ui/AssignmentsView.php:82
+#: src/Ui/AssignmentsView.php:87
 msgid "Download PDF"
 msgstr "PDF herunterladen"
 
-#: src/Ui/AssignmentsView.php:118 src/Ui/AssignmentsView.php:201
+#: src/Ui/AssignmentsView.php:123 src/Ui/AssignmentsView.php:210
 msgid "Nobody has accepted to participate yet."
 msgstr "Noch niemand hat sich angemeldet."
 
-#: src/Ui/AssignmentsView.php:126
+#: src/Ui/AssignmentsView.php:131
 msgid "Assign the parts played last time"
 msgstr "In die zuletzt gespielten Stimmen einteilen"
 
-#: src/Ui/AssignmentsView.php:133
+#: src/Ui/AssignmentsView.php:138
 #, php-format
 msgid ""
 "Assigns %d part: members who are not assigned in a piece yet get the part "
@@ -643,39 +656,46 @@ msgstr[1] ""
 "die zuletzt gespielte. Wer das Stück noch nie gespielt hat, wird nicht "
 "eingeteilt."
 
-#: src/Ui/AssignmentsView.php:165
+#: src/Ui/AssignmentsView.php:174
 msgid "View"
 msgstr "Ansicht"
 
-#: src/Ui/AssignmentsView.php:166
+#: src/Ui/AssignmentsView.php:175
 msgid "By piece"
 msgstr "Nach Stücken"
 
-#: src/Ui/AssignmentsView.php:169
+#: src/Ui/AssignmentsView.php:178
 msgid "By member"
 msgstr "Nach Mitgliedern"
 
-#: src/Ui/AssignmentsView.php:246
+#: src/Ui/AssignmentsView.php:257
+#, php-format
+msgid "%1$d of %2$d member assigned"
+msgid_plural "%1$d of %2$d members assigned"
+msgstr[0] "%1$d von %2$d Mitglied eingeteilt"
+msgstr[1] "%1$d von %2$d Mitgliedern eingeteilt"
+
+#: src/Ui/AssignmentsView.php:269
 msgid "At least one member has not been assigned a part yet"
 msgstr "Mindestens ein Mitglied hat noch keine Stimme"
 
-#: src/Ui/AssignmentsView.php:253
+#: src/Ui/AssignmentsView.php:276
 msgid "Assigned"
 msgstr "Eingeteilt"
 
-#: src/Ui/AssignmentsView.php:255 src/Ui/AssignmentsView.php:418
+#: src/Ui/AssignmentsView.php:278 src/Ui/AssignmentsView.php:484
 msgid "Assign"
 msgstr "Einteilen"
 
-#: src/Ui/AssignmentsView.php:294
+#: src/Ui/AssignmentsView.php:349
 msgid "Take over the assignment of"
 msgstr "Verteilung übernehmen von"
 
-#: src/Ui/AssignmentsView.php:296
+#: src/Ui/AssignmentsView.php:351
 msgid "Choose a piece"
 msgstr "Stück wählen"
 
-#: src/Ui/AssignmentsView.php:299
+#: src/Ui/AssignmentsView.php:354
 msgid ""
 "Replace all assignments of this piece? Every member gets the part with the "
 "same name as their part in the chosen piece; members whose part does not "
@@ -685,26 +705,26 @@ msgstr ""
 "gleichen Namen wie ihre Stimme im gewählten Stück; wer eine Stimme hat, die "
 "es hier nicht gibt, bleibt ohne Stimme."
 
-#: src/Ui/AssignmentsView.php:302
+#: src/Ui/AssignmentsView.php:357
 msgid "Take over"
 msgstr "Übernehmen"
 
-#: src/Ui/AssignmentsView.php:354 src/Ui/ProgramView.php:97
+#: src/Ui/AssignmentsView.php:415 src/Ui/ProgramView.php:97
 #: src/Ui/ProjectFormView.php:118
 msgid "Remove"
 msgstr "Entfernen"
 
 #. translators: %s: member name
-#: src/Ui/AssignmentsView.php:356
+#: src/Ui/AssignmentsView.php:417
 #, php-format
 msgid "Remove %s"
 msgstr "%s entfernen"
 
-#: src/Ui/AssignmentsView.php:413
+#: src/Ui/AssignmentsView.php:474
 msgid "Assign members"
 msgstr "Mitglieder einteilen"
 
-#: src/Ui/AssignmentsView.php:417
+#: src/Ui/AssignmentsView.php:483
 msgid "Members"
 msgstr "Mitglieder"
 
@@ -802,8 +822,12 @@ msgstr "Deine Stimmen"
 msgid "The parts of %d member changed since the members were last informed."
 msgid_plural ""
 "The parts of %d members changed since the members were last informed."
-msgstr[0] "Die Stimmen von %d Mitglied haben sich geändert, seit die Mitglieder zuletzt informiert wurden."
-msgstr[1] "Die Stimmen von %d Mitgliedern haben sich geändert, seit die Mitglieder zuletzt informiert wurden."
+msgstr[0] ""
+"Die Stimmen von %d Mitglied haben sich geändert, seit die Mitglieder zuletzt "
+"informiert wurden."
+msgstr[1] ""
+"Die Stimmen von %d Mitgliedern haben sich geändert, seit die Mitglieder "
+"zuletzt informiert wurden."
 
 #: src/Ui/PartChangesView.php:84 src/Ui/PartChangesView.php:123
 msgid "Inform members about changes"
@@ -817,7 +841,10 @@ msgstr "Mitglieder nicht informieren"
 msgid ""
 "The changed parts stay as they are, but the members are not told about them, "
 "and the changes are no longer listed here. Continue?"
-msgstr "Die geänderten Stimmen bleiben, wie sie sind, aber die Mitglieder erfahren nichts davon, und die Änderungen werden hier nicht mehr angezeigt. Fortfahren?"
+msgstr ""
+"Die geänderten Stimmen bleiben, wie sie sind, aber die Mitglieder erfahren "
+"nichts davon, und die Änderungen werden hier nicht mehr angezeigt. "
+"Fortfahren?"
 
 #: src/Ui/PartChangesView.php:115 src/Ui/PartChangesView.php:133
 #: src/Ui/ProjectView.php:226
@@ -828,7 +855,9 @@ msgstr "E-Mail"
 msgid ""
 "Every member below gets an email with only their own changes. The text is "
 "set on the Email page under \"Automatic emails\"."
-msgstr "Jedes Mitglied unten bekommt eine E-Mail mit nur seinen eigenen Änderungen. Den Text legst du auf der E-Mail-Seite unter „Automatische E-Mails“ fest."
+msgstr ""
+"Jedes Mitglied unten bekommt eine E-Mail mit nur seinen eigenen Änderungen. "
+"Den Text legst du auf der E-Mail-Seite unter „Automatische E-Mails“ fest."
 
 #: src/Ui/PartChangesView.php:132
 msgid "Changes"
@@ -1140,8 +1169,12 @@ msgid ""
 msgid_plural ""
 "%d members have not been informed about changed parts; the changes will be "
 "forgotten."
-msgstr[0] "%d Mitglied wurde nicht über geänderte Stimmen informiert; die Änderungen werden verworfen."
-msgstr[1] "%d Mitglieder wurden nicht über geänderte Stimmen informiert; die Änderungen werden verworfen."
+msgstr[0] ""
+"%d Mitglied wurde nicht über geänderte Stimmen informiert; die Änderungen "
+"werden verworfen."
+msgstr[1] ""
+"%d Mitglieder wurden nicht über geänderte Stimmen informiert; die Änderungen "
+"werden verworfen."
 
 #: src/Ui/ProjectView.php:79
 msgid "Overview"

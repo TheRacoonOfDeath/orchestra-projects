@@ -116,3 +116,23 @@
     align-items: baseline;
     flex-wrap: nowrap;
 }
+
+/* The pieces on the assignments tab: closed for those who assign, open for members. */
+.orchestra details.orchestra-projects-piece {
+    border: 1px solid var(--orchestra-border);
+    border-radius: var(--orchestra-radius-small);
+    padding: 0.6rem 0.85rem;
+}
+
+.orchestra details.orchestra-projects-piece > summary {
+    cursor: pointer;
+}
+
+.orchestra details.orchestra-projects-piece > summary > h3 {
+    display: inline;
+    margin: 0;
+}
+
+.orchestra details.orchestra-projects-piece[open] > summary {
+    margin-bottom: 0.75rem;
+}

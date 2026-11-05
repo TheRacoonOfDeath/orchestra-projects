@@ -494,7 +494,7 @@ encore_parts = wp_json(f'echo json_encode(array_column(array_map(fn($p) => [$p->
 act(conductor, spring, "program_add", piece=encore)
 act(conductor, spring, "assign", part=encore_parts["Horn 3"], **{"users[]": [str(ids["organizer"])]})
 _, page = conductor.get(manage_url(spring, "assignments"))
-encore_section = page.split("<h3>Encore", 1)[1].split("</section>", 1)[0]
+encore_section = page.split("<h3>Encore", 1)[1].split("</div></details>", 1)[0]
 check('value="copy_assignments"' in encore_section and f'<option value="{PIRATES}">' in encore_section
       and f'<option value="{encore}">' not in encore_section and "data-orchestra-confirm" in encore_section,
       "every piece offers to take over the assignment of another piece, after a confirmation")
@@ -512,7 +512,7 @@ wp_eval(f"wp_delete_post({encore}, true);")
 _, page = conductor.get(manage_url(spring, "assignments"))
 check("Horn 1" in page and "Mia" in page and "data-current" not in page.split("Horn 1", 1)[0],
       "the assignments tab lists parts and members")
-pirates = page.split("<h3>Pirates of the Caribbean", 1)[1].split("</section>", 1)[0]
+pirates = page.split("<h3>Pirates of the Caribbean", 1)[1].split("</div></details>", 1)[0]
 check(f'name="users[]" value="{ids["mia"]}"' not in pirates
       and f'name="users[]" value="{ids["organizer"]}"' not in pirates and 'name="users[]"' in page,
       "members who play a part of a piece are not offered for its other parts")
@@ -520,6 +520,17 @@ dance = page.split("<h3>Lord of the Dance", 1)[1].split("</h3>", 1)[0]
 check("At least one member has not been assigned a part yet" in dance,
       "pieces in which an accepted member has no part yet show a warning")
 check(NEW_BADGE in pirates, "the assignments mark members who play a part for the first time")
+pirates_tag = f'<details class="orchestra-projects-piece" id="orchestra-piece-{PIRATES}"'
+check(pirates_tag + ">" in page and f"{pirates_tag} open>" not in page,
+      "conductors see the pieces closed")
+check(re.search(r"<summary><h3>Pirates of the Caribbean(?:(?!</summary>).)*?\d+ of \d+ members assigned.*?</summary>", page, re.S)
+      is not None, "a closed piece says how many members have a part")
+check(f"orchestra_piece={PIRATES}#orchestra-piece-{PIRATES}" in pirates.replace("&#038;", "&"),
+      "the forms of a piece return to it")
+_, page = conductor.get(manage_url(spring, "assignments") + f"&orchestra_piece={PIRATES}")
+open_pieces = re.findall(r'<details class="orchestra-projects-piece" id="orchestra-piece-(\d+)" open>', page)
+check(open_pieces == [str(PIRATES)] and page.count('class="orchestra-projects-piece"') > 1,
+      f"returning to a piece opens it and leaves the others closed: {open_pieces}")
 _, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}&orchestra_tab=assignments")
 check("The parts have not been assigned yet." in text(page) and "Horn 1" not in text(page),
       "members do not see the assignments before the parts are assigned")
@@ -532,10 +543,12 @@ wp("post", "meta", "update", str(spring), "orchestra_projects_status", "parts_as
 _, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}")
 check("orchestra_tab=assignments" in page, "members have the assignments tab")
 _, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}&orchestra_tab=assignments")
-mia_pirates = page.split("<h3>Pirates of the Caribbean", 1)[1].split("</section>", 1)[0] if "<h3>Pirates" in page else ""
+mia_pirates = page.split("<h3>Pirates of the Caribbean", 1)[1].split("</div></details>", 1)[0] if "<h3>Pirates" in page else ""
 check("Horn 1" in mia_pirates and "Mia" in mia_pirates and "Olga" in mia_pirates and 'name="users[]"' not in page
       and "unassign" not in page and "Download PDF" not in page and "played last time" not in page
       and "At least one member" not in page, "members see who plays which part, without changing it")
+check(f'<details class="orchestra-projects-piece" id="orchestra-piece-{PIRATES}" open>' in page,
+      "members see the pieces open")
 pdf_html = assignments_pdf_html(spring)
 check("Mia*" in pdf_html and "* plays this part for the first time" in pdf_html,
       "the PDF marks new parts with an asterisk and explains it")

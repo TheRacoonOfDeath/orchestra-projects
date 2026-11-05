@@ -30,6 +30,11 @@ final class AssignmentsView
     /** `?orchestra_assignments_view=members` shows the assignments by member, read-only. */
     public const VIEW_PARAMETER = 'orchestra_assignments_view';
     public const VIEW_MEMBERS = 'members';
+    /**
+     * `?orchestra_piece=<id>` opens that piece, which is otherwise closed for conductors and
+     * organizers: the forms of a piece return to it, so that it stays open after each change.
+     */
+    public const PIECE_PARAMETER = 'orchestra_piece';
 
     public function __construct(
         private readonly ProgramRepository $program,
@@ -143,8 +148,12 @@ final class AssignmentsView
 
         // The columns of all pieces line up.
         $html .= '<div class="orchestra-aligned-tables orchestra-stack">';
+        Assets::enqueue();
+        // Those who assign see the pieces closed, members open.
+        $requested = \is_numeric($_GET[self::PIECE_PARAMETER] ?? null) ? (int) $_GET[self::PIECE_PARAMETER] : 0;
         foreach ($pieceIds as $pieceId) {
-            $html .= $this->piece($project, $pieceId, $byPart, $players, $new, $editable, $pieceIds);
+            $open = !$manager || $pieceId === $requested;
+            $html .= $this->piece($project, $pieceId, $byPart, $players, $new, $editable, $open, $pieceIds);
         }
         $html .= '</div>';
 
@@ -222,14 +231,15 @@ final class AssignmentsView
         array $players,
         array $new,
         bool $editable,
+        bool $open,
         array $pieceIds = [],
     ): string {
         $piece = $this->library->piece($pieceId);
         $parts = $this->library->parts($pieceId);
         $title = \esc_html($piece->title ?? '#' . $pieceId);
         if ($parts === []) {
-            return '<section class="orchestra-stack"><h3>' . $title . '</h3>'
-                . Html::empty(\__('The piece has no parts.', 'orchestra-projects')) . '</section>';
+            return self::disclosure($pieceId, $title, $open)
+                . Html::empty(\__('The piece has no parts.', 'orchestra-projects')) . '</div></details>';
         }
 
         $partOf = [];
@@ -240,6 +250,19 @@ final class AssignmentsView
         }
         // Accepted participants without a part in this piece.
         $unassigned = \array_diff_key($players, $partOf);
+        if ($players !== []) {
+            $title .= ' <span class="orchestra-muted">' . \esc_html(\sprintf(
+                /* translators: 1: number of assigned members, 2: number of participating members */
+                \_n(
+                    '%1$d of %2$d member assigned',
+                    '%1$d of %2$d members assigned',
+                    \count($players),
+                    'orchestra-projects'
+                ),
+                \count($players) - \count($unassigned),
+                \count($players)
+            )) . '</span>';
+        }
         // The warning is for those who assign; members see the parts only.
         if ($editable && $unassigned !== []) {
             $title .= ' ' . Html::badge(
@@ -247,7 +270,7 @@ final class AssignmentsView
                 'warning'
             );
         }
-        $html = '<section class="orchestra-stack"><h3>' . $title . '</h3>'
+        $html = self::disclosure($pieceId, $title, $open)
             . ($editable ? $this->copyForm($project, $pieceId, $pieceIds) : '');
 
         $headings = [\__('Part', 'orchestra-projects'), \__('Assigned', 'orchestra-projects')];
@@ -258,14 +281,46 @@ final class AssignmentsView
         foreach ($parts as $part) {
             $assigned = $byPart[$part->id] ?? [];
             $row = ['<strong>' . \esc_html($part->name)
-                . '</strong>', $this->assignedList($project, $assigned, $new, $editable)];
+                . '</strong>', $this->assignedList($project, $part, $assigned, $new, $editable)];
             if ($editable) {
                 $row[] = $this->assignForm($project, $part, $unassigned);
             }
             $rows[] = $row;
         }
 
-        return $html . Html::table($headings, $rows) . '</section>';
+        return $html . Html::table($headings, $rows) . '</div></details>';
+    }
+
+    /**
+     * Opens a piece that can be closed and opened, with its title as the summary. Close it with
+     * `</details>`.
+     */
+    private static function disclosure(int $pieceId, string $title, bool $open): string
+    {
+        return '<details class="orchestra-projects-piece" id="' . self::anchor($pieceId) . '"'
+            . ($open ? ' open' : '') . '><summary><h3>' . $title . '</h3></summary>'
+            . '<div class="orchestra-stack">';
+    }
+
+    private static function anchor(int $pieceId): string
+    {
+        return 'orchestra-piece-' . $pieceId;
+    }
+
+    /**
+     * Where the forms of a piece return to: this page with the piece open, scrolled to it.
+     *
+     * @return array<string, string>
+     */
+    private static function returnTo(int $pieceId): array
+    {
+        $url = \add_query_arg(
+            self::PIECE_PARAMETER,
+            (string) $pieceId,
+            \remove_query_arg(self::PIECE_PARAMETER, Redirect::currentUrl())
+        );
+
+        return [Redirect::FIELD => $url . '#' . self::anchor($pieceId)];
     }
 
     /**
@@ -288,7 +343,7 @@ final class AssignmentsView
         }
         $id = 'orchestra-projects-copy-' . $pieceId;
 
-        return ProjectForms::open($project->id, 'copy_assignments', ['piece' => $pieceId], [
+        return ProjectForms::open($project->id, 'copy_assignments', ['piece' => $pieceId] + self::returnTo($pieceId), [
             'class' => 'orchestra-actions',
         ])
             . '<label for="' . $id . '">' . \esc_html__('Take over the assignment of', 'orchestra-projects')
@@ -331,8 +386,13 @@ final class AssignmentsView
      * @param list<Assignment> $assigned
      * @param array<int, true> $new IDs of the assignments to a part the member plays for the first time
      */
-    private function assignedList(Project $project, array $assigned, array $new, bool $editable): string
-    {
+    private function assignedList(
+        Project $project,
+        Part $part,
+        array $assigned,
+        array $new,
+        bool $editable,
+    ): string {
         if ($assigned === []) {
             return '<span class="orchestra-muted">—</span>';
         }
@@ -343,11 +403,12 @@ final class AssignmentsView
             $this->names->of($b->userId)
         ));
         $items = '';
+        $returnTo = self::returnTo($part->pieceId);
         foreach ($assigned as $assignment) {
             $name = $this->names->of($assignment->userId);
             // A quiet ×, red on hover; screen readers hear "Remove …".
             $remove = $editable
-                ? ProjectForms::open($project->id, 'unassign', ['assignment' => $assignment->id], [
+                ? ProjectForms::open($project->id, 'unassign', ['assignment' => $assignment->id] + $returnTo, [
                     'class' => 'orchestra-inline-form',
                 ])
                 . '<button type="submit" class="orchestra-button--link orchestra-projects-remove" title="'
@@ -412,7 +473,12 @@ final class AssignmentsView
 
         return '<details class="orchestra-disclosure"><summary>' . \esc_html__('Assign members', 'orchestra-projects')
             . ' <span class="orchestra-muted">(' . \count($candidates) . ')</span></summary>'
-            . ProjectForms::open($project->id, 'assign', ['part' => $part->id], ['class' => 'orchestra-stack'])
+            . ProjectForms::open(
+                $project->id,
+                'assign',
+                ['part' => $part->id] + self::returnTo($part->pieceId),
+                ['class' => 'orchestra-stack']
+            )
             . '<div class="orchestra-checklist" id="orchestra-projects-part-' . $part->id . '" role="group"'
             . ' aria-label="' . \esc_attr__('Members', 'orchestra-projects') . '">' . $boxes . '</div>'
             . Form::submit(\__('Assign', 'orchestra-projects'), 'primary small') . '</form></details>';

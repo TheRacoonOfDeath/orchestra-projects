@@ -18,7 +18,7 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
   downloaded as a PDF (with orchestra-core 0.8 or later)
 - Parts a member plays for the first time are labelled "new", for the member and on the
   assignments; the PDF marks them with an asterisk and a legend
-- The assignments by piece or by member (a table of members and pieces), on the tab and in the PDF
+- The assignments by piece or by member (a table of members and pieces), on the tab and in the PDF; on the tab, conductors and organizers see the pieces closed and open the one they work on
 - Parts changed after the parts were assigned are remembered: conductors and organizers inform the
   affected members by email, each with only their own changes, or dismiss the changes (with
   orchestra-email 0.10 or later; organizers change the text on the Email page)

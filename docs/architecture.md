@@ -164,7 +164,16 @@ participation for responses), check the capability of the operation and return t
 were sent from.
 
 On the assignments tab, a member is removed from a part with a small "×" after their name (red on
-hover, read out as "Remove <name>"). Dates never break inside a date (`Dates::unbreakable()`), only
+hover, read out as "Remove <name>").
+
+On "By piece", every piece can be closed and opened (`<details>`, no JavaScript needed). Its
+summary line is the title, "N of M members assigned" and, for those who assign, the warning badge.
+Conductors and organizers (`orchestra_projects_assignment_manage`) see all pieces closed, because
+a piece with many players is long; members see them open. The forms inside a piece (assign, ×,
+take over) return to `&orchestra_piece=<id>#orchestra-piece-<id>`, which opens that piece and
+scrolls to it, so it stays open after each change.
+
+Dates never break inside a date (`Dates::unbreakable()`), only
 between them.
 
 ## Assignments as PDF
