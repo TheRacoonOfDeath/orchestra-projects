@@ -14,6 +14,7 @@ active status, only through their public services.
 | Program | table `orchestra_projects_program` (project, piece, position) |
 | Participation | table `orchestra_projects_participation` (project, user, status, responded at, changed by and at, member's comment, organizers' note; schema version 4) |
 | Assignments | table `orchestra_projects_assignments` (project, piece, part, user) |
+| What members were last informed about (Parts assigned only) | table `orchestra_projects_informed` (project, piece, part, user; schema version 5) and post meta `orchestra_projects_informed` |
 
 - The project status replaces the WordPress post status: saved projects are always published.
 - Schema version 4 drops the column `fee_paid` and the post meta `orchestra_projects_fee` of the
@@ -79,6 +80,39 @@ active status, only through their public services.
 - orchestra-library refuses to delete pieces in a program and parts with assignments
   (`orchestra_library_piece_delete_blockers`, `orchestra_library_part_delete_blockers`).
 
+## Informing members about changed parts
+
+Since 0.33, with orchestra-email 0.10. Members see their parts from Parts assigned on, so changes
+made after that are communicated:
+
+- When a project enters Parts assigned, a snapshot of its assignments is stored
+  (`Assignment\AssignmentChangeService`, table `orchestra_projects_informed`). The changes are the
+  difference between the snapshot and the current assignments per member and piece
+  (`AssignmentChanges::between()`): a new part, another part, or no part any more. Every way of
+  changing parts counts, also the seating of orchestra-seating, participations changed away from
+  accepted and pieces removed from the program; a part changed back is no change. Projects that
+  were in Parts assigned before 0.33 get their snapshot the first time it is needed.
+- On the assignments tab, conductors and organizers (`orchestra_projects_assignment_manage`) see
+  "The parts of N members changed since the members were last informed." with two buttons:
+  - **Inform members about changes** (`&orchestra_changes=review`) lists every affected member
+    with their changes and whether they get an email (not if inactive, without an address, or
+    automatic emails turned off in the profile). **Send** (`op=changes_inform`, after a
+    confirmation) sends the automatic email `orchestra_projects_changed_parts` of orchestra-email:
+    every member gets only their own changes, as a list per piece in program order, with "new"
+    for parts they never played, and a link to the assignments tab. The request carries a
+    fingerprint of the reviewed changes; if the parts changed in the meantime, nothing is sent and
+    the review has to be opened again.
+  - **Don't inform members** (`op=changes_forget`, after a confirmation that explains it) keeps
+    the parts and forgets the changes.
+  Both take a new snapshot.
+- Leaving Parts assigned (back to Preparation, on to Completed, also with "Complete the project")
+  forgets the changes; the confirmation of the status change says how many members were not
+  informed.
+- The text of the email (`Email\ChangedPartsEmail`) has a default with the placeholders `{name}`,
+  `{project}`, `{changes}` and `{link}`. Organizers (`orchestra_projects_notification_edit`)
+  change it on the Email page under "Automatic emails". Replies go to the user who sent it.
+- Without orchestra-email 0.10, the snapshot is still kept, but nothing is shown.
+
 ## Assignment history
 
 Not stored, derived from the assignments of the piece in all other projects when a conductor
@@ -121,7 +155,7 @@ views in **Projects** in wp-admin (views in `src/Ui`, shared by both).
 | Project → Who accepted | members | the names of everyone who accepted (conductors and organizers see them on the Participation tab) |
 | Project → Program | everyone who may see the project | members: the ordered list of pieces; conductors and organizers: add, order and remove pieces |
 | Project → Participation | conductors (read), organizers | accepted, pending, declined, with the last change and who entered it; organizers see the members' comments, write notes, change decisions and export the accepted participants. The number of a member's parts is shown as "3 parts". On phones the rows are compact (orchestra-core 0.15): name, then the last change and the parts on one line, then "Edit" with the comment, the note and the change |
-| Project → Assignments | everyone who may see the project | "By piece": parts with assigned members; conductors and organizers assign there, members only see it (no forms, history marks, warnings or PDF); "By member" (`&orchestra_assignments_view=members`): a read-only table with a row per member and a column per piece (`AssignmentMatrix`) |
+| Project → Assignments | everyone who may see the project | "By piece": parts with assigned members; conductors and organizers assign there, members only see it (no forms, history marks, warnings or PDF); "By member" (`&orchestra_assignments_view=members`): a read-only table with a row per member and a column per piece (`AssignmentMatrix`); in Parts assigned, the changed parts to inform the members about (see above) |
 | Project form | organizers | name, description, dates, staff (in wp-admin: the WordPress editor with the same fields) |
 
 URLs on the projects page: `?orchestra_project=ID&orchestra_tab=program`, `&orchestra_edit=1`,

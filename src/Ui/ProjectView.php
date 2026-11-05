@@ -36,7 +36,29 @@ final class ProjectView
         private readonly ParticipationView $participationView,
         private readonly AssignmentsView $assignmentsView,
         private readonly EmailLinks $emailLinks,
+        private readonly ?PartChangesView $changes = null,
     ) {
+    }
+
+    /**
+     * Added to the confirmation of leaving Parts assigned while changed parts were not communicated.
+     */
+    private function forgottenChanges(Project $project): string
+    {
+        $count = $project->status === ProjectStatus::PartsAssigned
+            ? ($this->changes?->affectedCount($project) ?? 0)
+            : 0;
+
+        return $count === 0 ? '' : ' ' . \sprintf(
+            /* translators: %d: number of members */
+            \_n(
+                '%d member has not been informed about changed parts; the changes will be forgotten.',
+                '%d members have not been informed about changed parts; the changes will be forgotten.',
+                $count,
+                'orchestra-projects'
+            ),
+            $count
+        );
     }
 
     /**
@@ -101,7 +123,7 @@ final class ProjectView
                 . Badges::project($project->status)
                 . '</h2>' . $edit . '</div>';
         }
-        $html .= self::completionNotice($project);
+        $html .= $this->completionNotice($project);
         if (\count($tabs) > 1) {
             $html .= Html::tabs($tabs, $tab, static fn (string $key): string => $urls->project($project->id, $key));
         }
@@ -121,7 +143,7 @@ final class ProjectView
     /**
      * Tells organizers that the project is over and offers to complete it.
      */
-    private static function completionNotice(Project $project): string
+    private function completionNotice(Project $project): string
     {
         if (!\current_user_can(Capabilities::PROJECT_MANAGE) || !$project->waitsForCompletion(Dates::today())) {
             return '';
@@ -139,7 +161,7 @@ final class ProjectView
             \__(
                 'Complete the project? Its program, participation and parts can no longer be changed.',
                 'orchestra-projects'
-            ),
+            ) . $this->forgottenChanges($project),
             'primary small'
         ) . '</div>';
     }
@@ -223,6 +245,7 @@ final class ProjectView
                 \__('Change the status to "%s"?', 'orchestra-projects'),
                 $target->label()
             );
+            $confirm .= $this->forgottenChanges($project);
             if ($target === ProjectStatus::Open) {
                 $confirm .= ' ' . \__(
                     'All active members and organizers who have not been asked yet will be asked to respond.',

@@ -18,9 +18,12 @@ use Orchestra\Projects\Admin\Names;
 use Orchestra\Projects\Admin\ProjectActions;
 use Orchestra\Projects\Admin\ProjectEditor;
 use Orchestra\Projects\Admin\ProjectsPage;
+use Orchestra\Projects\Assignment\AssignmentChangeService;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\AssignmentService;
+use Orchestra\Projects\Assignment\InformedRepository;
 use Orchestra\Projects\Database\Schema;
+use Orchestra\Projects\Email\ChangedPartsEmail;
 use Orchestra\Projects\Email\ProjectEmailGroups;
 use Orchestra\Projects\Export\AssignmentsPdf;
 use Orchestra\Projects\Export\AssignmentsPdfController;
@@ -41,6 +44,7 @@ use Orchestra\Projects\Project\StaffRepository;
 use Orchestra\Projects\Ui\AssignmentsView;
 use Orchestra\Projects\Ui\MemberProjectView;
 use Orchestra\Projects\Ui\ParticipationView;
+use Orchestra\Projects\Ui\PartChangesView;
 use Orchestra\Projects\Ui\ProgramView;
 use Orchestra\Projects\Ui\ProjectFormView;
 use Orchestra\Projects\Ui\ProjectListView;
@@ -67,6 +71,7 @@ final class Plugin
     private readonly ProgramRepository $program;
     private readonly ParticipationRepository $participations;
     private readonly AssignmentRepository $assignments;
+    private readonly InformedRepository $informed;
     private readonly ProjectsService $projects;
 
     private function __construct(private readonly string $pluginFile, wpdb $wpdb)
@@ -77,6 +82,7 @@ final class Plugin
         $this->program = new ProgramRepository($wpdb, $this->schema);
         $this->participations = new ParticipationRepository($wpdb, $this->schema);
         $this->assignments = new AssignmentRepository($wpdb, $this->schema);
+        $this->informed = new InformedRepository($wpdb, $this->schema);
         $this->projects = new ProjectsService(
             $this->projectRepository,
             $this->program,
@@ -189,6 +195,17 @@ final class Plugin
         }
         $emailLinks = new EmailLinks($email);
 
+        // Changed parts are remembered from Parts assigned on; informing needs orchestra-email 0.10.
+        $changes = new AssignmentChangeService($this->informed, $this->assignments);
+        \add_action(ProjectStatusService::ACTION_STATUS_CHANGED, [$changes, 'statusChanged'], 10, 3);
+        $changedPartsEmail = $email !== null && ChangedPartsEmail::available($email)
+            ? new ChangedPartsEmail($email, $library, $this->program, $this->assignments, $assignmentService)
+            : null;
+        $changedPartsEmail?->register();
+        $partChangesView = $changedPartsEmail === null
+            ? null
+            : new PartChangesView($changes, $changedPartsEmail, $names, $members);
+
         \add_action(
             'orchestra_core_register_capabilities',
             fn (CapabilityRegistry $registry) => Capabilities::register(
@@ -202,7 +219,8 @@ final class Plugin
             $this->staff,
             $this->program,
             $this->participations,
-            $this->assignments
+            $this->assignments,
+            $this->informed
         ))->register();
         $this->registerParticipationTriggers($participation);
         (new PersonalData($this->projectRepository, $this->participations, $this->assignments, $library))->register();
@@ -235,9 +253,11 @@ final class Plugin
                 $assignmentService,
                 $this->participations,
                 $library,
-                $names
+                $names,
+                $partChangesView
             ),
-            $emailLinks
+            $emailLinks,
+            $partChangesView
         );
 
         (new ResponseController($this->participations, $participation))->register();
@@ -265,7 +285,9 @@ final class Plugin
             $this->participations,
             $participation,
             $assignmentService,
-            $formHandler
+            $formHandler,
+            $changes,
+            $changedPartsEmail
         ))->register();
         (new ProjectsShortcode($this->projectRepository, $listView, $projectView, $formView))->register();
         \add_action(Menu::REGISTER_ACTION, [self::class, 'registerMenuItem']);

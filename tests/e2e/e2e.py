@@ -121,7 +121,7 @@ def admin_url(project, tab="overview"):
 
 TAB_OF = {"status": "overview", "complete": "overview", "participation": "participation",
           "participation_note": "participation", "assign": "assignments", "unassign": "assignments",
-          "assign_last": "assignments"}
+          "assign_last": "assignments", "changes_inform": "assignments", "changes_forget": "assignments"}
 nonces = {}
 
 
@@ -691,6 +691,10 @@ pdf = work_file("plan.pdf", b"%PDF-1.4\n% Rehearsal plan\n%%EOF\n")
 png = work_file("seating.png", tiny_png())
 script = work_file("evil.php", b"<?php echo 'x';")
 _, page = organizer.get(EMAIL)
+# Since orchestra-email 0.9, the fields for writing appear after "Write and send here".
+compose_form = next(f for f in re.findall(r"<form.*?</form>", page, flags=re.S) if "orchestra_email_review" in f
+                    or 'value="write"' in f)
+_, page = organizer.post(EMAIL, {**hidden_fields(compose_form), "op": "write"})
 check('id="orchestra_email_body"' in page and "tinymce" in page.lower() and 'name="attachments[]"' in page
       and 'enctype="multipart/form-data"' in page, "the email page has an editor and a file field")
 body = ('<p><strong>Bold</strong> and <em>italic</em> <span style="color: #c0392b; font-size: 20px; position: fixed">'
@@ -901,6 +905,88 @@ check("Spring Concert 2027" in page and "Parts assigned" in text(page) and "Horn
       "projects with the parts assigned are still active, and members see their parts")
 _, page = organizer.get(COMPOSE)
 check("Spring Concert 2027" in page, "projects with the parts assigned keep their email groups")
+
+# --- Informing members about changed parts --------------------------------------------------
+CHANGES_NOTICE = "changed since the members were last informed"
+REVIEW = manage_url(spring, "assignments") + "&orchestra_changes=review"
+_, page = conductor.get(manage_url(spring, "assignments"))
+check(CHANGES_NOTICE not in text(page), "a part changed and changed back is no change")
+act(conductor, spring, "assign", part=HORN2, move=1, **{"users[]": [str(ids["mia"])]})
+act(conductor, spring, "assign", part=VIOLIN1, **{"users[]": [str(ids["organizer"])]})
+_, page = conductor.get(manage_url(spring, "assignments"))
+check("The parts of 2 members " + CHANGES_NOTICE in text(page) and "Inform members about changes" in page
+      and "Don&#039;t inform members" in page and "data-orchestra-confirm" in page,
+      "changed parts are listed with the buttons to inform the members or not")
+_, page = mia.get(manage_url(spring, "assignments"))
+check(CHANGES_NOTICE not in text(page), "members do not see the changes")
+
+profile_url = wp_eval('echo Orchestra\\Core\\Ui\\Pages::url("orchestra_profile");')
+_, page = mia.get(profile_url)
+check("Send me automatic emails" in page and re.search(r'name="orchestra_members_automatic_emails" value="1" checked', page),
+      "the profile offers to turn automatic emails off, on by default")
+form = next(f for f in re.findall(r"<form.*?</form>", page, flags=re.S) if "orchestra_members_save_profile" in f)
+mia.post("/wp-admin/admin-post.php", {**hidden_fields(form), "display_name": "Mia", "email": "mia@example.com"})
+check(wp_eval(f'echo get_user_meta({ids["mia"]}, "orchestra_members_no_automatic_emails", true);') == "1",
+      "members turn automatic emails off in their profile")
+
+_, page = conductor.get(REVIEW)
+plain = text(page)
+mia_row = plain.split("Mia", 1)[1].split("Olga", 1)[0] if "Mia" in plain else ""
+check("Horn 1 → Horn 2" in mia_row and "No email: turned off in the profile" in mia_row,
+      "the review lists each member's changes and who gets no email")
+check("Lord of the Dance : now Violin 1" in plain and "Send" in page, "added parts are listed as new")
+
+before = len(mails())
+fingerprint = field(page, "fingerprint")
+stale = act(conductor, spring, "changes_inform", fingerprint="outdated")
+check("changed in the meantime" in text(stale[1]) and len(mails()) == before,
+      "changes that differ from the reviewed ones are not sent")
+act(conductor, spring, "changes_inform", fingerprint=fingerprint)
+sent = mails()[before:]
+check([m["to"] for m in sent] == ["organizer@example.com"], "only affected members who want automatic emails get one")
+body = sent[0]["message"] if sent else ""
+check(sent and sent[0]["subject"] == "Your parts in Spring Concert 2027 have changed" and "Hello Olga" in body
+      and "now Violin 1" in body and "Horn 2" not in body and "orchestra_project=" in body,
+      "the email has only the member's own changes and a link to the project")
+_, page = conductor.get(manage_url(spring, "assignments"))
+check(CHANGES_NOTICE not in text(page), "informed changes are forgotten")
+
+_, page = organizer.get(EMAIL + "&orchestra_view=automatic" if "?" in EMAIL else EMAIL + "?orchestra_view=automatic")
+check("Changed parts" in page and "{changes}" in page, "organizers change the text of the automatic email")
+form = next((f for f in re.findall(r"<form.*?</form>", page, flags=re.S) if "orchestra_email_automatic" in f), "")
+organizer.post("/wp-admin/admin-post.php", {
+    "action": "orchestra_email_automatic", "automatic": "orchestra_projects_changed_parts",
+    "_wpnonce": field(form, "_wpnonce") or "missing", "op": "save",
+    "subject": "New parts for {project}", "body": "<p>Hi {name}</p>{changes}", "redirect_to": EMAIL,
+})
+_, page = conductor.get(EMAIL + "&orchestra_view=automatic" if "?" in EMAIL else EMAIL + "?orchestra_view=automatic")
+check("{changes}" not in page, "conductors cannot change the automatic emails")
+
+act(conductor, spring, "assign", part=HORN1, move=1, **{"users[]": [str(ids["organizer"])]})
+_, page = conductor.get(REVIEW)
+before = len(mails())
+act(conductor, spring, "changes_inform", fingerprint=field(page, "fingerprint"))
+sent = mails()[before:]
+check(sent and sent[0]["subject"] == "New parts for Spring Concert 2027" and "Hi Olga" in sent[0]["message"],
+      "the organizers' text is used")
+
+act(conductor, spring, "assign", part=HORN1, move=1, **{"users[]": [str(ids["mia"])]})
+_, page = organizer.get(manage_url(spring))
+check("will be forgotten" in page, "leaving Parts assigned warns about changes nobody was informed about")
+before = len(mails())
+_, page = act(conductor, spring, "changes_forget")
+check(CHANGES_NOTICE not in text(page) and len(mails()) == before and HORN1 in assignments_of(spring)["mia"],
+      "changes can be forgotten without an email; the parts stay")
+act(conductor, spring, "assign", part=HORN2, move=1, **{"users[]": [str(ids["organizer"])]})
+act(organizer, spring, "status", target="preparation")
+act(organizer, spring, "status", target="parts_assigned")
+_, page = conductor.get(manage_url(spring, "assignments"))
+check(CHANGES_NOTICE not in text(page), "leaving Parts assigned forgets the changes")
+_, page = act(organizer, spring, "unassign", assignment=next(a for a in projects_api(
+    f"echo json_encode(array_map(fn($a) => [$a->id, $a->partId, $a->userId], $p->assignments({spring})));")
+    if a[1] == VIOLIN1 and a[2] == ids["organizer"])[0])
+act(organizer, spring, "changes_forget")
+wp_eval(f'delete_user_meta({ids["mia"]}, "orchestra_members_no_automatic_emails");')
 _, page = organizer.get(f"{DASHBOARD}&orchestra_project={spring}")
 check('Back to &quot;Preparation&quot;' in page or 'Back to "Preparation"' in page, "organizers can go back to preparation")
 act(organizer, spring, "status", target="completed")
@@ -976,7 +1062,7 @@ organizer.get(DASHBOARD)
 columns = wp_json('global $wpdb; echo json_encode($wpdb->get_col("SHOW COLUMNS FROM {$wpdb->prefix}orchestra_projects_participation"));')
 check("fee_paid" not in columns and "organizer_note" in columns
       and wp_eval(f'echo get_post_meta({spring}, "orchestra_projects_fee", true);') == ""
-      and wp_eval('echo get_option("orchestra_projects_schema_version");') == "4",
+      and wp_eval('echo get_option("orchestra_projects_schema_version");') == "5",
       "updating removes the fees and who paid them")
 
 # --- Privacy and deleted users --------------------------------------------------------------

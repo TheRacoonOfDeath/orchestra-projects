@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Orchestra\Projects\Project;
 
 use Orchestra\Projects\Assignment\AssignmentRepository;
+use Orchestra\Projects\Assignment\InformedRepository;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Program\ProgramRepository;
 
@@ -20,6 +21,7 @@ final class ProjectCleanup
         private readonly ProgramRepository $program,
         private readonly ParticipationRepository $participations,
         private readonly AssignmentRepository $assignments,
+        private readonly ?InformedRepository $informed = null,
     ) {
     }
 
@@ -41,6 +43,7 @@ final class ProjectCleanup
         }
 
         $this->assignments->deleteForProject($postId);
+        $this->informed?->delete($postId);
         $this->participations->deleteForProject($postId);
         $this->program->deleteForProject($postId);
         $this->staff->deleteForProject($postId);
@@ -56,6 +59,7 @@ final class ProjectCleanup
         $this->staff->deleteForUser($userId);
         $this->participations->anonymizeUser($userId);
         $this->assignments->anonymizeUser($userId);
+        $this->informed?->deleteForUser($userId);
     }
 
     /**

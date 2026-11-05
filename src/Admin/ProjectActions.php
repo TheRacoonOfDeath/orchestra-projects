@@ -6,8 +6,11 @@ namespace Orchestra\Projects\Admin;
 
 use Orchestra\Core\Ui\Notices;
 use Orchestra\Core\Ui\Redirect;
+use Orchestra\Projects\Assignment\AssignmentChanges;
+use Orchestra\Projects\Assignment\AssignmentChangeService;
 use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Capabilities;
+use Orchestra\Projects\Email\ChangedPartsEmail;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationService;
 use Orchestra\Projects\Participation\ParticipationStatus;
@@ -38,6 +41,8 @@ final class ProjectActions
         private readonly ParticipationService $participation,
         private readonly AssignmentService $assignments,
         private readonly ProjectFormHandler $formHandler,
+        private readonly AssignmentChangeService $changes,
+        private readonly ?ChangedPartsEmail $changedPartsEmail = null,
     ) {
     }
 
@@ -72,13 +77,24 @@ final class ProjectActions
             'status', 'complete' => Capabilities::PROJECT_MANAGE,
             'program_add', 'program_remove', 'program_up', 'program_down' => Capabilities::PROGRAM_MANAGE,
             'participation', 'participation_note', 'participation_bulk' => Capabilities::PARTICIPATION_MANAGE,
-            'assign', 'assign_last', 'unassign', 'copy_assignments' => Capabilities::ASSIGNMENT_MANAGE,
+            'assign', 'assign_last', 'unassign', 'copy_assignments', 'changes_inform', 'changes_forget'
+                => Capabilities::ASSIGNMENT_MANAGE,
             default => null,
         };
         if ($capability === null || !\current_user_can($capability)) {
             \wp_die(\esc_html__('You are not allowed to do this.', 'orchestra-projects'), 403);
         }
 
+        if ($operation === 'changes_inform') {
+            $this->informAboutChanges($project);
+        }
+        if ($operation === 'changes_forget') {
+            $this->changes->remember($project->id);
+            Notices::success(
+                \__('The changes are no longer listed. The members were not informed.', 'orchestra-projects')
+            );
+            Redirect::back();
+        }
         if ($operation === 'assign_last') {
             $this->assignLastParts($project);
         }
@@ -167,6 +183,36 @@ final class ProjectActions
         }
 
         return $error === null ? [] : [$error];
+    }
+
+    /**
+     * Sends every affected member their changes, unless the changes differ from the reviewed ones.
+     */
+    private function informAboutChanges(Project $project): never
+    {
+        $changes = $this->changes->pending($project);
+        if ($this->changedPartsEmail === null || $changes === []) {
+            Notices::error(\__('There are no changes to inform the members about.', 'orchestra-projects'));
+            Redirect::back();
+        }
+        if (self::string('fingerprint') !== AssignmentChanges::fingerprint($changes)) {
+            Notices::error(\__(
+                'The parts changed in the meantime. Please check the changes again before informing the members.',
+                'orchestra-projects'
+            ));
+            Redirect::back();
+        }
+
+        $sent = $this->changedPartsEmail->send($project, $changes, \get_current_user_id());
+        $this->changes->remember($project->id);
+        $affected = \count(AssignmentChanges::byUser($changes));
+        Notices::success(\sprintf(
+            /* translators: 1: number of members emailed, 2: number of members with changes */
+            \__('%1$d of %2$d members with changed parts are informed by email.', 'orchestra-projects'),
+            $sent,
+            $affected
+        ));
+        Redirect::back();
     }
 
     private function assignLastParts(Project $project): never

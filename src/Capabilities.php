@@ -59,6 +59,9 @@ final class Capabilities
     /** Email the project and assignment groups. Checked with the project ID. */
     public const EMAIL_SEND = 'orchestra_projects_email_send';
 
+    /** Change the text of the automatic email about changed parts (orchestra-email 0.10). */
+    public const NOTIFICATION_EDIT = 'orchestra_projects_notification_edit';
+
     /**
      * @internal Hooked to `orchestra_core_register_capabilities`.
      * @param Closure(int $participationId): ?int $participationOwner Returns the user ID of a participation
@@ -83,6 +86,7 @@ final class Capabilities
             ->register(self::ASSIGNMENT_MANAGE, [Roles::CONDUCTOR, Roles::ORGANIZER])
             ->register(self::ASSIGNMENT_HISTORY_READ, [Roles::CONDUCTOR, Roles::ORGANIZER])
             ->register(self::EMAIL_SEND, [Roles::CONDUCTOR, Roles::ORGANIZER])
+            ->register(self::NOTIFICATION_EDIT, [Roles::ORGANIZER])
             ->registerMetaCapability(
                 self::PARTICIPATION_READ,
                 new OwnershipMapper(self::PARTICIPATION_READ_OWN, self::PARTICIPATION_READ_OTHERS, $participationOwner)

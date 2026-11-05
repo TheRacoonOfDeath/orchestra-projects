@@ -8,13 +8,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-03 22:17+0100\n"
+"POT-Creation-Date: 2026-11-05 19:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
@@ -28,60 +28,80 @@ msgstr ""
 msgid "%s (inactive)"
 msgstr ""
 
-#: src/Admin/ProjectActions.php:68 src/Admin/ProjectsPage.php:104
+#: src/Admin/ProjectActions.php:73 src/Admin/ProjectsPage.php:104
 #: src/ProjectsService.php:136 src/Ui/ProjectsShortcode.php:85
 msgid "The project does not exist."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:79 src/Admin/ProjectActions.php:109
+#: src/Admin/ProjectActions.php:85 src/Admin/ProjectActions.php:125
 #: src/Export/AssignmentsPdfController.php:68
 #: src/Export/ParticipantsExportController.php:85
 #: src/Frontend/ResponseController.php:60
 msgid "You are not allowed to do this."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:91
+#: src/Admin/ProjectActions.php:94
+msgid "The changes are no longer listed. The members were not informed."
+msgstr ""
+
+#: src/Admin/ProjectActions.php:107
 msgid "Saved."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:118
+#: src/Admin/ProjectActions.php:134
 msgid "Please enter a name."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:137
+#: src/Admin/ProjectActions.php:153
 msgid "The project has been saved."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:179
+#: src/Admin/ProjectActions.php:195
+msgid "There are no changes to inform the members about."
+msgstr ""
+
+#: src/Admin/ProjectActions.php:200
+msgid ""
+"The parts changed in the meantime. Please check the changes again before "
+"informing the members."
+msgstr ""
+
+#. translators: 1: number of members emailed, 2: number of members with changes
+#: src/Admin/ProjectActions.php:211
+#, php-format
+msgid "%1$d of %2$d members with changed parts are informed by email."
+msgstr ""
+
+#: src/Admin/ProjectActions.php:225
 msgid ""
 "Nobody was assigned: no member without a part has played one of these pieces "
 "before."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:186
+#: src/Admin/ProjectActions.php:232
 #, php-format
 msgid "%d part was assigned to the member who played it last time."
 msgid_plural "%d parts were assigned to the members who played them last time."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Admin/ProjectActions.php:212
+#: src/Admin/ProjectActions.php:258
 #, php-format
 msgid "The assignment was taken over: %d part was assigned."
 msgid_plural "The assignment was taken over: %d parts were assigned."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Admin/ProjectActions.php:229
+#: src/Admin/ProjectActions.php:275
 msgid "Unknown status."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:241
+#: src/Admin/ProjectActions.php:287
 msgid "Select at least one member and a status."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:248 src/Admin/ProjectActions.php:264
-#: src/Admin/ProjectActions.php:277
+#: src/Admin/ProjectActions.php:294 src/Admin/ProjectActions.php:310
+#: src/Admin/ProjectActions.php:323
 msgid "The participation does not exist."
 msgstr ""
 
@@ -99,7 +119,7 @@ msgstr ""
 
 #: src/Admin/ProjectsPage.php:63 src/Admin/ProjectsPage.php:64
 #: src/Admin/ProjectsPage.php:77 src/Admin/ProjectsPage.php:119
-#: src/Plugin.php:297 src/Project/ProjectPostType.php:39
+#: src/Plugin.php:319 src/Project/ProjectPostType.php:39
 msgid "Projects"
 msgstr ""
 
@@ -149,7 +169,7 @@ msgstr ""
 msgid "new"
 msgstr ""
 
-#: src/Assignment/AssignmentService.php:309 src/Ui/AssignmentsView.php:90
+#: src/Assignment/AssignmentService.php:309 src/Ui/AssignmentsView.php:96
 msgid "Assignments cannot be changed in drafts and completed projects."
 msgstr ""
 
@@ -163,6 +183,75 @@ msgstr ""
 
 #: src/Assignment/HistoryMark.php:18
 msgid "never played"
+msgstr ""
+
+#: src/Email/ChangedPartsEmail.php:59
+msgid "Changed parts"
+msgstr ""
+
+#: src/Email/ChangedPartsEmail.php:61
+msgid ""
+"Sent when conductors or organizers inform the members about parts changed "
+"after the parts were assigned. Every member gets only their own changes."
+msgstr ""
+
+#: src/Email/ChangedPartsEmail.php:66
+msgid "Your parts in {project} have changed"
+msgstr ""
+
+#: src/Email/ChangedPartsEmail.php:68
+msgid ""
+"<p>Hello {name},</p><p>your parts in {project} have changed:</p>{changes}"
+"<p>All your parts and the sheet music are on the page of the project: {link}"
+"</p>"
+msgstr ""
+
+#: src/Email/ChangedPartsEmail.php:73
+msgid "The name of the member"
+msgstr ""
+
+#: src/Email/ChangedPartsEmail.php:74
+msgid "The name of the project"
+msgstr ""
+
+#: src/Email/ChangedPartsEmail.php:75
+msgid "The list of the member's changed parts"
+msgstr ""
+
+#: src/Email/ChangedPartsEmail.php:76
+msgid "The link to the parts of the project"
+msgstr ""
+
+#. translators: %s: project name
+#: src/Email/ChangedPartsEmail.php:121
+#, php-format
+msgid "Changed parts: %s"
+msgstr ""
+
+#: src/Email/ChangedPartsEmail.php:144
+msgid "A removed piece"
+msgstr ""
+
+#. translators: %s: part name
+#: src/Email/ChangedPartsEmail.php:150
+#, php-format
+msgid "now %s"
+msgstr ""
+
+#. translators: %s: part name
+#: src/Email/ChangedPartsEmail.php:155
+#, php-format
+msgid "no longer %s"
+msgstr ""
+
+#. translators: 1: previous part name, 2: new part name
+#: src/Email/ChangedPartsEmail.php:160
+#, php-format
+msgid "%1$s → %2$s"
+msgstr ""
+
+#: src/Email/ChangedPartsEmail.php:173
+msgid "a removed part"
 msgstr ""
 
 #: src/Email/ProjectEmailGroups.php:74
@@ -181,12 +270,12 @@ msgstr ""
 msgid "The program has no pieces yet."
 msgstr ""
 
-#: src/Export/AssignmentsPdf.php:66 src/Ui/AssignmentsView.php:226
+#: src/Export/AssignmentsPdf.php:66 src/Ui/AssignmentsView.php:232
 msgid "The piece has no parts."
 msgstr ""
 
 #: src/Export/AssignmentsPdf.php:78 src/Privacy/PersonalData.php:118
-#: src/Ui/AssignmentsView.php:247
+#: src/Ui/AssignmentsView.php:253
 msgid "Part"
 msgstr ""
 
@@ -204,8 +293,8 @@ msgstr ""
 msgid "Assignments: %s"
 msgstr ""
 
-#: src/Export/AssignmentsPdf.php:132 src/Ui/AssignmentsView.php:179
-#: src/Ui/ParticipationView.php:114
+#: src/Export/AssignmentsPdf.php:132 src/Ui/AssignmentsView.php:185
+#: src/Ui/PartChangesView.php:131 src/Ui/ParticipationView.php:114
 msgid "Member"
 msgstr ""
 
@@ -214,7 +303,7 @@ msgid "Parts by member"
 msgstr ""
 
 #: src/Export/AssignmentsPdfController.php:73 src/Ui/ParticipationView.php:116
-#: src/Ui/ProgramView.php:112 src/Ui/ProjectView.php:70
+#: src/Ui/ProgramView.php:112 src/Ui/ProjectView.php:92
 msgid "Assignments"
 msgstr ""
 
@@ -307,19 +396,19 @@ msgstr ""
 msgid "Declined"
 msgstr ""
 
-#: src/Plugin.php:289
+#: src/Plugin.php:311
 msgid "Plan projects, respond to them and download your sheet music."
 msgstr ""
 
-#: src/Plugin.php:292
+#: src/Plugin.php:314
 msgid "Plan projects: program, participation, parts and seating."
 msgstr ""
 
-#: src/Plugin.php:293
+#: src/Plugin.php:315
 msgid "Respond to projects, see your parts and download your sheet music."
 msgstr ""
 
-#: src/Plugin.php:322
+#: src/Plugin.php:344
 msgid ""
 "Orchestra Projects requires Orchestra Core 0.4, Orchestra Library and "
 "Orchestra Members to be active."
@@ -338,8 +427,8 @@ msgstr ""
 msgid "Project"
 msgstr ""
 
-#: src/Privacy/PersonalData.php:89 src/Ui/ProjectView.php:63
-#: src/Ui/ProjectView.php:180
+#: src/Privacy/PersonalData.php:89 src/Ui/ProjectView.php:85
+#: src/Ui/ProjectView.php:202
 msgid "Participation"
 msgstr ""
 
@@ -410,13 +499,13 @@ msgid "The program of a completed project cannot be changed."
 msgstr ""
 
 #. translators: %s: project name
-#: src/Project/ProjectCleanup.php:70
+#: src/Project/ProjectCleanup.php:74
 #, php-format
 msgid "The piece is in the program of the project \"%s\"."
 msgstr ""
 
 #. translators: %s: project name
-#: src/Project/ProjectCleanup.php:90
+#: src/Project/ProjectCleanup.php:94
 #, php-format
 msgid "The part is assigned in the project \"%s\"."
 msgstr ""
@@ -495,27 +584,27 @@ msgstr ""
 msgid "The project is not over yet. Change its status step by step instead."
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:59
+#: src/Ui/AssignmentsView.php:60
 msgid "The parts have not been assigned yet."
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:71
+#: src/Ui/AssignmentsView.php:72
 msgid "Add pieces to the program first. Their parts can then be assigned here."
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:81
+#: src/Ui/AssignmentsView.php:82
 msgid "Download PDF"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:112 src/Ui/AssignmentsView.php:195
+#: src/Ui/AssignmentsView.php:118 src/Ui/AssignmentsView.php:201
 msgid "Nobody has accepted to participate yet."
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:120
+#: src/Ui/AssignmentsView.php:126
 msgid "Assign the parts played last time"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:127
+#: src/Ui/AssignmentsView.php:133
 #, php-format
 msgid ""
 "Assigns %d part: members who are not assigned in a piece yet get the part "
@@ -526,65 +615,65 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Ui/AssignmentsView.php:159
+#: src/Ui/AssignmentsView.php:165
 msgid "View"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:160
+#: src/Ui/AssignmentsView.php:166
 msgid "By piece"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:163
+#: src/Ui/AssignmentsView.php:169
 msgid "By member"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:240
+#: src/Ui/AssignmentsView.php:246
 msgid "At least one member has not been assigned a part yet"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:247
+#: src/Ui/AssignmentsView.php:253
 msgid "Assigned"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:249 src/Ui/AssignmentsView.php:412
+#: src/Ui/AssignmentsView.php:255 src/Ui/AssignmentsView.php:418
 msgid "Assign"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:288
+#: src/Ui/AssignmentsView.php:294
 msgid "Take over the assignment of"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:290
+#: src/Ui/AssignmentsView.php:296
 msgid "Choose a piece"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:293
+#: src/Ui/AssignmentsView.php:299
 msgid ""
 "Replace all assignments of this piece? Every member gets the part with the "
 "same name as their part in the chosen piece; members whose part does not "
 "exist here are left without a part."
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:296
+#: src/Ui/AssignmentsView.php:302
 msgid "Take over"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:348 src/Ui/ProgramView.php:97
+#: src/Ui/AssignmentsView.php:354 src/Ui/ProgramView.php:97
 #: src/Ui/ProjectFormView.php:118
 msgid "Remove"
 msgstr ""
 
 #. translators: %s: member name
-#: src/Ui/AssignmentsView.php:350
+#: src/Ui/AssignmentsView.php:356
 #, php-format
 msgid "Remove %s"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:407
+#: src/Ui/AssignmentsView.php:413
 msgid "Assign members"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:411
+#: src/Ui/AssignmentsView.php:417
 msgid "Members"
 msgstr ""
 
@@ -673,6 +762,70 @@ msgstr ""
 msgid "Your parts"
 msgstr ""
 
+#: src/Ui/PartChangesView.php:75
+#, php-format
+msgid "The parts of %d member changed since the members were last informed."
+msgid_plural ""
+"The parts of %d members changed since the members were last informed."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Ui/PartChangesView.php:84 src/Ui/PartChangesView.php:123
+msgid "Inform members about changes"
+msgstr ""
+
+#: src/Ui/PartChangesView.php:90
+msgid "Don't inform members"
+msgstr ""
+
+#: src/Ui/PartChangesView.php:93
+msgid ""
+"The changed parts stay as they are, but the members are not told about them, "
+"and the changes are no longer listed here. Continue?"
+msgstr ""
+
+#: src/Ui/PartChangesView.php:115 src/Ui/PartChangesView.php:133
+#: src/Ui/ProjectView.php:226
+msgid "Email"
+msgstr ""
+
+#: src/Ui/PartChangesView.php:125
+msgid ""
+"Every member below gets an email with only their own changes. The text is "
+"set on the Email page under \"Automatic emails\"."
+msgstr ""
+
+#: src/Ui/PartChangesView.php:132
+msgid "Changes"
+msgstr ""
+
+#: src/Ui/PartChangesView.php:147
+#, php-format
+msgid "Send the email to %d member now?"
+msgid_plural "Send the email to %d members now?"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Ui/PartChangesView.php:156
+msgid "Send"
+msgstr ""
+
+#: src/Ui/PartChangesView.php:157
+msgid "Back"
+msgstr ""
+
+#: src/Ui/PartChangesView.php:165
+msgid "No email: inactive"
+msgstr ""
+
+#: src/Ui/PartChangesView.php:168
+msgid "No email: no address"
+msgstr ""
+
+#: src/Ui/PartChangesView.php:171
+msgid "No email: turned off in the profile"
+msgstr ""
+
 #. translators: 1: number accepted, 2: number declined, 3: number pending
 #: src/Ui/ParticipationView.php:45
 #, php-format
@@ -735,7 +888,7 @@ msgstr[1] ""
 msgid "Select %s"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:156 src/Ui/ProjectView.php:98
+#: src/Ui/ParticipationView.php:156 src/Ui/ProjectView.php:120
 msgid "Edit"
 msgstr ""
 
@@ -849,7 +1002,7 @@ msgstr ""
 msgid "Edit project"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:44 src/Ui/ProjectView.php:94
+#: src/Ui/ProjectFormView.php:44 src/Ui/ProjectView.php:116
 #: src/Ui/ProjectsShortcode.php:84
 msgid "All projects"
 msgstr ""
@@ -890,11 +1043,11 @@ msgstr ""
 msgid "A project can have any number of concerts, or none."
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:129 src/Ui/ProjectView.php:170
+#: src/Ui/ProjectFormView.php:129 src/Ui/ProjectView.php:192
 msgid "Conductors"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:130 src/Ui/ProjectView.php:174
+#: src/Ui/ProjectFormView.php:130 src/Ui/ProjectView.php:196
 msgid "Organizers"
 msgstr ""
 
@@ -928,83 +1081,90 @@ msgstr ""
 msgid "Ended, please complete"
 msgstr ""
 
-#: src/Ui/ProjectView.php:57
+#: src/Ui/ProjectView.php:55
+#, php-format
+msgid ""
+"%d member has not been informed about changed parts; the changes will be "
+"forgotten."
+msgid_plural ""
+"%d members have not been informed about changed parts; the changes will be "
+"forgotten."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Ui/ProjectView.php:79
 msgid "Overview"
 msgstr ""
 
-#: src/Ui/ProjectView.php:60
+#: src/Ui/ProjectView.php:82
 msgid "Program"
 msgstr ""
 
-#: src/Ui/ProjectView.php:66
+#: src/Ui/ProjectView.php:88
 msgid "Who accepted"
 msgstr ""
 
-#: src/Ui/ProjectView.php:93
+#: src/Ui/ProjectView.php:115
 msgid "Completed projects"
 msgstr ""
 
 #. translators: %s: date
-#: src/Ui/ProjectView.php:132
+#: src/Ui/ProjectView.php:154
 #, php-format
 msgid ""
 "The project ended on %s. Complete it to move it to the completed projects."
 msgstr ""
 
-#: src/Ui/ProjectView.php:137
+#: src/Ui/ProjectView.php:159
 msgid "Complete the project"
 msgstr ""
 
-#: src/Ui/ProjectView.php:140
+#: src/Ui/ProjectView.php:162
 msgid ""
 "Complete the project? Its program, participation and parts can no longer be "
 "changed."
 msgstr ""
 
-#: src/Ui/ProjectView.php:164 src/Ui/ProjectView.php:249
+#: src/Ui/ProjectView.php:186 src/Ui/ProjectView.php:272
 msgid "Status"
 msgstr ""
 
-#: src/Ui/ProjectView.php:167
+#: src/Ui/ProjectView.php:189
 msgid "Dates"
 msgstr ""
 
-#: src/Ui/ProjectView.php:197
+#: src/Ui/ProjectView.php:219
 msgid "Email accepted participants"
 msgstr ""
 
-#: src/Ui/ProjectView.php:199
+#: src/Ui/ProjectView.php:221
 msgid "Email pending participants"
 msgstr ""
 
-#: src/Ui/ProjectView.php:201
+#: src/Ui/ProjectView.php:223
 msgid "Email accepted and pending"
 msgstr ""
 
-#: src/Ui/ProjectView.php:204
-msgid "Email"
-msgstr ""
-
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:223
+#: src/Ui/ProjectView.php:245
 #, php-format
 msgid "Change the status to \"%s\"?"
 msgstr ""
 
-#: src/Ui/ProjectView.php:228
+#: src/Ui/ProjectView.php:251
 msgid ""
 "All active members and organizers who have not been asked yet will be asked "
 "to respond."
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:234
+#: src/Ui/ProjectView.php:257
 #, php-format
 msgid "Move to \"%s\""
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:236
+#: src/Ui/ProjectView.php:259
 #, php-format
 msgid "Back to \"%s\""
 msgstr ""

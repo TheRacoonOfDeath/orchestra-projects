@@ -19,6 +19,9 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
 - Parts a member plays for the first time are labelled "new", for the member and on the
   assignments; the PDF marks them with an asterisk and a legend
 - The assignments by piece or by member (a table of members and pieces), on the tab and in the PDF
+- Parts changed after the parts were assigned are remembered: conductors and organizers inform the
+  affected members by email, each with only their own changes, or dismiss the changes (with
+  orchestra-email 0.10 or later; organizers change the text on the Email page)
 - `[orchestra_projects]`: members see their projects, respond, see their parts and download the
   sheet music of each part, or all of it in one zip; organizers and conductors create projects, change their status and manage
   program, participation and assignments on the same page (or in **Projects** in wp-admin)

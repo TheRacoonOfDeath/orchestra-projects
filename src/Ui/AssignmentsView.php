@@ -38,6 +38,7 @@ final class AssignmentsView
         private readonly ParticipationRepository $participations,
         private readonly LibraryService $library,
         private readonly Names $names,
+        private readonly ?PartChangesView $changes = null,
     ) {
     }
 
@@ -83,6 +84,11 @@ final class AssignmentsView
                 )
                 : '')
             . '</div>';
+        $changes = $this->changes?->render($project) ?? '';
+        if (($_GET[PartChangesView::PARAMETER] ?? null) === PartChangesView::REVIEW && $changes !== '') {
+            return $changes;
+        }
+        $html .= $changes;
         $editable = $project->status->assignmentsEditable() && \current_user_can(Capabilities::ASSIGNMENT_MANAGE);
         $manager = \current_user_can(Capabilities::ASSIGNMENT_MANAGE);
         if ($manager && !$project->status->assignmentsEditable()) {

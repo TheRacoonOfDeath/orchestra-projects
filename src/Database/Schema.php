@@ -15,7 +15,7 @@ use wpdb;
 final class Schema
 {
     /** Increase whenever a table definition changes; dbDelta() applies the difference. */
-    public const VERSION = 4;
+    public const VERSION = 5;
 
     public const OPTION_VERSION = 'orchestra_projects_schema_version';
 
@@ -43,12 +43,24 @@ final class Schema
         return $this->wpdb->prefix . 'orchestra_projects_assignments';
     }
 
+    /** Since version 5: the assignments the members were last informed about. */
+    public function informedTable(): string
+    {
+        return $this->wpdb->prefix . 'orchestra_projects_informed';
+    }
+
     /**
      * @return list<string>
      */
     public function tables(): array
     {
-        return [$this->staffTable(), $this->programTable(), $this->participationTable(), $this->assignmentsTable()];
+        return [
+            $this->staffTable(),
+            $this->programTable(),
+            $this->participationTable(),
+            $this->assignmentsTable(),
+            $this->informedTable(),
+        ];
     }
 
     public function migrateIfOutdated(): void
@@ -126,6 +138,18 @@ final class Schema
   PRIMARY KEY  (id),
   UNIQUE KEY project_piece_user (project_id,piece_id,user_id),
   KEY part_id (part_id),
+  KEY user_id (user_id)
+) {$charsetCollate};");
+
+        // A snapshot of the assignments per project while it is in Parts assigned, see AssignmentChangeService.
+        \dbDelta("CREATE TABLE {$this->informedTable()} (
+  id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  project_id bigint(20) unsigned NOT NULL,
+  piece_id bigint(20) unsigned NOT NULL,
+  part_id bigint(20) unsigned NOT NULL,
+  user_id bigint(20) unsigned NOT NULL,
+  PRIMARY KEY  (id),
+  KEY project_id (project_id),
   KEY user_id (user_id)
 ) {$charsetCollate};");
 

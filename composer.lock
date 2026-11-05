@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2bea57d59aeed329d1bf0da675c64af2",
+    "content-hash": "7e9f63048278a61040b48c8ba7d42c1f",
     "packages": [
         {
             "name": "yahnis-elsts/plugin-update-checker",
@@ -464,16 +464,16 @@
         },
         {
             "name": "orchestra/email",
-            "version": "v0.1.0",
+            "version": "v0.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TheRacoonOfDeath/orchestra-email.git",
-                "reference": "bcd8dc594802af81a345cbd5c4d51994b9b7469f"
+                "reference": "d6c1c3cbfda9344c0f3858898d69dd91dcab6975"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-email/zipball/bcd8dc594802af81a345cbd5c4d51994b9b7469f",
-                "reference": "bcd8dc594802af81a345cbd5c4d51994b9b7469f",
+                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-email/zipball/d6c1c3cbfda9344c0f3858898d69dd91dcab6975",
+                "reference": "d6c1c3cbfda9344c0f3858898d69dd91dcab6975",
                 "shasum": ""
             },
             "require": {
@@ -481,7 +481,7 @@
                 "yahnis-elsts/plugin-update-checker": "^5.7"
             },
             "require-dev": {
-                "orchestra/core": "^0.6",
+                "orchestra/core": "^0.13",
                 "phpstan/phpstan": "^2.2",
                 "phpunit/phpunit": "^12.0",
                 "squizlabs/php_codesniffer": "^3.13",
@@ -522,10 +522,10 @@
             ],
             "description": "Emails to members, sections and project participants for the Orchestra plugin suite.",
             "support": {
-                "source": "https://github.com/TheRacoonOfDeath/orchestra-email/tree/v0.1.0",
+                "source": "https://github.com/TheRacoonOfDeath/orchestra-email/tree/v0.10.0",
                 "issues": "https://github.com/TheRacoonOfDeath/orchestra-email/issues"
             },
-            "time": "2026-10-16T15:30:52+00:00"
+            "time": "2026-11-05T20:11:37+00:00"
         },
         {
             "name": "orchestra/library",
@@ -599,16 +599,16 @@
         },
         {
             "name": "orchestra/members",
-            "version": "v0.14.0",
+            "version": "v0.14.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TheRacoonOfDeath/orchestra-members.git",
-                "reference": "0f81fbd98cd3307270597a1742db7abbc6f685d1"
+                "reference": "5cd2f7d0d97ff5042807c8fbdeec9a704713003d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-members/zipball/0f81fbd98cd3307270597a1742db7abbc6f685d1",
-                "reference": "0f81fbd98cd3307270597a1742db7abbc6f685d1",
+                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-members/zipball/5cd2f7d0d97ff5042807c8fbdeec9a704713003d",
+                "reference": "5cd2f7d0d97ff5042807c8fbdeec9a704713003d",
                 "shasum": ""
             },
             "require": {
@@ -662,10 +662,10 @@
             ],
             "description": "Member profiles and active status for the Orchestra plugin suite.",
             "support": {
-                "source": "https://github.com/TheRacoonOfDeath/orchestra-members/tree/v0.14.0",
+                "source": "https://github.com/TheRacoonOfDeath/orchestra-members/tree/v0.14.2",
                 "issues": "https://github.com/TheRacoonOfDeath/orchestra-members/issues"
             },
-            "time": "2026-10-20T21:45:39+00:00"
+            "time": "2026-10-22T14:22:39+00:00"
         },
         {
             "name": "phar-io/manifest",
