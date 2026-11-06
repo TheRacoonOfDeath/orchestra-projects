@@ -290,6 +290,7 @@ final class ProjectView
         string $confirm,
         string $style,
     ): string {
+        Assets::enqueue();
         $checked = $this->statusEmails?->informedBefore($project->id, $target) === false ? ' checked' : '';
 
         return Form::open(
