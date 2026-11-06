@@ -102,7 +102,8 @@ cat > "$WP_PATH/wp-content/mu-plugins/e2e-mail.php" <<'MU'
 <?php
 add_filter('pre_wp_mail', static function ($result, array $mail) {
     $log = get_option('e2e_mails', []);
-    $log[] = $mail;
+    // pre_wp_mail runs before PHPMailer, so the From name is read from its filter here.
+    $log[] = $mail + ['from_name' => apply_filters('wp_mail_from_name', 'WordPress')];
     update_option('e2e_mails', $log, false);
     return true;
 }, 10, 2);

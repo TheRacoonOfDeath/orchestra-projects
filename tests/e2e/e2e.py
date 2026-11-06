@@ -966,6 +966,8 @@ body = sent[0]["message"] if sent else ""
 check(sent and sent[0]["subject"] == "Your parts in Spring Concert 2027 have changed" and "Hello Olga" in body
       and "now Violin 1" in body and "Horn 2" not in body and "orchestra_project=" in body,
       "the email has only the member's own changes and a link to the project")
+check(sent and sent[0].get("from_name") == "Orchestra",
+      f"automatic emails come from \"Orchestra\": {sent[0].get('from_name') if sent else None}")
 _, page = conductor.get(manage_url(spring, "assignments"))
 check(CHANGES_NOTICE not in text(page), "informed changes are forgotten")
 
