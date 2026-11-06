@@ -122,15 +122,16 @@ made after that are communicated:
 
 Since 0.37, with orchestra-email 0.10 (`Email\StatusEmails`):
 
-- The status buttons to Open for Participation and to Parts assigned (forward or back) have a
-  checkbox "Inform the members by email" (`inform=1` with `op=status`). It is ticked when the
-  project reaches that status for the first time and unticked once the email was sent for it
-  (post meta `orchestra_projects_status_emails`), so organizers decide whether a reopen or a
-  second Parts assigned informs the members again.
+- The status buttons from Draft to Open for Participation and from Preparation to Parts assigned
+  have a checkbox "Inform the members by email" (`inform=1` with `op=status`,
+  `StatusEmails::informs()`). It is ticked when the project reaches that status for the first time
+  and unticked once the email was sent for it (post meta `orchestra_projects_status_emails`), so
+  organizers decide whether a second Parts assigned informs the members again. The moves back to
+  these statuses (Preparation → Open for late responses, Completed → Parts assigned) have no
+  checkbox and send nothing (since 0.37.1).
 - Open for Participation sends `orchestra_projects_open` to all players whose participation is
-  pending, after the missing participations were created: on the first opening every active
-  member, organizer and librarian, on a reopen only those who have not responded yet. Its link
-  goes to the project, where they respond.
+  pending, after the missing participations were created. Its link goes to the project, where they
+  respond.
 - Parts assigned sends `orchestra_projects_parts_assigned` to the participants who accepted, with
   a link to the assignments tab.
 - Inactive members, members without an address and members who turned automatic emails off are

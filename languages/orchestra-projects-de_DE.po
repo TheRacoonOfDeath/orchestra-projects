@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-06 14:29+0100\n"
+"POT-Creation-Date: 2026-11-06 14:50+0100\n"
 "PO-Revision-Date: 2026-10-16 00:00+0000\n"
 "Last-Translator: Julian Nickerl\n"
 "Language-Team: German\n"
@@ -23,7 +23,7 @@ msgstr "Ehemaliges Mitglied"
 msgid "%s (inactive)"
 msgstr "%s (inaktiv)"
 
-#: src/Admin/ProjectActions.php:75 src/Admin/ProjectActions.php:285
+#: src/Admin/ProjectActions.php:75 src/Admin/ProjectActions.php:286
 #: src/Admin/ProjectsPage.php:104 src/ProjectsService.php:140
 #: src/Ui/ProjectsShortcode.php:85
 msgid "The project does not exist."
@@ -42,7 +42,7 @@ msgstr ""
 "Die Änderungen werden nicht mehr angezeigt. Die Mitglieder wurden nicht "
 "informiert."
 
-#: src/Admin/ProjectActions.php:112 src/Admin/ProjectActions.php:290
+#: src/Admin/ProjectActions.php:112 src/Admin/ProjectActions.php:291
 msgid "Saved."
 msgstr "Gespeichert."
 
@@ -97,37 +97,37 @@ msgid_plural "The assignment was taken over: %d parts were assigned."
 msgstr[0] "Die Verteilung wurde übernommen: %d Stimme wurde eingeteilt."
 msgstr[1] "Die Verteilung wurde übernommen: %d Stimmen wurden eingeteilt."
 
-#: src/Admin/ProjectActions.php:281
+#: src/Admin/ProjectActions.php:282
 msgid "Unknown status."
 msgstr "Unbekannter Status."
 
 #. translators: %s: project status
-#: src/Admin/ProjectActions.php:295
+#: src/Admin/ProjectActions.php:296
 #, php-format
 msgid "The status is now \"%s\"."
 msgstr "Der Status ist jetzt „%s“."
 
-#: src/Admin/ProjectActions.php:297
+#: src/Admin/ProjectActions.php:298
 msgid "The members were not informed by email."
 msgstr "Die Mitglieder wurden nicht per E-Mail informiert."
 
-#: src/Admin/ProjectActions.php:303
+#: src/Admin/ProjectActions.php:304
 msgid "There was nobody to inform by email."
 msgstr "Es gab niemanden, der per E-Mail informiert werden konnte."
 
-#: src/Admin/ProjectActions.php:307
+#: src/Admin/ProjectActions.php:308
 #, php-format
 msgid "%1$d of %2$d member was informed by email."
 msgid_plural "%1$d of %2$d members were informed by email."
 msgstr[0] "%1$d von %2$d Mitglied wurde per E-Mail informiert."
 msgstr[1] "%1$d von %2$d Mitgliedern wurden per E-Mail informiert."
 
-#: src/Admin/ProjectActions.php:326
+#: src/Admin/ProjectActions.php:327
 msgid "Select at least one member and a status."
 msgstr "Wähle mindestens ein Mitglied und einen Status aus."
 
-#: src/Admin/ProjectActions.php:333 src/Admin/ProjectActions.php:349
-#: src/Admin/ProjectActions.php:362
+#: src/Admin/ProjectActions.php:334 src/Admin/ProjectActions.php:350
+#: src/Admin/ProjectActions.php:363
 msgid "The participation does not exist."
 msgstr "Die Teilnahme existiert nicht."
 
@@ -240,11 +240,11 @@ msgstr ""
 "p>{changes}<p>Alle deine Stimmen und die Noten findest du auf der Seite des "
 "Projekts: {link}</p>"
 
-#: src/Email/ChangedPartsEmail.php:73 src/Email/StatusEmails.php:65
+#: src/Email/ChangedPartsEmail.php:73 src/Email/StatusEmails.php:67
 msgid "The name of the member"
 msgstr "Der Name des Mitglieds"
 
-#: src/Email/ChangedPartsEmail.php:74 src/Email/StatusEmails.php:66
+#: src/Email/ChangedPartsEmail.php:74 src/Email/StatusEmails.php:68
 msgid "The name of the project"
 msgstr "Der Name des Projekts"
 
@@ -252,7 +252,7 @@ msgstr "Der Name des Projekts"
 msgid "The list of the member's changed parts"
 msgstr "Die Liste der geänderten Stimmen des Mitglieds"
 
-#: src/Email/ChangedPartsEmail.php:76 src/Email/StatusEmails.php:101
+#: src/Email/ChangedPartsEmail.php:76 src/Email/StatusEmails.php:103
 msgid "The link to the parts of the project"
 msgstr "Der Link zu den Stimmen des Projekts"
 
@@ -300,58 +300,67 @@ msgstr "Angemeldete Teilnehmer"
 msgid "Pending participants (no response yet)"
 msgstr "Unentschlossene Teilnehmer (noch keine Antwort)"
 
-#: src/Email/StatusEmails.php:67
+#: src/Email/StatusEmails.php:69
 msgid "The dates of the project"
 msgstr "Die Termine des Projekts"
 
-#: src/Email/StatusEmails.php:71
+#: src/Email/StatusEmails.php:73
 msgid "Project open for participation"
 msgstr "Projekt offen für Anmeldungen"
 
-#: src/Email/StatusEmails.php:73
+#: src/Email/StatusEmails.php:75
 msgid ""
-"Sent when organizers move a project to \"Open for Participation\" and choose "
+"Sent when organizers move a draft to \"Open for Participation\" and choose "
 "to inform the members. It goes to all active members who have not responded "
 "yet."
-msgstr "Wird verschickt, wenn Organisatoren ein Projekt auf „Offen für Anmeldungen“ setzen und die Mitglieder informieren. Die E-Mail geht an alle aktiven Mitglieder, die noch nicht geantwortet haben."
+msgstr ""
+"Wird verschickt, wenn Organisatoren einen Entwurf auf „Offen für "
+"Anmeldungen“ setzen und die Mitglieder informieren. Die E-Mail geht an alle "
+"aktiven Mitglieder, die noch nicht geantwortet haben."
 
-#: src/Email/StatusEmails.php:78
+#: src/Email/StatusEmails.php:80
 msgid "{project} is open for participation"
 msgstr "Anmeldung für {project} ist offen"
 
-#: src/Email/StatusEmails.php:80
+#: src/Email/StatusEmails.php:82
 msgid ""
 "<p>Hello {name},</p><p>the project {project} ({dates}) is open for "
 "participation.</p><p>Please tell us whether you take part: {link}</p>"
-msgstr "<p>Hallo {name},</p><p>für das Projekt {project} ({dates}) kannst du dich jetzt anmelden.</p><p>Bitte sag uns, ob du dabei bist: {link}</p>"
+msgstr ""
+"<p>Hallo {name},</p><p>für das Projekt {project} ({dates}) kannst du dich "
+"jetzt anmelden.</p><p>Bitte sag uns, ob du dabei bist: {link}</p>"
 
-#: src/Email/StatusEmails.php:84
+#: src/Email/StatusEmails.php:86
 msgid "The link to the project, where members respond"
 msgstr "Der Link zum Projekt, wo die Mitglieder antworten"
 
-#: src/Email/StatusEmails.php:88 src/Project/ProjectStatus.php:33
+#: src/Email/StatusEmails.php:90 src/Project/ProjectStatus.php:33
 msgid "Parts assigned"
 msgstr "Stimmverteilung abgeschlossen"
 
-#: src/Email/StatusEmails.php:90
+#: src/Email/StatusEmails.php:92
 msgid ""
-"Sent when organizers move a project to \"Parts assigned\" and choose to "
-"inform the members. It goes to all members who accepted the project."
-msgstr "Wird verschickt, wenn Organisatoren ein Projekt auf „Stimmverteilung abgeschlossen“ setzen und die Mitglieder informieren. Die E-Mail geht an alle Mitglieder, die zugesagt haben."
+"Sent when organizers move a project from \"Preparation\" to \"Parts "
+"assigned\" and choose to inform the members. It goes to all members who "
+"accepted the project."
+msgstr "Wird verschickt, wenn Organisatoren ein Projekt von „Anmeldung geschlossen“ auf „Stimmverteilung abgeschlossen“ setzen und die Mitglieder informieren. Die E-Mail geht an alle Mitglieder, die zugesagt haben."
 
-#: src/Email/StatusEmails.php:95
+#: src/Email/StatusEmails.php:97
 msgid "Your parts in {project} are assigned"
 msgstr "Deine Stimmen in {project} sind verteilt"
 
-#: src/Email/StatusEmails.php:97
+#: src/Email/StatusEmails.php:99
 msgid ""
 "<p>Hello {name},</p><p>the parts in {project} ({dates}) are assigned.</"
 "p><p>Your parts and the sheet music are on the page of the project: {link}</"
 "p>"
-msgstr "<p>Hallo {name},</p><p>die Stimmen in {project} ({dates}) sind verteilt.</p><p>Deine Stimmen und die Noten findest du auf der Seite des Projekts: {link}</p>"
+msgstr ""
+"<p>Hallo {name},</p><p>die Stimmen in {project} ({dates}) sind verteilt.</"
+"p><p>Deine Stimmen und die Noten findest du auf der Seite des Projekts: "
+"{link}</p>"
 
 #. translators: 1: project status, 2: project name
-#: src/Email/StatusEmails.php:161
+#: src/Email/StatusEmails.php:163
 #, php-format
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"
@@ -1431,6 +1440,23 @@ msgstr "Du darfst die Projekte nicht sehen."
 
 #~ msgid "Paid"
 #~ msgstr "Bezahlt"
+
+#~ msgid ""
+#~ "Sent when organizers move a project to \"Open for Participation\" and "
+#~ "choose to inform the members. It goes to all active members who have not "
+#~ "responded yet."
+#~ msgstr ""
+#~ "Wird verschickt, wenn Organisatoren ein Projekt auf „Offen für "
+#~ "Anmeldungen“ setzen und die Mitglieder informieren. Die E-Mail geht an "
+#~ "alle aktiven Mitglieder, die noch nicht geantwortet haben."
+
+#~ msgid ""
+#~ "Sent when organizers move a project to \"Parts assigned\" and choose to "
+#~ "inform the members. It goes to all members who accepted the project."
+#~ msgstr ""
+#~ "Wird verschickt, wenn Organisatoren ein Projekt auf „Stimmverteilung "
+#~ "abgeschlossen“ setzen und die Mitglieder informieren. Die E-Mail geht an "
+#~ "alle Mitglieder, die zugesagt haben."
 
 #~ msgid ""
 #~ "Some selected members already play another part of this piece. Move them "

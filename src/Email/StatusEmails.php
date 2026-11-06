@@ -20,8 +20,8 @@ use Orchestra\Projects\Ui\ProjectsShortcode;
 use Orchestra\Projects\Ui\ProjectView;
 
 /**
- * The automatic emails sent when organizers move a project to Open for Participation (to the
- * players who have not responded yet) or to Parts assigned (to the accepted participants), if they
+ * The automatic emails sent when organizers move a draft to Open for Participation (to the players
+ * who have not responded yet) or a project from Preparation to Parts assigned (to the accepted participants), if they
  * tick "Inform the members by email". Organizers change the texts on the Email page.
  */
 final class StatusEmails
@@ -44,11 +44,13 @@ final class StatusEmails
     }
 
     /**
-     * Whether moving a project to the status can inform the members.
+     * Whether moving a project from one status to the other can inform the members: only the forward
+     * moves to Open for Participation and to Parts assigned, not the moves back to them.
      */
-    public static function informs(ProjectStatus $status): bool
+    public static function informs(ProjectStatus $from, ProjectStatus $to): bool
     {
-        return $status === ProjectStatus::Open || $status === ProjectStatus::PartsAssigned;
+        return ($from === ProjectStatus::Draft && $to === ProjectStatus::Open)
+            || ($from === ProjectStatus::Preparation && $to === ProjectStatus::PartsAssigned);
     }
 
     public function register(): void
@@ -70,7 +72,7 @@ final class StatusEmails
             self::OPEN_ID,
             \__('Project open for participation', 'orchestra-projects'),
             \__(
-                'Sent when organizers move a project to "Open for Participation" and choose to inform the'
+                'Sent when organizers move a draft to "Open for Participation" and choose to inform the'
                     . ' members. It goes to all active members who have not responded yet.',
                 'orchestra-projects'
             ),
@@ -87,8 +89,8 @@ final class StatusEmails
             self::PARTS_ASSIGNED_ID,
             \__('Parts assigned', 'orchestra-projects'),
             \__(
-                'Sent when organizers move a project to "Parts assigned" and choose to inform the members.'
-                    . ' It goes to all members who accepted the project.',
+                'Sent when organizers move a project from "Preparation" to "Parts assigned" and choose to'
+                    . ' inform the members. It goes to all members who accepted the project.',
                 'orchestra-projects'
             ),
             Capabilities::NOTIFICATION_EDIT,

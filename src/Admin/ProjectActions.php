@@ -277,6 +277,7 @@ final class ProjectActions
     private function changeStatus(Project $project): never
     {
         $target = ProjectStatus::tryFrom(self::string('target'));
+        $from = $project->status;
         $error = $target === null
             ? \__('Unknown status.', 'orchestra-projects')
             : $this->status->change($project, $target);
@@ -286,7 +287,7 @@ final class ProjectActions
             Redirect::back();
         }
 
-        if ($this->statusEmails === null || !StatusEmails::informs($target)) {
+        if ($this->statusEmails === null || !StatusEmails::informs($from, $target)) {
             Notices::success(\__('Saved.', 'orchestra-projects'));
             Redirect::back();
         }

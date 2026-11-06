@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-06 14:29+0100\n"
+"POT-Creation-Date: 2026-11-06 14:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,7 +28,7 @@ msgstr ""
 msgid "%s (inactive)"
 msgstr ""
 
-#: src/Admin/ProjectActions.php:75 src/Admin/ProjectActions.php:285
+#: src/Admin/ProjectActions.php:75 src/Admin/ProjectActions.php:286
 #: src/Admin/ProjectsPage.php:104 src/ProjectsService.php:140
 #: src/Ui/ProjectsShortcode.php:85
 msgid "The project does not exist."
@@ -45,7 +45,7 @@ msgstr ""
 msgid "The changes are no longer listed. The members were not informed."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:112 src/Admin/ProjectActions.php:290
+#: src/Admin/ProjectActions.php:112 src/Admin/ProjectActions.php:291
 msgid "Saved."
 msgstr ""
 
@@ -93,37 +93,37 @@ msgid_plural "The assignment was taken over: %d parts were assigned."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Admin/ProjectActions.php:281
+#: src/Admin/ProjectActions.php:282
 msgid "Unknown status."
 msgstr ""
 
 #. translators: %s: project status
-#: src/Admin/ProjectActions.php:295
+#: src/Admin/ProjectActions.php:296
 #, php-format
 msgid "The status is now \"%s\"."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:297
+#: src/Admin/ProjectActions.php:298
 msgid "The members were not informed by email."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:303
+#: src/Admin/ProjectActions.php:304
 msgid "There was nobody to inform by email."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:307
+#: src/Admin/ProjectActions.php:308
 #, php-format
 msgid "%1$d of %2$d member was informed by email."
 msgid_plural "%1$d of %2$d members were informed by email."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Admin/ProjectActions.php:326
+#: src/Admin/ProjectActions.php:327
 msgid "Select at least one member and a status."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:333 src/Admin/ProjectActions.php:349
-#: src/Admin/ProjectActions.php:362
+#: src/Admin/ProjectActions.php:334 src/Admin/ProjectActions.php:350
+#: src/Admin/ProjectActions.php:363
 msgid "The participation does not exist."
 msgstr ""
 
@@ -228,11 +228,11 @@ msgid ""
 "</p>"
 msgstr ""
 
-#: src/Email/ChangedPartsEmail.php:73 src/Email/StatusEmails.php:65
+#: src/Email/ChangedPartsEmail.php:73 src/Email/StatusEmails.php:67
 msgid "The name of the member"
 msgstr ""
 
-#: src/Email/ChangedPartsEmail.php:74 src/Email/StatusEmails.php:66
+#: src/Email/ChangedPartsEmail.php:74 src/Email/StatusEmails.php:68
 msgid "The name of the project"
 msgstr ""
 
@@ -240,7 +240,7 @@ msgstr ""
 msgid "The list of the member's changed parts"
 msgstr ""
 
-#: src/Email/ChangedPartsEmail.php:76 src/Email/StatusEmails.php:101
+#: src/Email/ChangedPartsEmail.php:76 src/Email/StatusEmails.php:103
 msgid "The link to the parts of the project"
 msgstr ""
 
@@ -288,50 +288,51 @@ msgstr ""
 msgid "Pending participants (no response yet)"
 msgstr ""
 
-#: src/Email/StatusEmails.php:67
+#: src/Email/StatusEmails.php:69
 msgid "The dates of the project"
 msgstr ""
 
-#: src/Email/StatusEmails.php:71
+#: src/Email/StatusEmails.php:73
 msgid "Project open for participation"
 msgstr ""
 
-#: src/Email/StatusEmails.php:73
+#: src/Email/StatusEmails.php:75
 msgid ""
-"Sent when organizers move a project to \"Open for Participation\" and choose "
+"Sent when organizers move a draft to \"Open for Participation\" and choose "
 "to inform the members. It goes to all active members who have not responded "
 "yet."
 msgstr ""
 
-#: src/Email/StatusEmails.php:78
+#: src/Email/StatusEmails.php:80
 msgid "{project} is open for participation"
 msgstr ""
 
-#: src/Email/StatusEmails.php:80
+#: src/Email/StatusEmails.php:82
 msgid ""
 "<p>Hello {name},</p><p>the project {project} ({dates}) is open for "
 "participation.</p><p>Please tell us whether you take part: {link}</p>"
 msgstr ""
 
-#: src/Email/StatusEmails.php:84
+#: src/Email/StatusEmails.php:86
 msgid "The link to the project, where members respond"
 msgstr ""
 
-#: src/Email/StatusEmails.php:88 src/Project/ProjectStatus.php:33
+#: src/Email/StatusEmails.php:90 src/Project/ProjectStatus.php:33
 msgid "Parts assigned"
 msgstr ""
 
-#: src/Email/StatusEmails.php:90
+#: src/Email/StatusEmails.php:92
 msgid ""
-"Sent when organizers move a project to \"Parts assigned\" and choose to "
-"inform the members. It goes to all members who accepted the project."
-msgstr ""
-
-#: src/Email/StatusEmails.php:95
-msgid "Your parts in {project} are assigned"
+"Sent when organizers move a project from \"Preparation\" to \"Parts "
+"assigned\" and choose to inform the members. It goes to all members who "
+"accepted the project."
 msgstr ""
 
 #: src/Email/StatusEmails.php:97
+msgid "Your parts in {project} are assigned"
+msgstr ""
+
+#: src/Email/StatusEmails.php:99
 msgid ""
 "<p>Hello {name},</p><p>the parts in {project} ({dates}) are assigned.</"
 "p><p>Your parts and the sheet music are on the page of the project: {link}</"
@@ -339,7 +340,7 @@ msgid ""
 msgstr ""
 
 #. translators: 1: project status, 2: project name
-#: src/Email/StatusEmails.php:161
+#: src/Email/StatusEmails.php:163
 #, php-format
 msgid "%1$s: %2$s"
 msgstr ""

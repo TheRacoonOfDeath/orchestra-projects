@@ -22,9 +22,9 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
 - Parts changed after the parts were assigned are remembered: conductors and organizers inform the
   affected members by email, each with only their own changes, or dismiss the changes (with
   orchestra-email 0.10 or later; organizers change the text on the Email page)
-- Moving a project to Open for Participation or Parts assigned can inform the members by email:
-  the members who have not responded yet, or the accepted participants (with orchestra-email 0.10
-  or later; organizers change the texts on the Email page)
+- Moving a draft to Open for Participation or a project to Parts assigned can inform the members
+  by email: all active members, or the accepted participants (with orchestra-email 0.10 or later;
+  organizers change the texts on the Email page)
 - `[orchestra_projects]`: members see their projects, respond, see their parts and download the
   sheet music of each part, or all of it in one zip; organizers and conductors create projects, change their status and manage
   program, participation and assignments on the same page (or in **Projects** in wp-admin)

@@ -260,7 +260,7 @@ final class ProjectView
                 ? \sprintf(\__('Move to "%s"', 'orchestra-projects'), $target->label())
                 /* translators: %s: project status */
                 : \sprintf(\__('Back to "%s"', 'orchestra-projects'), $target->label());
-            $buttons .= $this->statusEmails !== null && StatusEmails::informs($target)
+            $buttons .= $this->statusEmails !== null && StatusEmails::informs($project->status, $target)
                 ? $this->informingStatusButton($project, $target, $label, $confirm, $index === 0 ? 'primary' : '')
                 : ProjectForms::button(
                     $project->id,

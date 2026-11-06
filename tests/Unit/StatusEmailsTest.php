@@ -13,11 +13,18 @@ use ReflectionClass;
 
 final class StatusEmailsTest extends TestCase
 {
-    public function testOnlyOpenAndPartsAssignedInformTheMembers(): void
+    public function testOnlyTheForwardMovesToOpenAndPartsAssignedInformTheMembers(): void
     {
-        $informing = \array_values(\array_filter(ProjectStatus::cases(), StatusEmails::informs(...)));
+        $informing = [];
+        foreach (ProjectStatus::cases() as $from) {
+            foreach (ProjectStatus::cases() as $to) {
+                if ($from->canMoveTo($to) && StatusEmails::informs($from, $to)) {
+                    $informing[] = $from->value . ' → ' . $to->value;
+                }
+            }
+        }
 
-        $this->assertSame([ProjectStatus::Open, ProjectStatus::PartsAssigned], $informing);
+        $this->assertSame(['draft → open', 'preparation → parts_assigned'], $informing);
     }
 
     public function testTheDefaultTextsOnlyUseTheirPlaceholders(): void
