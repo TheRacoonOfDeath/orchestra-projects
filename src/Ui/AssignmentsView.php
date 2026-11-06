@@ -21,6 +21,7 @@ use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationStatus;
 use Orchestra\Projects\Program\ProgramRepository;
 use Orchestra\Projects\Project\Project;
+use Orchestra\Projects\ProjectsService;
 
 /**
  * The parts of every piece in the program with their players; conductors assign members here.
@@ -90,7 +91,7 @@ final class AssignmentsView
                 : '')
             . '</div>';
         $changes = $this->changes?->render($project) ?? '';
-        if (($_GET[PartChangesView::PARAMETER] ?? null) === PartChangesView::REVIEW && $changes !== '') {
+        if (ProjectsService::reviewingPartChanges() && $changes !== '') {
             return $changes;
         }
         $html .= $changes;

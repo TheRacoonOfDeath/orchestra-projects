@@ -16,6 +16,7 @@ use Orchestra\Projects\Program\ProgramRepository;
 use Orchestra\Projects\Project\Project;
 use Orchestra\Projects\Project\ProjectRepository;
 use Orchestra\Projects\Project\ProjectStatus;
+use Orchestra\Projects\Ui\PartChangesView;
 
 /**
  * The public API of orchestra-projects for other plugins, e.g. the email groups. It reads, and
@@ -23,7 +24,8 @@ use Orchestra\Projects\Project\ProjectStatus;
  *
  *     $projects = \Orchestra\Projects\Plugin::instance()->projects();
  *
- * It does not check permissions. Other plugins must not access the tables directly.
+ * It does not check permissions, except for {@see partChanges()}. Other plugins must not access the
+ * tables directly.
  */
 final class ProjectsService
 {
@@ -48,6 +50,8 @@ final class ProjectsService
         private readonly AssignmentRepository $assignments,
         /** @var Closure(): AssignmentService Created on first use, once orchestra-library is loaded. */
         private readonly Closure $assignmentService,
+        /** @var Closure(): ?PartChangesView Null without orchestra-email 0.10. */
+        private readonly Closure $partChangesView,
     ) {
     }
 
@@ -137,5 +141,27 @@ final class ProjectsService
         }
 
         return ($this->assignmentService)()->setPart($project, $pieceId, $userId, $partId, $actorId);
+    }
+
+    /**
+     * The notice about the parts changed since the members were last informed, with "Inform members
+     * about changes" and "Don't inform members", as on the assignments tab; instead the review of the
+     * changes when the page asks for it ({@see reviewingPartChanges()}). Its forms return to the
+     * current page. Empty unless the project is in Parts assigned and has changes, orchestra-email
+     * 0.10 is running and the current user may manage assignments. orchestra-seating shows it on the
+     * seating tab. Since 0.35.
+     */
+    public function partChanges(Project $project): string
+    {
+        return ($this->partChangesView)()?->render($project) ?? '';
+    }
+
+    /**
+     * Whether the current page asks for the review of the changed parts. Show nothing but
+     * {@see partChanges()} then, unless it is empty. Since 0.35.
+     */
+    public static function reviewingPartChanges(): bool
+    {
+        return ($_GET[PartChangesView::PARAMETER] ?? null) === PartChangesView::REVIEW;
     }
 }

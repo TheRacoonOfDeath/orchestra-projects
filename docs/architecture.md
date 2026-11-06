@@ -105,6 +105,9 @@ made after that are communicated:
   - **Don't inform members** (`op=changes_forget`, after a confirmation that explains it) keeps
     the parts and forgets the changes.
   Both take a new snapshot.
+- The seating tab of orchestra-seating shows the same notice and review above the seating
+  (`ProjectsService::partChanges()`, since 0.35), because voices changed there are part changes
+  too. Only part changes count; seats alone are no change.
 - Leaving Parts assigned (back to Preparation, on to Completed, also with "Complete the project")
   forgets the changes; the confirmation of the status change says how many members were not
   informed.

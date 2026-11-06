@@ -73,6 +73,7 @@ final class Plugin
     private readonly AssignmentRepository $assignments;
     private readonly InformedRepository $informed;
     private readonly ProjectsService $projects;
+    private ?PartChangesView $partChangesView = null;
 
     private function __construct(private readonly string $pluginFile, wpdb $wpdb)
     {
@@ -94,7 +95,8 @@ final class Plugin
                 $this->program,
                 $this->projectRepository,
                 LibraryPlugin::instance()->library()
-            )
+            ),
+            fn (): ?PartChangesView => $this->partChangesView
         );
     }
 
@@ -205,6 +207,7 @@ final class Plugin
         $partChangesView = $changedPartsEmail === null
             ? null
             : new PartChangesView($changes, $changedPartsEmail, $names, $members);
+        $this->partChangesView = $partChangesView;
 
         \add_action(
             'orchestra_core_register_capabilities',
