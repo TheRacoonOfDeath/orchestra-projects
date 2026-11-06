@@ -147,6 +147,8 @@
 
 .orchestra .orchestra-projects-status-form .orchestra-checkbox {
     align-items: center;
+    /* Themes give labels a margin, which would move the button out of line with the others. */
+    margin: 0;
 }
 
 .orchestra .orchestra-projects-status-form .orchestra-checkbox input {

@@ -239,7 +239,8 @@ final class ProjectView
     private function statusButtons(Project $project): string
     {
         $buttons = '';
-        foreach ([$project->status->next(), $project->status->previous()] as $index => $target) {
+        // Back on the left, forward on the right.
+        foreach ([$project->status->previous(), $project->status->next()] as $index => $target) {
             if ($target === null) {
                 continue;
             }
@@ -255,20 +256,20 @@ final class ProjectView
                     'orchestra-projects'
                 );
             }
-            $label = $index === 0
+            $label = $index === 1
                 /* translators: %s: project status */
                 ? \sprintf(\__('Move to "%s"', 'orchestra-projects'), $target->label())
                 /* translators: %s: project status */
                 : \sprintf(\__('Back to "%s"', 'orchestra-projects'), $target->label());
             $buttons .= $this->statusEmails !== null && StatusEmails::informs($project->status, $target)
-                ? $this->informingStatusButton($project, $target, $label, $confirm, $index === 0 ? 'primary' : '')
+                ? $this->informingStatusButton($project, $target, $label, $confirm, $index === 1 ? 'primary' : '')
                 : ProjectForms::button(
                     $project->id,
                     'status',
                     $label,
                     ['target' => $target->value],
                     $confirm,
-                    $index === 0 ? 'primary' : ''
+                    $index === 1 ? 'primary' : ''
                 );
         }
 
