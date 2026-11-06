@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 22:57+0100\n"
+"POT-Creation-Date: 2026-11-06 11:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgid "%s (inactive)"
 msgstr ""
 
 #: src/Admin/ProjectActions.php:73 src/Admin/ProjectsPage.php:104
-#: src/ProjectsService.php:136 src/Ui/ProjectsShortcode.php:85
+#: src/ProjectsService.php:140 src/Ui/ProjectsShortcode.php:85
 msgid "The project does not exist."
 msgstr ""
 
@@ -119,7 +119,7 @@ msgstr ""
 
 #: src/Admin/ProjectsPage.php:63 src/Admin/ProjectsPage.php:64
 #: src/Admin/ProjectsPage.php:77 src/Admin/ProjectsPage.php:119
-#: src/Plugin.php:319 src/Project/ProjectPostType.php:39
+#: src/Plugin.php:324 src/Project/ProjectPostType.php:39
 msgid "Projects"
 msgstr ""
 
@@ -169,7 +169,7 @@ msgstr ""
 msgid "new"
 msgstr ""
 
-#: src/Assignment/AssignmentService.php:309 src/Ui/AssignmentsView.php:101
+#: src/Assignment/AssignmentService.php:309 src/Ui/AssignmentsView.php:102
 msgid "Assignments cannot be changed in drafts and completed projects."
 msgstr ""
 
@@ -270,12 +270,12 @@ msgstr ""
 msgid "The program has no pieces yet."
 msgstr ""
 
-#: src/Export/AssignmentsPdf.php:66 src/Ui/AssignmentsView.php:242
+#: src/Export/AssignmentsPdf.php:66 src/Ui/AssignmentsView.php:243
 msgid "The piece has no parts."
 msgstr ""
 
 #: src/Export/AssignmentsPdf.php:78 src/Privacy/PersonalData.php:118
-#: src/Ui/AssignmentsView.php:276
+#: src/Ui/AssignmentsView.php:277
 msgid "Part"
 msgstr ""
 
@@ -293,7 +293,7 @@ msgstr ""
 msgid "Assignments: %s"
 msgstr ""
 
-#: src/Export/AssignmentsPdf.php:132 src/Ui/AssignmentsView.php:194
+#: src/Export/AssignmentsPdf.php:132 src/Ui/AssignmentsView.php:195
 #: src/Ui/PartChangesView.php:131 src/Ui/ParticipationView.php:114
 msgid "Member"
 msgstr ""
@@ -366,20 +366,20 @@ msgid ""
 "decision."
 msgstr ""
 
-#: src/Participation/ParticipationService.php:67
+#: src/Participation/ParticipationService.php:70
 msgid "This response is not possible."
 msgstr ""
 
-#: src/Participation/ParticipationService.php:89
+#: src/Participation/ParticipationService.php:92
 msgid "This comment is not possible."
 msgstr ""
 
-#: src/Participation/ParticipationService.php:93
+#: src/Participation/ParticipationService.php:96
 msgid ""
 "Comments can only be changed while the project is open for participation."
 msgstr ""
 
-#: src/Participation/ParticipationService.php:138
+#: src/Participation/ParticipationService.php:141
 msgid ""
 "The member has assignments in this project. Confirm that they are removed."
 msgstr ""
@@ -396,21 +396,21 @@ msgstr ""
 msgid "Declined"
 msgstr ""
 
-#: src/Plugin.php:311
+#: src/Plugin.php:316
 msgid "Plan projects, respond to them and download your sheet music."
 msgstr ""
 
-#: src/Plugin.php:314
+#: src/Plugin.php:319
 msgid "Plan projects: program, participation, parts and seating."
 msgstr ""
 
-#: src/Plugin.php:315
+#: src/Plugin.php:320
 msgid "Respond to projects, see your parts and download your sheet music."
 msgstr ""
 
-#: src/Plugin.php:344
+#: src/Plugin.php:349
 msgid ""
-"Orchestra Projects requires Orchestra Core 0.4, Orchestra Library and "
+"Orchestra Projects requires Orchestra Core 0.17, Orchestra Library and "
 "Orchestra Members to be active."
 msgstr ""
 
@@ -584,27 +584,27 @@ msgstr ""
 msgid "The project is not over yet. Change its status step by step instead."
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:65
+#: src/Ui/AssignmentsView.php:66
 msgid "The parts have not been assigned yet."
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:77
+#: src/Ui/AssignmentsView.php:78
 msgid "Add pieces to the program first. Their parts can then be assigned here."
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:87
+#: src/Ui/AssignmentsView.php:88
 msgid "Download PDF"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:123 src/Ui/AssignmentsView.php:210
+#: src/Ui/AssignmentsView.php:124 src/Ui/AssignmentsView.php:211
 msgid "Nobody has accepted to participate yet."
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:131
+#: src/Ui/AssignmentsView.php:132
 msgid "Assign the parts played last time"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:138
+#: src/Ui/AssignmentsView.php:139
 #, php-format
 msgid ""
 "Assigns %d part: members who are not assigned in a piece yet get the part "
@@ -615,72 +615,72 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Ui/AssignmentsView.php:174
+#: src/Ui/AssignmentsView.php:175
 msgid "View"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:175
+#: src/Ui/AssignmentsView.php:176
 msgid "By piece"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:178
+#: src/Ui/AssignmentsView.php:179
 msgid "By member"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:257
+#: src/Ui/AssignmentsView.php:258
 #, php-format
 msgid "%1$d of %2$d member assigned"
 msgid_plural "%1$d of %2$d members assigned"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Ui/AssignmentsView.php:269
+#: src/Ui/AssignmentsView.php:270
 msgid "At least one member has not been assigned a part yet"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:276
+#: src/Ui/AssignmentsView.php:277
 msgid "Assigned"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:278 src/Ui/AssignmentsView.php:484
+#: src/Ui/AssignmentsView.php:279 src/Ui/AssignmentsView.php:485
 msgid "Assign"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:349
+#: src/Ui/AssignmentsView.php:350
 msgid "Take over the assignment of"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:351
+#: src/Ui/AssignmentsView.php:352
 msgid "Choose a piece"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:354
+#: src/Ui/AssignmentsView.php:355
 msgid ""
 "Replace all assignments of this piece? Every member gets the part with the "
 "same name as their part in the chosen piece; members whose part does not "
 "exist here are left without a part."
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:357
+#: src/Ui/AssignmentsView.php:358
 msgid "Take over"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:415 src/Ui/ProgramView.php:97
+#: src/Ui/AssignmentsView.php:416 src/Ui/ProgramView.php:97
 #: src/Ui/ProjectFormView.php:118
 msgid "Remove"
 msgstr ""
 
 #. translators: %s: member name
-#: src/Ui/AssignmentsView.php:417
+#: src/Ui/AssignmentsView.php:418
 #, php-format
 msgid "Remove %s"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:474
+#: src/Ui/AssignmentsView.php:475
 msgid "Assign members"
 msgstr ""
 
-#: src/Ui/AssignmentsView.php:483
+#: src/Ui/AssignmentsView.php:484
 msgid "Members"
 msgstr ""
 

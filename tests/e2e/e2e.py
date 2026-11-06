@@ -248,6 +248,9 @@ check("orchestra_projects_assignment_manage" in caps[1]
 check({"orchestra_projects_project_manage", "orchestra_projects_participation_manage",
        "orchestra_projects_participation_respond_own", "orchestra_projects_assignment_manage"} <= set(caps[2]),
       "organizers manage projects, assign and play")
+librarian_caps = wp_json('echo json_encode(array_keys(array_filter(get_role("orchestra_librarian")->capabilities)));')
+check([c for c in librarian_caps if c.startswith("orchestra_projects_")]
+      == [c for c in caps[0] if c.startswith("orchestra_projects_")], "librarians have the project rights of members")
 
 # --- Creating projects ----------------------------------------------------------------------
 _, page = conductor.get(f"{DASHBOARD}&orchestra_project=new")
@@ -613,6 +616,8 @@ wp("user", "set-role", "sam", "orchestra_member")
 check(participation_of(spring, "sam") is not None, "users promoted to member are asked to respond")
 wp("user", "create", "cleo", "cleo@example.com", "--role=orchestra_conductor", "--user_pass=pass")
 check(participation_of(spring, "cleo") is None, "new conductors are not asked")
+wp("user", "create", "lea", "lea@example.com", "--role=orchestra_librarian", "--user_pass=pass", "--display_name=Lea")
+check(participation_of(spring, "lea") is not None, "new librarians are asked to respond like members")
 
 # --- Email to project and assignment groups ------------------------------------------------
 COMPOSE = EMAIL
@@ -1097,7 +1102,7 @@ _, page = admin.get("/wp-admin/options-privacy.php?tab=policyguide")
 check("Orchestra Projects" in page, "suggests a privacy policy text")
 
 wp("user", "delete", "max", "--yes")
-check(projects_api(f"echo json_encode(count($p->participantIds({spring})));") == 6
+check(projects_api(f"echo json_encode(count($p->participantIds({spring})));") == 7
       and wp_eval('global $wpdb; echo $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}orchestra_projects_participation'
                   f' WHERE project_id = {spring} AND user_id IS NULL");') == "1",
       "deleting a user anonymizes their participation")

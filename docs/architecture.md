@@ -50,8 +50,9 @@ active status, only through their public services.
   (`orchestra_projects_assignment_manage`) always see them, also organizers who play.
   orchestra-seating hides the seating from members in the same phases.
 - Opening a project creates Open participation records for all active users with the role
-  member or organizer who have none yet. New accounts, reactivated members and users who get one
-  of these roles while a project is open receive one as well.
+  member, organizer or librarian (since 0.36; a member who also maintains the library) who have
+  none yet. New accounts, reactivated members and users who get one of these roles while a project
+  is open receive one as well. Librarians have the project capabilities of members.
 - Members respond once; the decision is final. Organizers change any decision at any time, also
   for several people at once (checkboxes per group, `op=participation_bulk`; each change follows the
   same rules). Leaving Accepted removes the member's assignments in the project, after a

@@ -26,7 +26,7 @@
         "yahnis-elsts/plugin-update-checker": "^5.7"
     },
     "require-dev": {
-        "orchestra/core": "^0.15",
+        "orchestra/core": "^0.17",
         "orchestra/email": "^0.10",
         "orchestra/library": "^0.2",
         "orchestra/members": "^0.14",

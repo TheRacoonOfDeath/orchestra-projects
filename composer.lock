@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7e9f63048278a61040b48c8ba7d42c1f",
+    "content-hash": "2b940294cc643d74a765f6c24418072c",
     "packages": [
         {
             "name": "yahnis-elsts/plugin-update-checker",
@@ -399,16 +399,16 @@
         },
         {
             "name": "orchestra/core",
-            "version": "v0.15.0",
+            "version": "v0.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TheRacoonOfDeath/orchestra-core.git",
-                "reference": "9a0d5c5786a64a330a77d10af6d9d3d6bc2c62d0"
+                "reference": "bbb5096a2dd4e069f0d649ae146e683e7ba9b5aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-core/zipball/9a0d5c5786a64a330a77d10af6d9d3d6bc2c62d0",
-                "reference": "9a0d5c5786a64a330a77d10af6d9d3d6bc2c62d0",
+                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-core/zipball/bbb5096a2dd4e069f0d649ae146e683e7ba9b5aa",
+                "reference": "bbb5096a2dd4e069f0d649ae146e683e7ba9b5aa",
                 "shasum": ""
             },
             "require": {
@@ -457,10 +457,10 @@
             ],
             "description": "Core plugin providing shared infrastructure for the Orchestra plugin suite.",
             "support": {
-                "source": "https://github.com/TheRacoonOfDeath/orchestra-core/tree/v0.15.0",
+                "source": "https://github.com/TheRacoonOfDeath/orchestra-core/tree/v0.17.0",
                 "issues": "https://github.com/TheRacoonOfDeath/orchestra-core/issues"
             },
-            "time": "2026-11-04T07:17:23+00:00"
+            "time": "2026-11-06T06:53:01+00:00"
         },
         {
             "name": "orchestra/email",

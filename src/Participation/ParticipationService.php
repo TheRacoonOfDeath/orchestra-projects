@@ -13,8 +13,11 @@ use WP_User;
 
 final class ParticipationService
 {
-    /** Roles that play in projects. Conductors do not. */
-    public const PLAYER_ROLES = [Roles::MEMBER, Roles::ORGANIZER];
+    /**
+     * Roles that play in projects; librarians are members who also maintain the library.
+     * Conductors do not play.
+     */
+    public const PLAYER_ROLES = [Roles::MEMBER, Roles::ORGANIZER, Roles::LIBRARIAN];
 
     public function __construct(
         private readonly ParticipationRepository $participations,

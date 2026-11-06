@@ -6,6 +6,7 @@ namespace Orchestra\Projects;
 
 use LogicException;
 use Orchestra\Core\Authorization\CapabilityRegistry;
+use Orchestra\Core\Authorization\Roles;
 use Orchestra\Core\Ui\Html;
 use Orchestra\Core\Ui\Menu;
 use Orchestra\Core\Ui\MenuItem;
@@ -151,10 +152,11 @@ final class Plugin
      */
     public function registerFeatures(): void
     {
-        // The shared UI exists since orchestra-core 0.4.
+        // The shared UI exists since orchestra-core 0.4, the librarian role since 0.17.
         if (
             !\class_exists(CapabilityRegistry::class)
             || !\class_exists(Html::class)
+            || !\defined(Roles::class . '::LIBRARIAN')
             || !\class_exists(LibraryPlugin::class)
             || !\class_exists(MembersPlugin::class)
         ) {
@@ -344,7 +346,8 @@ final class Plugin
     {
         echo '<div class="notice notice-error"><p>'
             . \esc_html__(
-                'Orchestra Projects requires Orchestra Core 0.4, Orchestra Library and Orchestra Members to be active.',
+                'Orchestra Projects requires Orchestra Core 0.17, Orchestra Library and Orchestra Members'
+                    . ' to be active.',
                 'orchestra-projects'
             )
             . '</p></div>';

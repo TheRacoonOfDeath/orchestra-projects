@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 22:57+0100\n"
+"POT-Creation-Date: 2026-11-06 11:00+0100\n"
 "PO-Revision-Date: 2026-10-16 00:00+0000\n"
 "Last-Translator: Julian Nickerl\n"
 "Language-Team: German\n"
@@ -24,7 +24,7 @@ msgid "%s (inactive)"
 msgstr "%s (inaktiv)"
 
 #: src/Admin/ProjectActions.php:73 src/Admin/ProjectsPage.php:104
-#: src/ProjectsService.php:136 src/Ui/ProjectsShortcode.php:85
+#: src/ProjectsService.php:140 src/Ui/ProjectsShortcode.php:85
 msgid "The project does not exist."
 msgstr "Das Projekt existiert nicht."
 
@@ -123,7 +123,7 @@ msgstr "Projekt verwalten"
 
 #: src/Admin/ProjectsPage.php:63 src/Admin/ProjectsPage.php:64
 #: src/Admin/ProjectsPage.php:77 src/Admin/ProjectsPage.php:119
-#: src/Plugin.php:319 src/Project/ProjectPostType.php:39
+#: src/Plugin.php:324 src/Project/ProjectPostType.php:39
 msgid "Projects"
 msgstr "Projekte"
 
@@ -173,7 +173,7 @@ msgstr "Die Einteilung existiert nicht."
 msgid "new"
 msgstr "neu"
 
-#: src/Assignment/AssignmentService.php:309 src/Ui/AssignmentsView.php:101
+#: src/Assignment/AssignmentService.php:309 src/Ui/AssignmentsView.php:102
 msgid "Assignments cannot be changed in drafts and completed projects."
 msgstr ""
 "In Entwürfen und abgeschlossenen Projekten können die Einteilungen nicht "
@@ -282,12 +282,12 @@ msgstr "Unentschlossene Teilnehmer (noch keine Antwort)"
 msgid "The program has no pieces yet."
 msgstr "Das Programm hat noch keine Stücke."
 
-#: src/Export/AssignmentsPdf.php:66 src/Ui/AssignmentsView.php:242
+#: src/Export/AssignmentsPdf.php:66 src/Ui/AssignmentsView.php:243
 msgid "The piece has no parts."
 msgstr "Das Stück hat keine Stimmen."
 
 #: src/Export/AssignmentsPdf.php:78 src/Privacy/PersonalData.php:118
-#: src/Ui/AssignmentsView.php:276
+#: src/Ui/AssignmentsView.php:277
 msgid "Part"
 msgstr "Stimme"
 
@@ -305,7 +305,7 @@ msgstr "* spielt diese Stimme zum ersten Mal"
 msgid "Assignments: %s"
 msgstr "Stimmverteilung: %s"
 
-#: src/Export/AssignmentsPdf.php:132 src/Ui/AssignmentsView.php:194
+#: src/Export/AssignmentsPdf.php:132 src/Ui/AssignmentsView.php:195
 #: src/Ui/PartChangesView.php:131 src/Ui/ParticipationView.php:114
 msgid "Member"
 msgstr "Mitglied"
@@ -380,21 +380,21 @@ msgstr ""
 "Du hast bereits geantwortet. Bitte wende dich an einen Organisator, um deine "
 "Entscheidung zu ändern."
 
-#: src/Participation/ParticipationService.php:67
+#: src/Participation/ParticipationService.php:70
 msgid "This response is not possible."
 msgstr "Diese Antwort ist nicht möglich."
 
-#: src/Participation/ParticipationService.php:89
+#: src/Participation/ParticipationService.php:92
 msgid "This comment is not possible."
 msgstr "Dieser Kommentar ist nicht möglich."
 
-#: src/Participation/ParticipationService.php:93
+#: src/Participation/ParticipationService.php:96
 msgid ""
 "Comments can only be changed while the project is open for participation."
 msgstr ""
 "Kommentare können nur geändert werden, solange die Anmeldung offen ist."
 
-#: src/Participation/ParticipationService.php:138
+#: src/Participation/ParticipationService.php:141
 msgid ""
 "The member has assignments in this project. Confirm that they are removed."
 msgstr ""
@@ -413,25 +413,25 @@ msgstr "Angemeldet"
 msgid "Declined"
 msgstr "Abgesagt"
 
-#: src/Plugin.php:311
+#: src/Plugin.php:316
 msgid "Plan projects, respond to them and download your sheet music."
 msgstr "Projekte planen, dich anmelden und deine Noten herunterladen."
 
-#: src/Plugin.php:314
+#: src/Plugin.php:319
 msgid "Plan projects: program, participation, parts and seating."
 msgstr "Projekte planen: Programm, Teilnahme, Stimmverteilung und Sitzplan."
 
-#: src/Plugin.php:315
+#: src/Plugin.php:320
 msgid "Respond to projects, see your parts and download your sheet music."
 msgstr ""
 "Auf Projekte antworten, deine Stimmen sehen und deine Noten herunterladen."
 
-#: src/Plugin.php:344
+#: src/Plugin.php:349
 msgid ""
-"Orchestra Projects requires Orchestra Core 0.4, Orchestra Library and "
+"Orchestra Projects requires Orchestra Core 0.17, Orchestra Library and "
 "Orchestra Members to be active."
 msgstr ""
-"Orchestra Projects benötigt aktive Plugins Orchestra Core 0.4, Orchestra "
+"Orchestra Projects benötigt aktive Plugins Orchestra Core 0.17, Orchestra "
 "Library und Orchestra Members."
 
 #: src/Privacy/PersonalData.php:46 src/Privacy/PersonalData.php:61
@@ -617,29 +617,29 @@ msgstr ""
 "Das Projekt ist noch nicht vorbei. Ändere seinen Status stattdessen Schritt "
 "für Schritt."
 
-#: src/Ui/AssignmentsView.php:65
+#: src/Ui/AssignmentsView.php:66
 msgid "The parts have not been assigned yet."
 msgstr "Stimmverteilung noch nicht abgeschlossen"
 
-#: src/Ui/AssignmentsView.php:77
+#: src/Ui/AssignmentsView.php:78
 msgid "Add pieces to the program first. Their parts can then be assigned here."
 msgstr ""
 "Füge zuerst Stücke zum Programm hinzu. Ihre Stimmen können dann hier "
 "verteilt werden."
 
-#: src/Ui/AssignmentsView.php:87
+#: src/Ui/AssignmentsView.php:88
 msgid "Download PDF"
 msgstr "PDF herunterladen"
 
-#: src/Ui/AssignmentsView.php:123 src/Ui/AssignmentsView.php:210
+#: src/Ui/AssignmentsView.php:124 src/Ui/AssignmentsView.php:211
 msgid "Nobody has accepted to participate yet."
 msgstr "Noch niemand hat sich angemeldet."
 
-#: src/Ui/AssignmentsView.php:131
+#: src/Ui/AssignmentsView.php:132
 msgid "Assign the parts played last time"
 msgstr "In die zuletzt gespielten Stimmen einteilen"
 
-#: src/Ui/AssignmentsView.php:138
+#: src/Ui/AssignmentsView.php:139
 #, php-format
 msgid ""
 "Assigns %d part: members who are not assigned in a piece yet get the part "
@@ -656,46 +656,46 @@ msgstr[1] ""
 "die zuletzt gespielte. Wer das Stück noch nie gespielt hat, wird nicht "
 "eingeteilt."
 
-#: src/Ui/AssignmentsView.php:174
+#: src/Ui/AssignmentsView.php:175
 msgid "View"
 msgstr "Ansicht"
 
-#: src/Ui/AssignmentsView.php:175
+#: src/Ui/AssignmentsView.php:176
 msgid "By piece"
 msgstr "Nach Stücken"
 
-#: src/Ui/AssignmentsView.php:178
+#: src/Ui/AssignmentsView.php:179
 msgid "By member"
 msgstr "Nach Mitgliedern"
 
-#: src/Ui/AssignmentsView.php:257
+#: src/Ui/AssignmentsView.php:258
 #, php-format
 msgid "%1$d of %2$d member assigned"
 msgid_plural "%1$d of %2$d members assigned"
 msgstr[0] "%1$d von %2$d Mitglied eingeteilt"
 msgstr[1] "%1$d von %2$d Mitgliedern eingeteilt"
 
-#: src/Ui/AssignmentsView.php:269
+#: src/Ui/AssignmentsView.php:270
 msgid "At least one member has not been assigned a part yet"
 msgstr "Mindestens ein Mitglied hat noch keine Stimme"
 
-#: src/Ui/AssignmentsView.php:276
+#: src/Ui/AssignmentsView.php:277
 msgid "Assigned"
 msgstr "Eingeteilt"
 
-#: src/Ui/AssignmentsView.php:278 src/Ui/AssignmentsView.php:484
+#: src/Ui/AssignmentsView.php:279 src/Ui/AssignmentsView.php:485
 msgid "Assign"
 msgstr "Einteilen"
 
-#: src/Ui/AssignmentsView.php:349
+#: src/Ui/AssignmentsView.php:350
 msgid "Take over the assignment of"
 msgstr "Verteilung übernehmen von"
 
-#: src/Ui/AssignmentsView.php:351
+#: src/Ui/AssignmentsView.php:352
 msgid "Choose a piece"
 msgstr "Stück wählen"
 
-#: src/Ui/AssignmentsView.php:354
+#: src/Ui/AssignmentsView.php:355
 msgid ""
 "Replace all assignments of this piece? Every member gets the part with the "
 "same name as their part in the chosen piece; members whose part does not "
@@ -705,26 +705,26 @@ msgstr ""
 "gleichen Namen wie ihre Stimme im gewählten Stück; wer eine Stimme hat, die "
 "es hier nicht gibt, bleibt ohne Stimme."
 
-#: src/Ui/AssignmentsView.php:357
+#: src/Ui/AssignmentsView.php:358
 msgid "Take over"
 msgstr "Übernehmen"
 
-#: src/Ui/AssignmentsView.php:415 src/Ui/ProgramView.php:97
+#: src/Ui/AssignmentsView.php:416 src/Ui/ProgramView.php:97
 #: src/Ui/ProjectFormView.php:118
 msgid "Remove"
 msgstr "Entfernen"
 
 #. translators: %s: member name
-#: src/Ui/AssignmentsView.php:417
+#: src/Ui/AssignmentsView.php:418
 #, php-format
 msgid "Remove %s"
 msgstr "%s entfernen"
 
-#: src/Ui/AssignmentsView.php:474
+#: src/Ui/AssignmentsView.php:475
 msgid "Assign members"
 msgstr "Mitglieder einteilen"
 
-#: src/Ui/AssignmentsView.php:483
+#: src/Ui/AssignmentsView.php:484
 msgid "Members"
 msgstr "Mitglieder"
 
@@ -1347,6 +1347,13 @@ msgstr "Du darfst die Projekte nicht sehen."
 #~ msgstr ""
 #~ "Optional, z. B. „120 €, ermäßigt 80 €, per Überweisung bis 1. Oktober“. "
 #~ "Wird allen Mitgliedern angezeigt."
+
+#~ msgid ""
+#~ "Orchestra Projects requires Orchestra Core 0.4, Orchestra Library and "
+#~ "Orchestra Members to be active."
+#~ msgstr ""
+#~ "Orchestra Projects benötigt aktive Plugins Orchestra Core 0.4, Orchestra "
+#~ "Library und Orchestra Members."
 
 #~ msgid "Paid"
 #~ msgstr "Bezahlt"

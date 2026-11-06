@@ -68,8 +68,8 @@ final class Capabilities
      */
     public static function register(CapabilityRegistry $registry, Closure $participationOwner): void
     {
-        $everyone = [Roles::MEMBER, Roles::CONDUCTOR, Roles::ORGANIZER];
-        $players = [Roles::MEMBER, Roles::ORGANIZER];
+        $everyone = [Roles::MEMBER, Roles::CONDUCTOR, Roles::ORGANIZER, Roles::LIBRARIAN];
+        $players = [Roles::MEMBER, Roles::ORGANIZER, Roles::LIBRARIAN];
 
         $registry
             ->register(self::PROJECT_READ, $everyone)

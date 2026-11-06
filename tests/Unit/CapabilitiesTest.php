@@ -31,6 +31,7 @@ final class CapabilitiesTest extends TestCase
             Capabilities::PARTICIPATION_RESPOND_OWN,
             Capabilities::PROJECT_READ,
         ], $byRole[Roles::MEMBER]);
+        $this->assertSame($byRole[Roles::MEMBER], $byRole[Roles::LIBRARIAN]);
         $this->assertSame([
             Capabilities::ASSIGNMENT_HISTORY_READ,
             Capabilities::ASSIGNMENT_MANAGE,
