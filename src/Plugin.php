@@ -26,6 +26,7 @@ use Orchestra\Projects\Assignment\InformedRepository;
 use Orchestra\Projects\Database\Schema;
 use Orchestra\Projects\Email\ChangedPartsEmail;
 use Orchestra\Projects\Email\ProjectEmailGroups;
+use Orchestra\Projects\Email\StatusEmails;
 use Orchestra\Projects\Export\AssignmentsPdf;
 use Orchestra\Projects\Export\AssignmentsPdfController;
 use Orchestra\Projects\Export\ParticipantsExport;
@@ -206,6 +207,11 @@ final class Plugin
             ? new ChangedPartsEmail($email, $library, $this->program, $this->assignments, $assignmentService)
             : null;
         $changedPartsEmail?->register();
+        // Informing the members about a new status also needs orchestra-email 0.10.
+        $statusEmails = $email !== null && StatusEmails::available($email)
+            ? new StatusEmails($email, $this->participations)
+            : null;
+        $statusEmails?->register();
         $partChangesView = $changedPartsEmail === null
             ? null
             : new PartChangesView($changes, $changedPartsEmail, $names, $members);
@@ -262,7 +268,8 @@ final class Plugin
                 $partChangesView
             ),
             $emailLinks,
-            $partChangesView
+            $partChangesView,
+            $statusEmails
         );
 
         (new ResponseController($this->participations, $participation))->register();
@@ -292,7 +299,8 @@ final class Plugin
             $assignmentService,
             $formHandler,
             $changes,
-            $changedPartsEmail
+            $changedPartsEmail,
+            $statusEmails
         ))->register();
         (new ProjectsShortcode($this->projectRepository, $listView, $projectView, $formView))->register();
         \add_action(Menu::REGISTER_ACTION, [self::class, 'registerMenuItem']);

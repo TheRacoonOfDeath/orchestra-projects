@@ -64,9 +64,12 @@ add_filter(ProjectsService::TABS_FILTER, function (array $tabs, Project $project
 
 ## Automatic emails
 
-With orchestra-email 0.10, orchestra-projects registers the automatic email
+With orchestra-email 0.10, orchestra-projects registers the automatic emails
 `Email\ChangedPartsEmail::ID` (`orchestra_projects_changed_parts`), see
-[Informing members about changed parts](architecture.md#informing-members-about-changed-parts).
+[Informing members about changed parts](architecture.md#informing-members-about-changed-parts),
+and since 0.37 `Email\StatusEmails::OPEN_ID` (`orchestra_projects_open`) and
+`Email\StatusEmails::PARTS_ASSIGNED_ID` (`orchestra_projects_parts_assigned`), see
+[Informing members about status changes](architecture.md#informing-members-about-status-changes).
 
 ## Hooks used
 

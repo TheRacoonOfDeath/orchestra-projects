@@ -340,14 +340,37 @@ blockers = wp_json(f'echo json_encode(apply_filters("orchestra_library_piece_del
 check(len(blockers) == 1 and "Spring Concert 2027" in blockers[0], "pieces in a program cannot be deleted in the library")
 
 # --- Opening for participation ----------------------------------------------------------------
+def mails():
+    return json.loads(wp_eval('echo json_encode(get_option("e2e_mails", []));'))
+
+
+def status_form(page, target):
+    """The status form that moves the project to the target, or an empty string."""
+    return next((f for f in re.findall(r"<form.*?</form>", page, flags=re.S)
+                 if f'name="target" value="{target}"' in f), "")
+
+
 status, _ = act(conductor, spring, "status", target="open")
 check(status == 403, "conductors cannot change the project status")
 _, page = act(organizer, spring, "status", target="preparation")
 check("cannot be moved to this status" in text(page), "projects move one step at a time")
-act(organizer, spring, "status", target="open")
+_, page = organizer.get(manage_url(spring))
+form = status_form(page, "open")
+check("Inform the members by email" in form and re.search(r'name="inform" value="1" checked', form),
+      "moving to Open offers to inform the members, ticked the first time")
+before = len(mails())
+_, page = act(organizer, spring, "status", target="open", inform="1")
 rows = projects_api(f"echo json_encode($p->participantIds({spring}));")
 check(sorted(rows) == sorted([ids["organizer"], ids["mia"], ids["max"], ids["mo"]]),
       "opening asks all active members and organizers, not conductors, inactive members or others")
+sent = mails()[before:]
+check(sorted(m["to"] for m in sent) == ["max@example.com", "mia@example.com", "mo@example.com", "organizer@example.com"],
+      f"opening emails all players who have not responded: {[m['to'] for m in sent]}")
+check(sent and sent[0]["subject"] == "Spring Concert 2027 is open for participation"
+      and f"orchestra_project={spring}" in sent[0]["message"],
+      "the email links to the project, where the members respond")
+check('The status is now "Open for Participation". 4 of 4 members were informed by email.' in text(page),
+      "the organizer is told how many members were informed")
 
 # --- Responses ------------------------------------------------------------------------------
 _, page = mia.get(DASHBOARD)
@@ -623,10 +646,6 @@ check(participation_of(spring, "lea") is not None, "new librarians are asked to 
 COMPOSE = EMAIL
 
 
-def mails():
-    return json.loads(wp_eval('echo json_encode(get_option("e2e_mails", []));'))
-
-
 def send_email(session, groups, subject, op="send"):
     """Reviews an email on the email page and, for op "send", sends it."""
     _, page = session.get(EMAIL)
@@ -896,7 +915,12 @@ check(projects_api(f"echo json_encode($p->programPieceIds({summer}));") == [] an
       "removing a piece removes its assignments")
 
 _, mo_open_page = mo.get(DASHBOARD)
-act(organizer, spring, "status", target="preparation")
+before = len(mails())
+_, page = act(organizer, spring, "status", target="preparation")
+check("Saved." in text(page) and len(mails()) == before, "moving to Preparation sends no email")
+form = status_form(page, "open")
+check("Inform the members by email" in form and "checked" not in form,
+      "moving back to Open offers to inform the members again, unticked")
 _, page = mo.get(DASHBOARD)
 check("Accept" not in text(page).split("Spring Concert 2027", 1)[1].split("Summer 2028")[0],
       "no responses during preparation")
@@ -912,7 +936,18 @@ check(HORN2 in assignments_of(spring).get("organizer", []), "assignments can be 
 _, page = act(organizer, spring, "status", target="completed")
 check(projects_api(f"echo json_encode($p->project({spring})->status->value);") == "preparation",
       "projects cannot skip \"Parts assigned\"")
-act(organizer, spring, "status", target="parts_assigned")
+before = len(mails())
+_, page = act(organizer, spring, "status", target="parts_assigned", inform="1")
+sent = mails()[before:]
+accepted = sorted(f"{login}@example.com" for login in ("organizer", "mia", "max", "mo")
+                  if participation_of(spring, login)["status"] == "accepted")
+check(accepted and sorted(m["to"] for m in sent) == accepted,
+      f"assigning the parts emails the accepted participants only: {[m['to'] for m in sent]}")
+check(sent and sent[0]["subject"] == "Your parts in Spring Concert 2027 are assigned"
+      and "orchestra_tab=assignments" in sent[0]["message"].replace("&#038;", "&").replace("&amp;", "&"),
+      "the email links to the parts of the project")
+check(f"{len(accepted)} of {len(accepted)} members were informed by email." in text(page),
+      "the organizer is told that the participants were informed")
 act(conductor, spring, "assign", part=VIOLIN1, **{"users[]": [str(ids["organizer"])]})
 check(VIOLIN1 in assignments_of(spring).get("organizer", []), "assignments can still be changed once the parts are assigned")
 act(conductor, spring, "unassign", assignment=next(a for a in projects_api(
@@ -1040,7 +1075,9 @@ check(projects_api(f"echo json_encode($p->project({spring})->status->value);") =
 wp_eval(f'update_post_meta({spring}, "orchestra_projects_status", "completed");')
 
 past, _ = create_project(organizer, "Autumn 2020", "2020-10-01", "2020-10-03", ["2020-10-02"])
-act(organizer, past, "status", target="open")
+_, page = act(organizer, past, "status", target="open")
+check('The status is now "Open for Participation". The members were not informed by email.' in text(page),
+      "without the tick the members are not informed")
 _, page = organizer.get(f"{DASHBOARD}&orchestra_project={past}")
 check("The project ended on" in text(page) and "Complete the project" in page,
       "organizers are told to complete projects that are over")
@@ -1048,7 +1085,10 @@ _, page = organizer.get(DASHBOARD)
 check("Ended, please complete" in text(page), "the project list marks projects that are over for organizers")
 _, page = conductor.get(f"{DASHBOARD}&orchestra_project={past}")
 check("The project ended on" not in text(page), "only organizers are told to complete projects")
+act(organizer, past, "participation", participation=participation_of(past, "mia")["id"], status="accepted")
+before = len(mails())
 _, page = act(organizer, past, "complete")
+check(len(mails()) == before, "completing a project in one step sends no emails")
 check(projects_api(f"echo json_encode($p->project({past})->status->value);") == "completed"
       and "The project ended on" not in text(page), "organizers complete a project that is over in one step")
 summer_status = projects_api(f"echo json_encode($p->project({summer})->status->value);")

@@ -15,6 +15,7 @@ active status, only through their public services.
 | Participation | table `orchestra_projects_participation` (project, user, status, responded at, changed by and at, member's comment, organizers' note; schema version 4) |
 | Assignments | table `orchestra_projects_assignments` (project, piece, part, user) |
 | What members were last informed about (Parts assigned only) | table `orchestra_projects_informed` (project, piece, part, user; schema version 5) and post meta `orchestra_projects_informed` |
+| Statuses whose automatic email was sent (since 0.37) | post meta `orchestra_projects_status_emails` (list of status values) |
 
 - The project status replaces the WordPress post status: saved projects are always published.
 - Schema version 4 drops the column `fee_paid` and the post meta `orchestra_projects_fee` of the
@@ -116,6 +117,30 @@ made after that are communicated:
   `{project}`, `{changes}` and `{link}`. Organizers (`orchestra_projects_notification_edit`)
   change it on the Email page under "Automatic emails". Replies go to the user who sent it.
 - Without orchestra-email 0.10, the snapshot is still kept, but nothing is shown.
+
+## Informing members about status changes
+
+Since 0.37, with orchestra-email 0.10 (`Email\StatusEmails`):
+
+- The status buttons to Open for Participation and to Parts assigned (forward or back) have a
+  checkbox "Inform the members by email" (`inform=1` with `op=status`). It is ticked when the
+  project reaches that status for the first time and unticked once the email was sent for it
+  (post meta `orchestra_projects_status_emails`), so organizers decide whether a reopen or a
+  second Parts assigned informs the members again.
+- Open for Participation sends `orchestra_projects_open` to all players whose participation is
+  pending, after the missing participations were created: on the first opening every active
+  member, organizer and librarian, on a reopen only those who have not responded yet. Its link
+  goes to the project, where they respond.
+- Parts assigned sends `orchestra_projects_parts_assigned` to the participants who accepted, with
+  a link to the assignments tab.
+- Inactive members, members without an address and members who turned automatic emails off are
+  left out by orchestra-email. The notice after the status change says how many of the meant
+  members were emailed, or that the members were not informed when the box was unticked.
+- "Complete the project" passes through Parts assigned without sending anything.
+- Placeholders `{name}`, `{project}`, `{dates}` and `{link}`; organizers
+  (`orchestra_projects_notification_edit`) change the texts on the Email page under "Automatic
+  emails". Replies go to the organizer who changed the status.
+- Without orchestra-email 0.10, the status buttons have no checkbox and nothing is sent.
 
 ## Assignment history
 

@@ -22,6 +22,8 @@ final class ProjectPostType
     public const META_END_DATE = 'orchestra_projects_end_date';
     /** One entry per concert; the name is kept from the time projects had one concert. */
     public const META_CONCERT_DATE = 'orchestra_projects_concert_date';
+    /** The statuses whose automatic email was sent, see {@see \Orchestra\Projects\Email\StatusEmails} */
+    public const META_STATUS_EMAILS = 'orchestra_projects_status_emails';
 
     public function register(): void
     {

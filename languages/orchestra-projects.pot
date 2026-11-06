@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-06 11:00+0100\n"
+"POT-Creation-Date: 2026-11-06 14:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,80 +28,102 @@ msgstr ""
 msgid "%s (inactive)"
 msgstr ""
 
-#: src/Admin/ProjectActions.php:73 src/Admin/ProjectsPage.php:104
-#: src/ProjectsService.php:140 src/Ui/ProjectsShortcode.php:85
+#: src/Admin/ProjectActions.php:75 src/Admin/ProjectActions.php:285
+#: src/Admin/ProjectsPage.php:104 src/ProjectsService.php:140
+#: src/Ui/ProjectsShortcode.php:85
 msgid "The project does not exist."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:85 src/Admin/ProjectActions.php:125
+#: src/Admin/ProjectActions.php:87 src/Admin/ProjectActions.php:130
 #: src/Export/AssignmentsPdfController.php:68
 #: src/Export/ParticipantsExportController.php:85
 #: src/Frontend/ResponseController.php:60
 msgid "You are not allowed to do this."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:94
+#: src/Admin/ProjectActions.php:99
 msgid "The changes are no longer listed. The members were not informed."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:107
+#: src/Admin/ProjectActions.php:112 src/Admin/ProjectActions.php:290
 msgid "Saved."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:134
+#: src/Admin/ProjectActions.php:139
 msgid "Please enter a name."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:153
+#: src/Admin/ProjectActions.php:158
 msgid "The project has been saved."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:195
+#: src/Admin/ProjectActions.php:199
 msgid "There are no changes to inform the members about."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:200
+#: src/Admin/ProjectActions.php:204
 msgid ""
 "The parts changed in the meantime. Please check the changes again before "
 "informing the members."
 msgstr ""
 
 #. translators: 1: number of members emailed, 2: number of members with changes
-#: src/Admin/ProjectActions.php:211
+#: src/Admin/ProjectActions.php:215
 #, php-format
 msgid "%1$d of %2$d members with changed parts are informed by email."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:225
+#: src/Admin/ProjectActions.php:229
 msgid ""
 "Nobody was assigned: no member without a part has played one of these pieces "
 "before."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:232
+#: src/Admin/ProjectActions.php:236
 #, php-format
 msgid "%d part was assigned to the member who played it last time."
 msgid_plural "%d parts were assigned to the members who played them last time."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Admin/ProjectActions.php:258
+#: src/Admin/ProjectActions.php:262
 #, php-format
 msgid "The assignment was taken over: %d part was assigned."
 msgid_plural "The assignment was taken over: %d parts were assigned."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Admin/ProjectActions.php:275
+#: src/Admin/ProjectActions.php:281
 msgid "Unknown status."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:287
+#. translators: %s: project status
+#: src/Admin/ProjectActions.php:295
+#, php-format
+msgid "The status is now \"%s\"."
+msgstr ""
+
+#: src/Admin/ProjectActions.php:297
+msgid "The members were not informed by email."
+msgstr ""
+
+#: src/Admin/ProjectActions.php:303
+msgid "There was nobody to inform by email."
+msgstr ""
+
+#: src/Admin/ProjectActions.php:307
+#, php-format
+msgid "%1$d of %2$d member was informed by email."
+msgid_plural "%1$d of %2$d members were informed by email."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Admin/ProjectActions.php:326
 msgid "Select at least one member and a status."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:294 src/Admin/ProjectActions.php:310
-#: src/Admin/ProjectActions.php:323
+#: src/Admin/ProjectActions.php:333 src/Admin/ProjectActions.php:349
+#: src/Admin/ProjectActions.php:362
 msgid "The participation does not exist."
 msgstr ""
 
@@ -119,7 +141,7 @@ msgstr ""
 
 #: src/Admin/ProjectsPage.php:63 src/Admin/ProjectsPage.php:64
 #: src/Admin/ProjectsPage.php:77 src/Admin/ProjectsPage.php:119
-#: src/Plugin.php:324 src/Project/ProjectPostType.php:39
+#: src/Plugin.php:332 src/Project/ProjectPostType.php:41
 msgid "Projects"
 msgstr ""
 
@@ -128,7 +150,7 @@ msgid "All Projects"
 msgstr ""
 
 #: src/Admin/ProjectsPage.php:84 src/Admin/ProjectsPage.php:85
-#: src/Project/ProjectPostType.php:41
+#: src/Project/ProjectPostType.php:43
 msgid "Add Project"
 msgstr ""
 
@@ -206,11 +228,11 @@ msgid ""
 "</p>"
 msgstr ""
 
-#: src/Email/ChangedPartsEmail.php:73
+#: src/Email/ChangedPartsEmail.php:73 src/Email/StatusEmails.php:65
 msgid "The name of the member"
 msgstr ""
 
-#: src/Email/ChangedPartsEmail.php:74
+#: src/Email/ChangedPartsEmail.php:74 src/Email/StatusEmails.php:66
 msgid "The name of the project"
 msgstr ""
 
@@ -218,7 +240,7 @@ msgstr ""
 msgid "The list of the member's changed parts"
 msgstr ""
 
-#: src/Email/ChangedPartsEmail.php:76
+#: src/Email/ChangedPartsEmail.php:76 src/Email/StatusEmails.php:101
 msgid "The link to the parts of the project"
 msgstr ""
 
@@ -266,6 +288,62 @@ msgstr ""
 msgid "Pending participants (no response yet)"
 msgstr ""
 
+#: src/Email/StatusEmails.php:67
+msgid "The dates of the project"
+msgstr ""
+
+#: src/Email/StatusEmails.php:71
+msgid "Project open for participation"
+msgstr ""
+
+#: src/Email/StatusEmails.php:73
+msgid ""
+"Sent when organizers move a project to \"Open for Participation\" and choose "
+"to inform the members. It goes to all active members who have not responded "
+"yet."
+msgstr ""
+
+#: src/Email/StatusEmails.php:78
+msgid "{project} is open for participation"
+msgstr ""
+
+#: src/Email/StatusEmails.php:80
+msgid ""
+"<p>Hello {name},</p><p>the project {project} ({dates}) is open for "
+"participation.</p><p>Please tell us whether you take part: {link}</p>"
+msgstr ""
+
+#: src/Email/StatusEmails.php:84
+msgid "The link to the project, where members respond"
+msgstr ""
+
+#: src/Email/StatusEmails.php:88 src/Project/ProjectStatus.php:33
+msgid "Parts assigned"
+msgstr ""
+
+#: src/Email/StatusEmails.php:90
+msgid ""
+"Sent when organizers move a project to \"Parts assigned\" and choose to "
+"inform the members. It goes to all members who accepted the project."
+msgstr ""
+
+#: src/Email/StatusEmails.php:95
+msgid "Your parts in {project} are assigned"
+msgstr ""
+
+#: src/Email/StatusEmails.php:97
+msgid ""
+"<p>Hello {name},</p><p>the parts in {project} ({dates}) are assigned.</"
+"p><p>Your parts and the sheet music are on the page of the project: {link}</"
+"p>"
+msgstr ""
+
+#. translators: 1: project status, 2: project name
+#: src/Email/StatusEmails.php:161
+#, php-format
+msgid "%1$s: %2$s"
+msgstr ""
+
 #: src/Export/AssignmentsPdf.php:54
 msgid "The program has no pieces yet."
 msgstr ""
@@ -303,7 +381,7 @@ msgid "Parts by member"
 msgstr ""
 
 #: src/Export/AssignmentsPdfController.php:73 src/Ui/ParticipationView.php:116
-#: src/Ui/ProgramView.php:112 src/Ui/ProjectView.php:92
+#: src/Ui/ProgramView.php:112 src/Ui/ProjectView.php:95
 msgid "Assignments"
 msgstr ""
 
@@ -396,19 +474,19 @@ msgstr ""
 msgid "Declined"
 msgstr ""
 
-#: src/Plugin.php:316
+#: src/Plugin.php:324
 msgid "Plan projects, respond to them and download your sheet music."
 msgstr ""
 
-#: src/Plugin.php:319
+#: src/Plugin.php:327
 msgid "Plan projects: program, participation, parts and seating."
 msgstr ""
 
-#: src/Plugin.php:320
+#: src/Plugin.php:328
 msgid "Respond to projects, see your parts and download your sheet music."
 msgstr ""
 
-#: src/Plugin.php:349
+#: src/Plugin.php:357
 msgid ""
 "Orchestra Projects requires Orchestra Core 0.17, Orchestra Library and "
 "Orchestra Members to be active."
@@ -423,12 +501,12 @@ msgid "Project participation"
 msgstr ""
 
 #: src/Privacy/PersonalData.php:86 src/Privacy/PersonalData.php:110
-#: src/Project/ProjectPostType.php:40
+#: src/Project/ProjectPostType.php:42
 msgid "Project"
 msgstr ""
 
-#: src/Privacy/PersonalData.php:89 src/Ui/ProjectView.php:85
-#: src/Ui/ProjectView.php:202
+#: src/Privacy/PersonalData.php:89 src/Ui/ProjectView.php:88
+#: src/Ui/ProjectView.php:205
 msgid "Participation"
 msgstr ""
 
@@ -532,23 +610,23 @@ msgstr ""
 msgid "The end date must not be before the start date."
 msgstr ""
 
-#: src/Project/ProjectPostType.php:42
+#: src/Project/ProjectPostType.php:44
 msgid "Add New Project"
 msgstr ""
 
-#: src/Project/ProjectPostType.php:43
+#: src/Project/ProjectPostType.php:45
 msgid "Edit Project"
 msgstr ""
 
-#: src/Project/ProjectPostType.php:44
+#: src/Project/ProjectPostType.php:46
 msgid "New Project"
 msgstr ""
 
-#: src/Project/ProjectPostType.php:45
+#: src/Project/ProjectPostType.php:47
 msgid "No projects found."
 msgstr ""
 
-#: src/Project/ProjectPostType.php:46
+#: src/Project/ProjectPostType.php:48
 msgid "No projects found in Trash."
 msgstr ""
 
@@ -562,10 +640,6 @@ msgstr ""
 
 #: src/Project/ProjectStatus.php:32
 msgid "Preparation"
-msgstr ""
-
-#: src/Project/ProjectStatus.php:33
-msgid "Parts assigned"
 msgstr ""
 
 #: src/Project/ProjectStatus.php:34 src/Ui/ProjectListView.php:46
@@ -792,7 +866,7 @@ msgid ""
 msgstr ""
 
 #: src/Ui/PartChangesView.php:115 src/Ui/PartChangesView.php:133
-#: src/Ui/ProjectView.php:226
+#: src/Ui/ProjectView.php:229
 msgid "Email"
 msgstr ""
 
@@ -895,7 +969,7 @@ msgstr[1] ""
 msgid "Select %s"
 msgstr ""
 
-#: src/Ui/ParticipationView.php:156 src/Ui/ProjectView.php:120
+#: src/Ui/ParticipationView.php:156 src/Ui/ProjectView.php:123
 msgid "Edit"
 msgstr ""
 
@@ -1009,7 +1083,7 @@ msgstr ""
 msgid "Edit project"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:44 src/Ui/ProjectView.php:116
+#: src/Ui/ProjectFormView.php:44 src/Ui/ProjectView.php:119
 #: src/Ui/ProjectsShortcode.php:84
 msgid "All projects"
 msgstr ""
@@ -1050,11 +1124,11 @@ msgstr ""
 msgid "A project can have any number of concerts, or none."
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:129 src/Ui/ProjectView.php:192
+#: src/Ui/ProjectFormView.php:129 src/Ui/ProjectView.php:195
 msgid "Conductors"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:130 src/Ui/ProjectView.php:196
+#: src/Ui/ProjectFormView.php:130 src/Ui/ProjectView.php:199
 msgid "Organizers"
 msgstr ""
 
@@ -1088,7 +1162,7 @@ msgstr ""
 msgid "Ended, please complete"
 msgstr ""
 
-#: src/Ui/ProjectView.php:55
+#: src/Ui/ProjectView.php:58
 #, php-format
 msgid ""
 "%d member has not been informed about changed parts; the changes will be "
@@ -1099,81 +1173,85 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Ui/ProjectView.php:79
+#: src/Ui/ProjectView.php:82
 msgid "Overview"
 msgstr ""
 
-#: src/Ui/ProjectView.php:82
+#: src/Ui/ProjectView.php:85
 msgid "Program"
 msgstr ""
 
-#: src/Ui/ProjectView.php:88
+#: src/Ui/ProjectView.php:91
 msgid "Who accepted"
 msgstr ""
 
-#: src/Ui/ProjectView.php:115
+#: src/Ui/ProjectView.php:118
 msgid "Completed projects"
 msgstr ""
 
 #. translators: %s: date
-#: src/Ui/ProjectView.php:154
+#: src/Ui/ProjectView.php:157
 #, php-format
 msgid ""
 "The project ended on %s. Complete it to move it to the completed projects."
 msgstr ""
 
-#: src/Ui/ProjectView.php:159
+#: src/Ui/ProjectView.php:162
 msgid "Complete the project"
 msgstr ""
 
-#: src/Ui/ProjectView.php:162
+#: src/Ui/ProjectView.php:165
 msgid ""
 "Complete the project? Its program, participation and parts can no longer be "
 "changed."
 msgstr ""
 
-#: src/Ui/ProjectView.php:186 src/Ui/ProjectView.php:272
+#: src/Ui/ProjectView.php:189 src/Ui/ProjectView.php:277
 msgid "Status"
 msgstr ""
 
-#: src/Ui/ProjectView.php:189
+#: src/Ui/ProjectView.php:192
 msgid "Dates"
 msgstr ""
 
-#: src/Ui/ProjectView.php:219
+#: src/Ui/ProjectView.php:222
 msgid "Email accepted participants"
 msgstr ""
 
-#: src/Ui/ProjectView.php:221
+#: src/Ui/ProjectView.php:224
 msgid "Email pending participants"
 msgstr ""
 
-#: src/Ui/ProjectView.php:223
+#: src/Ui/ProjectView.php:226
 msgid "Email accepted and pending"
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:245
+#: src/Ui/ProjectView.php:248
 #, php-format
 msgid "Change the status to \"%s\"?"
 msgstr ""
 
-#: src/Ui/ProjectView.php:251
+#: src/Ui/ProjectView.php:254
 msgid ""
 "All active members and organizers who have not been asked yet will be asked "
 "to respond."
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:257
+#: src/Ui/ProjectView.php:260
 #, php-format
 msgid "Move to \"%s\""
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:259
+#: src/Ui/ProjectView.php:262
 #, php-format
 msgid "Back to \"%s\""
+msgstr ""
+
+#: src/Ui/ProjectView.php:302
+msgid "Inform the members by email"
 msgstr ""
 
 #: src/Ui/ProjectsShortcode.php:61

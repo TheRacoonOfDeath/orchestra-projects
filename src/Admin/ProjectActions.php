@@ -11,6 +11,7 @@ use Orchestra\Projects\Assignment\AssignmentChangeService;
 use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Capabilities;
 use Orchestra\Projects\Email\ChangedPartsEmail;
+use Orchestra\Projects\Email\StatusEmails;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationService;
 use Orchestra\Projects\Participation\ParticipationStatus;
@@ -43,6 +44,7 @@ final class ProjectActions
         private readonly ProjectFormHandler $formHandler,
         private readonly AssignmentChangeService $changes,
         private readonly ?ChangedPartsEmail $changedPartsEmail = null,
+        private readonly ?StatusEmails $statusEmails = null,
     ) {
     }
 
@@ -85,6 +87,9 @@ final class ProjectActions
             \wp_die(\esc_html__('You are not allowed to do this.', 'orchestra-projects'), 403);
         }
 
+        if ($operation === 'status') {
+            $this->changeStatus($project);
+        }
         if ($operation === 'changes_inform') {
             $this->informAboutChanges($project);
         }
@@ -164,7 +169,6 @@ final class ProjectActions
     {
         $userId = \get_current_user_id();
         $error = match ($operation) {
-            'status' => $this->changeStatus($project),
             'complete' => $this->status->complete($project, Dates::today()),
             'program_add' => $this->program->add($project, self::int('piece')),
             'program_remove' => $this->program->remove($project, self::int('piece'), self::flag('confirm')),
@@ -267,13 +271,48 @@ final class ProjectActions
         Redirect::back();
     }
 
-    private function changeStatus(Project $project): ?string
+    /**
+     * Changes the status and, if the organizer chose so, informs the members by email.
+     */
+    private function changeStatus(Project $project): never
     {
         $target = ProjectStatus::tryFrom(self::string('target'));
-
-        return $target === null
+        $error = $target === null
             ? \__('Unknown status.', 'orchestra-projects')
             : $this->status->change($project, $target);
+        $project = $this->projects->find($project->id);
+        if ($error !== null || $project === null) {
+            Notices::error($error ?? \__('The project does not exist.', 'orchestra-projects'));
+            Redirect::back();
+        }
+
+        if ($this->statusEmails === null || !StatusEmails::informs($target)) {
+            Notices::success(\__('Saved.', 'orchestra-projects'));
+            Redirect::back();
+        }
+
+        /* translators: %s: project status */
+        $changed = \sprintf(\__('The status is now "%s".', 'orchestra-projects'), $target->label());
+        if (!self::flag('inform')) {
+            Notices::success($changed . ' ' . \__('The members were not informed by email.', 'orchestra-projects'));
+            Redirect::back();
+        }
+
+        $result = $this->statusEmails->send($project, \get_current_user_id());
+        Notices::success($changed . ' ' . ($result['candidates'] === 0
+            ? \__('There was nobody to inform by email.', 'orchestra-projects')
+            : \sprintf(
+                /* translators: 1: number of members emailed, 2: number of members meant to be informed */
+                \_n(
+                    '%1$d of %2$d member was informed by email.',
+                    '%1$d of %2$d members were informed by email.',
+                    $result['candidates'],
+                    'orchestra-projects'
+                ),
+                $result['sent'],
+                $result['candidates']
+            )));
+        Redirect::back();
     }
 
     /**

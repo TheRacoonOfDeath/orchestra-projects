@@ -8,8 +8,10 @@ use Orchestra\Core\Ui\Form;
 use Orchestra\Core\Ui\Html;
 use Orchestra\Projects\Admin\EmailLinks;
 use Orchestra\Projects\Admin\Names;
+use Orchestra\Projects\Admin\ProjectActions;
 use Orchestra\Projects\Capabilities;
 use Orchestra\Projects\Email\ProjectEmailGroups;
+use Orchestra\Projects\Email\StatusEmails;
 use Orchestra\Projects\Participation\ParticipationStatus;
 use Orchestra\Projects\Project\Project;
 use Orchestra\Projects\Project\ProjectStatus;
@@ -37,6 +39,7 @@ final class ProjectView
         private readonly AssignmentsView $assignmentsView,
         private readonly EmailLinks $emailLinks,
         private readonly ?PartChangesView $changes = null,
+        private readonly ?StatusEmails $statusEmails = null,
     ) {
     }
 
@@ -257,19 +260,46 @@ final class ProjectView
                 ? \sprintf(\__('Move to "%s"', 'orchestra-projects'), $target->label())
                 /* translators: %s: project status */
                 : \sprintf(\__('Back to "%s"', 'orchestra-projects'), $target->label());
-            $buttons .= ProjectForms::button(
-                $project->id,
-                'status',
-                $label,
-                ['target' => $target->value],
-                $confirm,
-                $index === 0 ? 'primary' : ''
-            );
+            $buttons .= $this->statusEmails !== null && StatusEmails::informs($target)
+                ? $this->informingStatusButton($project, $target, $label, $confirm, $index === 0 ? 'primary' : '')
+                : ProjectForms::button(
+                    $project->id,
+                    'status',
+                    $label,
+                    ['target' => $target->value],
+                    $confirm,
+                    $index === 0 ? 'primary' : ''
+                );
         }
 
         return $buttons === ''
             ? ''
             : '<section class="orchestra-stack"><h3>' . \esc_html__('Status', 'orchestra-projects') . '</h3>'
                 . '<div class="orchestra-actions">' . $buttons . '</div></section>';
+    }
+
+    /**
+     * A status button with the choice to inform the members by email, ticked unless they were
+     * informed when the project reached the status before.
+     */
+    private function informingStatusButton(
+        Project $project,
+        ProjectStatus $target,
+        string $label,
+        string $confirm,
+        string $style,
+    ): string {
+        $checked = $this->statusEmails?->informedBefore($project->id, $target) === false ? ' checked' : '';
+
+        return Form::open(
+            ProjectActions::ACTION,
+            ProjectActions::nonceAction($project->id),
+            ['project' => $project->id, 'op' => 'status', 'target' => $target->value],
+            ['class' => 'orchestra-inline-form orchestra-projects-status-form', 'data-orchestra-confirm' => $confirm]
+        )
+            . Form::submit($label, $style)
+            . ' <label class="orchestra-checkbox"><input type="checkbox" name="inform" value="1"' . $checked . '> '
+            . \esc_html__('Inform the members by email', 'orchestra-projects') . '</label>'
+            . '</form>';
     }
 }

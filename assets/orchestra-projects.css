@@ -136,3 +136,19 @@
 .orchestra details.orchestra-projects-piece[open] > summary {
     margin-bottom: 0.75rem;
 }
+
+/* A status button with "Inform the members by email" next to it. */
+.orchestra .orchestra-projects-status-form {
+    align-items: center;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.orchestra .orchestra-projects-status-form .orchestra-checkbox {
+    align-items: center;
+}
+
+.orchestra .orchestra-projects-status-form .orchestra-checkbox input {
+    margin-top: 0;
+}
