@@ -18,4 +18,3 @@ jobs:
     uses: TheRacoonOfDeath/orchestra-workflows/.github/workflows/security-scan.yml@v1
     with:
       javascript: false
-      create-issues: false   # until the first findings are triaged
