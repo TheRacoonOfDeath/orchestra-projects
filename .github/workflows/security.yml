@@ -1,0 +1,21 @@
+# Security scan, defined in TheRacoonOfDeath/orchestra-workflows (see its README.md).
+name: Security scan
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 5 * * 1'   # Mondays 05:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  issues: write
+
+jobs:
+  scan:
+    uses: TheRacoonOfDeath/orchestra-workflows/.github/workflows/security-scan.yml@v1
+    with:
+      javascript: false
+      create-issues: false   # until the first findings are triaged

@@ -65,7 +65,9 @@ final class ParticipantsExportController
         \header('Content-Disposition: ' . self::attachment($fileName));
         \header('X-Content-Type-Options: nosniff');
         \header('Cache-Control: private, no-store, max-age=0');
-        echo $csv; // A file download, not HTML.
+        // A CSV file download (Content-Type text/csv, nosniff), not HTML.
+        // nosemgrep: php.lang.security.injection.echoed-request.echoed-request
+        echo $csv;
         exit;
     }
 
