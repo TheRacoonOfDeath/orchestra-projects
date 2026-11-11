@@ -63,7 +63,7 @@ plugin_header() {
 }
 REPOSITORY_URL="https://github.com/TheRacoonOfDeath/${PLUGIN_NAME}"
 php -r '
-[, $name, $slug, $version, $repository, $zip, $requires, $requiresPhp, $description] = $argv;
+[, $name, $slug, $version, $repository, $zip, $requires, $tested, $requiresPhp, $description] = $argv;
 echo json_encode([
     "name" => $name,
     "slug" => $slug,
@@ -71,6 +71,7 @@ echo json_encode([
     "download_url" => "$repository/releases/download/v$version/$zip",
     "homepage" => $repository,
     "requires" => $requires,
+    "tested" => $tested,
     "requires_php" => $requiresPhp,
     "last_updated" => gmdate("Y-m-d H:i:s"),
     "sections" => [
@@ -79,7 +80,7 @@ echo json_encode([
     ],
 ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), "\n";
 ' "$(plugin_header 'Plugin Name')" "$PLUGIN_NAME" "$VERSION" "$REPOSITORY_URL" "$ZIP_NAME" \
-    "$(plugin_header 'Requires at least')" "$(plugin_header 'Requires PHP')" "$(plugin_header 'Description')" \
+    "$(plugin_header 'Requires at least')" "$(plugin_header 'Tested up to')" "$(plugin_header 'Requires PHP')" "$(plugin_header 'Description')" \
     > "$BUILD_DIR/update.json"
 
 ZIP_SIZE=$(du -h "$BUILD_DIR/$ZIP_NAME" | cut -f1)

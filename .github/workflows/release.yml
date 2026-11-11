@@ -1,0 +1,16 @@
+# Builds and publishes a release when a version tag is pushed, defined in
+# TheRacoonOfDeath/orchestra-workflows (see its README.md).
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    uses: TheRacoonOfDeath/orchestra-workflows/.github/workflows/release.yml@v1

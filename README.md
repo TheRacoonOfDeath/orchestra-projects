@@ -71,6 +71,9 @@ HTTP as each role. They need PHP with `pdo_sqlite`, Python 3, curl, unzip and ne
 
 1. Run `composer check` and `composer e2e`.
 2. Bump `Version:` in `orchestra-projects.php`.
-3. Run `./build-plugin.sh`; it creates `build/orchestra-projects-{VERSION}.zip` with production
-   dependencies only, and `build/update.json`.
-4. Create a GitHub release `v{VERSION}` and attach the zip **and `update.json`**.
+3. Commit and push, then push an annotated tag with short user-facing notes:
+   `git tag -a v{VERSION} -m "notes" && git push origin v{VERSION}`. GitHub Actions runs
+   `composer check`, builds the zip and `update.json` with `./build-plugin.sh`, signs their build
+   provenance and creates the release
+   ([orchestra-workflows](https://github.com/TheRacoonOfDeath/orchestra-workflows#releases)).
+   `./build-plugin.sh` stays available for local test builds.

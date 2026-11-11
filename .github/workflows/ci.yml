@@ -1,0 +1,17 @@
+# Tests, defined in TheRacoonOfDeath/orchestra-workflows (see its README.md).
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    uses: TheRacoonOfDeath/orchestra-workflows/.github/workflows/ci.yml@v1
+    with:
+      e2e: true
