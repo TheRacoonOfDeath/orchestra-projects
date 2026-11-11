@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test data for e2e.py, run with `wp eval-file`: an inactive member, pieces with parts and sheet
+ * Test data for e2e.py, required with `wp eval`: an inactive member, pieces with parts and sheet
  * music in orchestra-library. Prints the IDs as JSON.
  */
 

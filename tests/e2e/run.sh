@@ -118,7 +118,8 @@ for user in "organizer Olga orchestra_organizer" "conductor Carl orchestra_condu
 done
 # The Orchestra pages with the shortcodes, as created by "Create Orchestra pages"
 "$WP" eval 'Orchestra\Core\Ui\PageSetup::createMissingPages();'
-SEED=$("$WP" eval-file "$ROOT/tests/e2e/seed.php")
+# Required, not run with eval-file: eval'd code cannot declare strict_types on PHP 8.3.
+SEED=$("$WP" eval "require '$ROOT/tests/e2e/seed.php';")
 
 # Web server
 "${PHP[@]}" -S "localhost:$PORT" -t "$WP_PATH" > "$WORK_DIR/server.log" 2>&1 &
