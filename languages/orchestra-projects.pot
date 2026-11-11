@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-06 14:50+0100\n"
+"POT-Creation-Date: 2026-11-11 13:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,12 +18,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: src/Admin/Names.php:21 src/Admin/Names.php:25
+#: src/Admin/Names.php:23 src/Admin/Names.php:27
 msgid "Former member"
 msgstr ""
 
 #. translators: %s: member name
-#: src/Admin/Names.php:31
+#: src/Admin/Names.php:33
 #, php-format
 msgid "%s (inactive)"
 msgstr ""
@@ -36,7 +36,7 @@ msgstr ""
 
 #: src/Admin/ProjectActions.php:87 src/Admin/ProjectActions.php:130
 #: src/Export/AssignmentsPdfController.php:68
-#: src/Export/ParticipantsExportController.php:85
+#: src/Export/ParticipantsExportController.php:87
 #: src/Frontend/ResponseController.php:60
 msgid "You are not allowed to do this."
 msgstr ""
@@ -141,7 +141,7 @@ msgstr ""
 
 #: src/Admin/ProjectsPage.php:63 src/Admin/ProjectsPage.php:64
 #: src/Admin/ProjectsPage.php:77 src/Admin/ProjectsPage.php:119
-#: src/Plugin.php:332 src/Project/ProjectPostType.php:41
+#: src/Plugin.php:342 src/Project/ProjectPostType.php:41
 msgid "Projects"
 msgstr ""
 
@@ -353,7 +353,7 @@ msgstr ""
 msgid "The piece has no parts."
 msgstr ""
 
-#: src/Export/AssignmentsPdf.php:78 src/Privacy/PersonalData.php:118
+#: src/Export/AssignmentsPdf.php:78 src/Privacy/PersonalData.php:129
 #: src/Ui/AssignmentsView.php:277
 msgid "Part"
 msgstr ""
@@ -409,7 +409,7 @@ msgstr ""
 msgid "Comment"
 msgstr ""
 
-#: src/Export/ParticipantsExport.php:100 src/Privacy/PersonalData.php:97
+#: src/Export/ParticipantsExport.php:100 src/Privacy/PersonalData.php:108
 msgid "Organizer note"
 msgstr ""
 
@@ -475,85 +475,123 @@ msgstr ""
 msgid "Declined"
 msgstr ""
 
-#: src/Plugin.php:324
+#: src/Plugin.php:334
 msgid "Plan projects, respond to them and download your sheet music."
 msgstr ""
 
-#: src/Plugin.php:327
+#: src/Plugin.php:337
 msgid "Plan projects: program, participation, parts and seating."
 msgstr ""
 
-#: src/Plugin.php:328
+#: src/Plugin.php:338
 msgid "Respond to projects, see your parts and download your sheet music."
 msgstr ""
 
-#: src/Plugin.php:357
+#: src/Plugin.php:367
 msgid ""
 "Orchestra Projects requires Orchestra Core 0.17, Orchestra Library and "
 "Orchestra Members to be active."
 msgstr ""
 
-#: src/Privacy/PersonalData.php:46 src/Privacy/PersonalData.php:61
+#: src/Privacy/PersonalData.php:53 src/Privacy/PersonalData.php:68
 msgid "Orchestra projects"
 msgstr ""
 
-#: src/Privacy/PersonalData.php:82
+#: src/Privacy/PersonalData.php:89
 msgid "Project participation"
 msgstr ""
 
-#: src/Privacy/PersonalData.php:86 src/Privacy/PersonalData.php:110
-#: src/Project/ProjectPostType.php:42
+#: src/Privacy/PersonalData.php:93 src/Privacy/PersonalData.php:121
+#: src/Privacy/PersonalData.php:143 src/Project/ProjectPostType.php:42
 msgid "Project"
 msgstr ""
 
-#: src/Privacy/PersonalData.php:89 src/Ui/ProjectView.php:88
+#: src/Privacy/PersonalData.php:96 src/Ui/ProjectView.php:88
 #: src/Ui/ProjectView.php:205
 msgid "Participation"
 msgstr ""
 
-#: src/Privacy/PersonalData.php:90
+#: src/Privacy/PersonalData.php:97
 msgid "Responded"
 msgstr ""
 
-#: src/Privacy/PersonalData.php:92
+#: src/Privacy/PersonalData.php:99
+msgid "Last changed"
+msgstr ""
+
+#: src/Privacy/PersonalData.php:103
 msgid "Your comment"
 msgstr ""
 
-#: src/Privacy/PersonalData.php:106
+#: src/Privacy/PersonalData.php:117
 msgid "Assigned parts"
 msgstr ""
 
-#: src/Privacy/PersonalData.php:114 src/Ui/ProgramView.php:109
+#: src/Privacy/PersonalData.php:125 src/Ui/ProgramView.php:109
 msgid "Piece"
 msgstr ""
 
-#: src/Privacy/PersonalData.php:142
+#: src/Privacy/PersonalData.php:139
+msgid "Projects you run"
+msgstr ""
+
+#: src/Privacy/PersonalData.php:147
+msgid "Role"
+msgstr ""
+
+#: src/Privacy/PersonalData.php:149
+msgid "Conductor"
+msgstr ""
+
+#: src/Privacy/PersonalData.php:150
+msgid "Organizer"
+msgstr ""
+
+#: src/Privacy/PersonalData.php:181
 msgid ""
 "Participation and assigned parts are kept as history and anonymized when the "
 "account is deleted."
 msgstr ""
 
-#: src/Privacy/PersonalData.php:160
+#: src/Privacy/PersonalData.php:200
 msgid "For each project, we store whether members accepted or declined."
 msgstr ""
 
-#: src/Privacy/PersonalData.php:162
+#: src/Privacy/PersonalData.php:202
+msgid ""
+"Everyone who can see a project sees the names of those who accepted; who "
+"declined or has not responded yet is only visible to conductors and "
+"organizers."
+msgstr ""
+
+#: src/Privacy/PersonalData.php:207
 msgid ""
 "Members can add a comment for the organizers, and organizers can add a note; "
-"only organizers see them."
+"only organizers see them on the website."
 msgstr ""
 
-#: src/Privacy/PersonalData.php:166
+#: src/Privacy/PersonalData.php:214
 msgid ""
-"We store which parts members play in each project, to plan future projects."
+"We store which parts members play in each project, to plan future projects. "
+"Once the parts are assigned, all members can see who plays which part; "
+"conductors and organizers can download this as a PDF."
 msgstr ""
 
-#: src/Privacy/PersonalData.php:167
+#: src/Privacy/PersonalData.php:222
 msgid ""
-"It is kept after members leave and anonymized when accounts are deleted."
+"Organizers can download the profiles of the members who accepted a project, "
+"including the information they entered in their profile, as a file to plan "
+"the project."
 msgstr ""
 
-#: src/Privacy/PersonalData.php:170
+#: src/Privacy/PersonalData.php:229
+msgid ""
+"This history is kept after members leave, based on the legitimate interest "
+"of the orchestra in its history, and no longer shows their name once their "
+"account is deleted. On request, comments and notes are deleted at once."
+msgstr ""
+
+#: src/Privacy/PersonalData.php:240
 msgid "Orchestra Projects"
 msgstr ""
 
@@ -578,13 +616,13 @@ msgid "The program of a completed project cannot be changed."
 msgstr ""
 
 #. translators: %s: project name
-#: src/Project/ProjectCleanup.php:74
+#: src/Project/ProjectCleanup.php:98
 #, php-format
 msgid "The piece is in the program of the project \"%s\"."
 msgstr ""
 
 #. translators: %s: project name
-#: src/Project/ProjectCleanup.php:94
+#: src/Project/ProjectCleanup.php:118
 #, php-format
 msgid "The part is assigned in the project \"%s\"."
 msgstr ""
@@ -1207,7 +1245,7 @@ msgid ""
 "changed."
 msgstr ""
 
-#: src/Ui/ProjectView.php:189 src/Ui/ProjectView.php:277
+#: src/Ui/ProjectView.php:189 src/Ui/ProjectView.php:278
 msgid "Status"
 msgstr ""
 
@@ -1228,30 +1266,30 @@ msgid "Email accepted and pending"
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:248
+#: src/Ui/ProjectView.php:249
 #, php-format
 msgid "Change the status to \"%s\"?"
 msgstr ""
 
-#: src/Ui/ProjectView.php:254
+#: src/Ui/ProjectView.php:255
 msgid ""
 "All active members and organizers who have not been asked yet will be asked "
 "to respond."
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:260
+#: src/Ui/ProjectView.php:261
 #, php-format
 msgid "Move to \"%s\""
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:262
+#: src/Ui/ProjectView.php:263
 #, php-format
 msgid "Back to \"%s\""
 msgstr ""
 
-#: src/Ui/ProjectView.php:302
+#: src/Ui/ProjectView.php:304
 msgid "Inform the members by email"
 msgstr ""
 

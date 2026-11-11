@@ -6,15 +6,20 @@ namespace Orchestra\Projects\Privacy;
 
 use Orchestra\Library\LibraryService;
 use Orchestra\Projects\Assignment\AssignmentRepository;
+use Orchestra\Projects\Assignment\InformedRepository;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Project\ProjectRepository;
+use Orchestra\Projects\Project\StaffRepository;
 use WP_User;
 
 /**
- * Exports participation and assignments with the WordPress privacy tools.
+ * Connects participation, assignments and the projects people run to the WordPress privacy tools.
  *
- * They are the orchestra's history, so the eraser keeps them. When the account is deleted, they
- * are anonymized ({@see \Orchestra\Projects\Project\ProjectCleanup::anonymizeUser()}).
+ * The decisions and the assigned parts are the orchestra's history, so the eraser keeps them; when
+ * the account is deleted they are anonymized ({@see \Orchestra\Projects\Project\ProjectCleanup::anonymizeUser()}).
+ * Everything else about the person is erased: comments and notes, being named as conductor or
+ * organizer of projects, who changed decisions or made assignments, and changed parts not yet
+ * reported.
  */
 final class PersonalData
 {
@@ -25,6 +30,8 @@ final class PersonalData
         private readonly ParticipationRepository $participations,
         private readonly AssignmentRepository $assignments,
         private readonly LibraryService $library,
+        private readonly StaffRepository $staff,
+        private readonly InformedRepository $informed,
     ) {
     }
 
@@ -89,6 +96,10 @@ final class PersonalData
                     ['name' => \__('Participation', 'orchestra-projects'), 'value' => $participation->status->label()],
                     ['name' => \__('Responded', 'orchestra-projects'), 'value' => $participation->respondedAt ?? ''],
                     [
+                        'name' => \__('Last changed', 'orchestra-projects'),
+                        'value' => $participation->changedAt ?? '',
+                    ],
+                    [
                         'name' => \__('Your comment', 'orchestra-projects'),
                         'value' => $participation->memberComment ?? '',
                     ],
@@ -122,6 +133,26 @@ final class PersonalData
             ];
         }
 
+        foreach ($this->staff->forUser($user->ID) as $index => $staff) {
+            $data[] = [
+                'group_id' => self::ID . '-staff',
+                'group_label' => \__('Projects you run', 'orchestra-projects'),
+                'item_id' => 'orchestra-staff-' . $user->ID . '-' . $index,
+                'data' => [
+                    [
+                        'name' => \__('Project', 'orchestra-projects'),
+                        'value' => $this->projectName($staff['projectId']),
+                    ],
+                    [
+                        'name' => \__('Role', 'orchestra-projects'),
+                        'value' => $staff['role'] === StaffRepository::CONDUCTOR
+                            ? \__('Conductor', 'orchestra-projects')
+                            : \__('Organizer', 'orchestra-projects'),
+                    ],
+                ],
+            ];
+        }
+
         return ['data' => $data, 'done' => true];
     }
 
@@ -131,11 +162,19 @@ final class PersonalData
     public function erase(string $email, int $page = 1): array
     {
         $user = \get_user_by('email', $email);
-        $retained = $user instanceof WP_User
-            && ($this->participations->forUser($user->ID) !== [] || $this->assignments->forUser($user->ID) !== []);
+        if (!$user instanceof WP_User) {
+            return ['items_removed' => false, 'items_retained' => false, 'messages' => [], 'done' => true];
+        }
+
+        $removed = $this->participations->clearTextsOf($user->ID)
+            + $this->staff->deleteForUser($user->ID)
+            + $this->informed->deleteForUser($user->ID);
+        $this->participations->forgetChanger($user->ID);
+        $this->assignments->forgetCreator($user->ID);
+        $retained = $this->participations->forUser($user->ID) !== [] || $this->assignments->forUser($user->ID) !== [];
 
         return [
-            'items_removed' => false,
+            'items_removed' => $removed > 0,
             'items_retained' => $retained,
             'messages' => $retained
                 ? [\__(
@@ -156,20 +195,49 @@ final class PersonalData
             return;
         }
 
-        $sentences = [
-            \__('For each project, we store whether members accepted or declined.', 'orchestra-projects'),
-            \__(
-                'Members can add a comment for the organizers, and organizers can add a note; only organizers'
-                    . ' see them.',
-                'orchestra-projects'
-            ),
-            \__('We store which parts members play in each project, to plan future projects.', 'orchestra-projects'),
-            \__('It is kept after members leave and anonymized when accounts are deleted.', 'orchestra-projects'),
+        $paragraphs = [
+            [
+                \__('For each project, we store whether members accepted or declined.', 'orchestra-projects'),
+                \__(
+                    'Everyone who can see a project sees the names of those who accepted; who declined or has not'
+                        . ' responded yet is only visible to conductors and organizers.',
+                    'orchestra-projects'
+                ),
+                \__(
+                    'Members can add a comment for the organizers, and organizers can add a note; only organizers'
+                        . ' see them on the website.',
+                    'orchestra-projects'
+                ),
+            ],
+            [
+                \__(
+                    'We store which parts members play in each project, to plan future projects. Once the parts are'
+                        . ' assigned, all members can see who plays which part; conductors and organizers can download'
+                        . ' this as a PDF.',
+                    'orchestra-projects'
+                ),
+            ],
+            [
+                \__(
+                    'Organizers can download the profiles of the members who accepted a project, including the'
+                        . ' information they entered in their profile, as a file to plan the project.',
+                    'orchestra-projects'
+                ),
+            ],
+            [
+                \__(
+                    'This history is kept after members leave, based on the legitimate interest of the orchestra in'
+                        . ' its history, and no longer shows their name once their account is deleted. On request,'
+                        . ' comments and notes are deleted at once.',
+                    'orchestra-projects'
+                ),
+            ],
         ];
-        \wp_add_privacy_policy_content(
-            \__('Orchestra Projects', 'orchestra-projects'),
-            '<p>' . \esc_html(\implode(' ', $sentences)) . '</p>'
-        );
+        $text = '';
+        foreach ($paragraphs as $sentences) {
+            $text .= '<p>' . \esc_html(\implode(' ', $sentences)) . '</p>';
+        }
+        \wp_add_privacy_policy_content(\__('Orchestra Projects', 'orchestra-projects'), \wp_kses_post($text));
     }
 
     private function projectName(int $projectId): string

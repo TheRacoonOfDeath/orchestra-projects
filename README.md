@@ -31,8 +31,10 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
 - Email groups for [orchestra-email](https://github.com/TheRacoonOfDeath/orchestra-email), if it is
   installed: the accepted and pending participants of each project
 - Pieces and parts used in projects cannot be deleted in the library
-- Export of participation and assignments with the WordPress privacy tools; deleting an account
-  anonymizes its history
+- Privacy (GDPR): export and erasure with the WordPress privacy tools (erasing deletes comments,
+  notes and staff entries and keeps decisions and parts as history; deleting an account anonymizes
+  it), a suggested privacy policy text, and the inactive status only shown to conductors and
+  organizers
 - An API for other plugins
 
 ## Installation

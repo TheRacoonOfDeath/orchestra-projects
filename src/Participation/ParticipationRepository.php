@@ -157,11 +157,7 @@ final class ParticipationRepository
             $this->schema->participationTable(),
             $userId
         ));
-        $this->execute($this->wpdb->prepare(
-            'UPDATE %i SET changed_by = NULL WHERE changed_by = %d',
-            $this->schema->participationTable(),
-            $userId
-        ));
+        $this->forgetChanger($userId);
     }
 
     /**
@@ -180,6 +176,36 @@ final class ParticipationRepository
             ($row['member_comment'] ?? null) === null ? null : Row::string($row, 'member_comment'),
             ($row['organizer_note'] ?? null) === null ? null : Row::string($row, 'organizer_note'),
         );
+    }
+
+    /**
+     * Deletes the member's comments and the organizers' notes about the member; the decisions stay.
+     *
+     * @return int the number of participations that had a comment or note
+     */
+    public function clearTextsOf(int $userId): int
+    {
+        $query = $this->wpdb->prepare(
+            'UPDATE %i SET member_comment = NULL, organizer_note = NULL'
+                . ' WHERE user_id = %d AND (member_comment IS NOT NULL OR organizer_note IS NOT NULL)',
+            $this->schema->participationTable(),
+            $userId
+        );
+        $changed = $query === null ? 0 : $this->wpdb->query($query);
+
+        return \is_int($changed) ? $changed : 0;
+    }
+
+    /**
+     * Removes the user as the one who changed others' decisions; the decisions stay.
+     */
+    public function forgetChanger(int $userId): void
+    {
+        $this->execute($this->wpdb->prepare(
+            'UPDATE %i SET changed_by = NULL WHERE changed_by = %d',
+            $this->schema->participationTable(),
+            $userId
+        ));
     }
 
     private function execute(?string $query): void

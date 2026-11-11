@@ -787,6 +787,13 @@ check("Mo" not in text(page).split("Recipients", 1)[1].split("Subject", 1)[0] an
       "inactive members are left out of project groups")
 wp_eval(f'delete_user_meta({ids["mo"]}, "orchestra_members_inactive");')
 
+wp_eval(f'update_user_meta({ids["mia"]}, "orchestra_members_inactive", "1");')
+_, member_page = sam.get(f"{DASHBOARD}&orchestra_project={spring}&orchestra_tab=accepted")
+_, organizer_page = organizer.get(manage_url(spring, "participation"))
+check("Mia" in text(member_page) and "(inactive)" not in text(member_page) and "Mia (inactive)" in text(organizer_page),
+      "only conductors and organizers see that a member is inactive")
+wp_eval(f'delete_user_meta({ids["mia"]}, "orchestra_members_inactive");')
+
 # --- Tabs of other plugins ------------------------------------------------------------------
 extra_tab = os.path.join(os.environ["E2E_WP_PATH"], "wp-content", "mu-plugins", "e2e-extra-tab.php")
 with open(extra_tab, "w") as handle:
@@ -1125,8 +1132,11 @@ organizer.get(DASHBOARD)
 columns = wp_json('global $wpdb; echo json_encode($wpdb->get_col("SHOW COLUMNS FROM {$wpdb->prefix}orchestra_projects_participation"));')
 check("fee_paid" not in columns and "organizer_note" in columns
       and wp_eval(f'echo get_post_meta({spring}, "orchestra_projects_fee", true);') == ""
-      and wp_eval('echo get_option("orchestra_projects_schema_version");') == "5",
+      and wp_eval('echo get_option("orchestra_projects_schema_version");') == "6",
       "updating removes the fees and who paid them")
+created_by = wp_json('global $wpdb; echo json_encode($wpdb->get_row("SHOW COLUMNS FROM'
+                     ' {$wpdb->prefix}orchestra_projects_assignments LIKE \'created_by\'", ARRAY_A));')
+check(created_by["Null"] == "YES", "who made an assignment can be anonymized")
 
 # --- Privacy and deleted users --------------------------------------------------------------
 export = wp_json(
@@ -1142,7 +1152,10 @@ erased = wp_json(
     '$e = apply_filters("wp_privacy_personal_data_erasers", [])["orchestra-projects"];'
     'echo json_encode(call_user_func($e["callback"], "mia@example.com", 1));'
 )
-check(erased["items_retained"] and not erased["items_removed"], "the eraser keeps the history")
+check(erased["items_retained"] and erased["items_removed"], "the eraser keeps the history and removes the rest")
+check(participation_of(spring, "mia")["member_comment"] is None and participation_of(spring, "mia")["organizer_note"] is None
+      and participation_of(spring, "mia")["status"] == "accepted",
+      "the eraser deletes comments and notes but keeps the decision")
 _, page = admin.get("/wp-admin/options-privacy.php?tab=policyguide")
 check("Orchestra Projects" in page, "suggests a privacy policy text")
 

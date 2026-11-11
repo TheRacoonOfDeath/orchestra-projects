@@ -109,6 +109,19 @@ final class AssignmentRepository
             $this->schema->assignmentsTable(),
             $userId
         ));
+        $this->forgetCreator($userId);
+    }
+
+    /**
+     * Removes the user as the one who made assignments; the assignments stay.
+     */
+    public function forgetCreator(int $userId): void
+    {
+        $this->execute($this->wpdb->prepare(
+            'UPDATE %i SET created_by = NULL WHERE created_by = %d',
+            $this->schema->assignmentsTable(),
+            $userId
+        ));
     }
 
     /**

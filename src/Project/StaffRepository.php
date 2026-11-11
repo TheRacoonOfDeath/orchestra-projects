@@ -58,8 +58,36 @@ final class StaffRepository
         $this->wpdb->delete($this->schema->staffTable(), ['project_id' => $projectId]);
     }
 
-    public function deleteForUser(int $userId): void
+    /**
+     * @return list<array{projectId: int, role: string}> the projects the user runs
+     */
+    public function forUser(int $userId): array
     {
-        $this->wpdb->delete($this->schema->staffTable(), ['user_id' => $userId]);
+        $rows = Row::all($this->wpdb->get_results(
+            $this->wpdb->prepare(
+                'SELECT project_id, role FROM %i WHERE user_id = %d ORDER BY id',
+                $this->schema->staffTable(),
+                $userId
+            ),
+            ARRAY_A
+        ));
+
+        return \array_map(
+            static fn (array $row): array => [
+                'projectId' => Row::int($row, 'project_id'),
+                'role' => Row::string($row, 'role'),
+            ],
+            $rows
+        );
+    }
+
+    /**
+     * @return int the number of deleted rows
+     */
+    public function deleteForUser(int $userId): int
+    {
+        $deleted = $this->wpdb->delete($this->schema->staffTable(), ['user_id' => $userId]);
+
+        return \is_int($deleted) ? $deleted : 0;
     }
 }

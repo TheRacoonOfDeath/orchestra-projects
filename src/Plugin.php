@@ -67,6 +67,7 @@ final class Plugin
 
     private static ?self $instance = null;
 
+    private readonly wpdb $wpdb;
     private readonly Schema $schema;
     private readonly ProjectRepository $projectRepository;
     private readonly StaffRepository $staff;
@@ -79,6 +80,7 @@ final class Plugin
 
     private function __construct(private readonly string $pluginFile, wpdb $wpdb)
     {
+        $this->wpdb = $wpdb;
         $this->schema = new Schema($wpdb);
         $this->projectRepository = new ProjectRepository();
         $this->staff = new StaffRepository($wpdb, $this->schema);
@@ -231,10 +233,18 @@ final class Plugin
             $this->program,
             $this->participations,
             $this->assignments,
-            $this->informed
+            $this->informed,
+            $this->wpdb
         ))->register();
         $this->registerParticipationTriggers($participation);
-        (new PersonalData($this->projectRepository, $this->participations, $this->assignments, $library))->register();
+        (new PersonalData(
+            $this->projectRepository,
+            $this->participations,
+            $this->assignments,
+            $library,
+            $this->staff,
+            $this->informed
+        ))->register();
 
         // The views are shared by the projects page and the wp-admin screens.
         $memberView = new MemberProjectView(

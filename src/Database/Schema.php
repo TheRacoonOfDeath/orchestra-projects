@@ -10,12 +10,13 @@ use wpdb;
  * Creates and migrates the custom tables of orchestra-projects.
  *
  * Pieces and parts are referenced by their orchestra-library IDs. User IDs of participation and
- * assignments become NULL when the user is deleted, so the history stays complete but anonymous.
+ * assignments (also who changed or made them) become NULL when the user is deleted, so the history
+ * stays complete but anonymous.
  */
 final class Schema
 {
     /** Increase whenever a table definition changes; dbDelta() applies the difference. */
-    public const VERSION = 5;
+    public const VERSION = 6;
 
     public const OPTION_VERSION = 'orchestra_projects_schema_version';
 
@@ -133,7 +134,7 @@ final class Schema
   piece_id bigint(20) unsigned NOT NULL,
   part_id bigint(20) unsigned NOT NULL,
   user_id bigint(20) unsigned DEFAULT NULL,
-  created_by bigint(20) unsigned NOT NULL,
+  created_by bigint(20) unsigned DEFAULT NULL,
   created_at datetime NOT NULL,
   PRIMARY KEY  (id),
   UNIQUE KEY project_piece_user (project_id,piece_id,user_id),
@@ -154,7 +155,29 @@ final class Schema
 ) {$charsetCollate};");
 
         $this->removeFees();
+        $this->allowAnonymousCreators();
         \update_option(self::OPTION_VERSION, self::VERSION, true);
+    }
+
+    /**
+     * Version 6: who made an assignment becomes NULL when that user is deleted. dbDelta() does not
+     * change whether a column allows NULL, so this does.
+     */
+    private function allowAnonymousCreators(): void
+    {
+        $table = $this->assignmentsTable();
+        $column = $this->wpdb->get_row(
+            (string) $this->wpdb->prepare('SHOW COLUMNS FROM %i LIKE %s', $table, 'created_by'),
+            ARRAY_A
+        );
+        if (\is_array($column) && ($column['Null'] ?? '') === 'NO') {
+            $this->wpdb->query(
+                (string) $this->wpdb->prepare(
+                    'ALTER TABLE %i MODIFY created_by bigint(20) unsigned DEFAULT NULL',
+                    $table
+                )
+            );
+        }
     }
 
     /**

@@ -13,7 +13,7 @@ active status, only through their public services.
 | Conductors and organizers of a project | table `orchestra_projects_staff` |
 | Program | table `orchestra_projects_program` (project, piece, position) |
 | Participation | table `orchestra_projects_participation` (project, user, status, responded at, changed by and at, member's comment, organizers' note; schema version 4) |
-| Assignments | table `orchestra_projects_assignments` (project, piece, part, user) |
+| Assignments | table `orchestra_projects_assignments` (project, piece, part, user, who made it; `created_by` nullable since schema version 6) |
 | What members were last informed about (Parts assigned only) | table `orchestra_projects_informed` (project, piece, part, user; schema version 5) and post meta `orchestra_projects_informed` |
 | Statuses whose automatic email was sent (since 0.37) | post meta `orchestra_projects_status_emails` (list of status values) |
 
@@ -22,8 +22,28 @@ active status, only through their public services.
   project fees of 0.23 and 0.24, which were removed again.
 - Assignments store the piece of their part. Parts never move between pieces; the column makes
   "one part per piece and member" a unique key and the history queries simple.
-- When a user is deleted, the user ID in participation and assignments becomes NULL. The history
-  stays complete and shows "Former member". Staff entries of the user are deleted.
+- When a user is deleted, the user ID in participation and assignments becomes NULL, and so do
+  who changed a participation (`changed_by`) and who made an assignment (`created_by`, nullable
+  since schema version 6). The history stays complete and shows "Former member". Staff entries,
+  comments, notes and changed parts of the user are deleted, and projects they authored get
+  `post_author` 0.
+
+## Privacy
+
+See also the [GDPR documentation of orchestra-core](https://github.com/TheRacoonOfDeath/orchestra-core/blob/main/docs/gdpr.md).
+
+- **Tools → Export Personal Data**: every participation (project, decision, responded, last
+  changed, comment, organizers' note), every assigned part and the projects the person runs as
+  conductor or organizer. The note is exported because it is data about the member, although the
+  site shows it to organizers only.
+- **Tools → Erase Personal Data** (since 0.38): deletes comments and notes, the staff entries and
+  the changed parts not yet reported, and removes the person as the one who changed decisions or
+  made assignments. The decisions and the assigned parts are the orchestra's history and are
+  kept; the eraser reports them as retained. Deleting the account then anonymizes them (above).
+- Whether someone is inactive ("Name (inactive)", `Admin\Names`) is shown only to users with
+  `orchestra_projects_participation_read_others` (conductors, organizers); members see the name.
+- **Settings → Privacy** suggests a text for the privacy policy: who sees decisions, comments,
+  assignments, the participants export, and why the history is kept.
 - Deleting a project (administrators only) deletes its rows in all tables.
 
 ## Rules
@@ -234,6 +254,9 @@ ordered by last and first name.
   as formulas.
 - Needs orchestra-members 0.9 for names and profile fields; with an older version the button is
   hidden.
+- The file contains every profile field, which can be special categories of personal data (e.g.
+  dietary restrictions). It is generated on request and never stored on the site; once downloaded,
+  it is the organizer's responsibility to keep it safe and delete it after the project.
 
 ## Email groups
 

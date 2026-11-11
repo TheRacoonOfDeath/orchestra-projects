@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Orchestra\Projects\Admin;
 
 use Orchestra\Members\MembersService;
+use Orchestra\Projects\Capabilities;
 
 /**
- * Display names of users, including deleted and inactive ones.
+ * Display names of users, including deleted and inactive ones. Whether someone is inactive is
+ * shown only to conductors and organizers, who manage participation; members see the name.
  */
 final class Names
 {
@@ -25,7 +27,7 @@ final class Names
             return \__('Former member', 'orchestra-projects');
         }
 
-        return $this->members->isActive($userId)
+        return !\current_user_can(Capabilities::PARTICIPATION_READ_OTHERS) || $this->members->isActive($userId)
             ? $user->display_name
             /* translators: %s: member name */
             : \sprintf(\__('%s (inactive)', 'orchestra-projects'), $user->display_name);

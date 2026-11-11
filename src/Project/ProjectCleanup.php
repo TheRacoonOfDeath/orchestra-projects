@@ -8,6 +8,7 @@ use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\InformedRepository;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Program\ProgramRepository;
+use wpdb;
 
 /**
  * Keeps the tables consistent when projects or users are deleted, and protects pieces and parts
@@ -22,6 +23,7 @@ final class ProjectCleanup
         private readonly ParticipationRepository $participations,
         private readonly AssignmentRepository $assignments,
         private readonly ?InformedRepository $informed = null,
+        private readonly ?wpdb $wpdb = null,
     ) {
     }
 
@@ -60,6 +62,28 @@ final class ProjectCleanup
         $this->participations->anonymizeUser($userId);
         $this->assignments->anonymizeUser($userId);
         $this->informed?->deleteForUser($userId);
+        $this->forgetAuthor($userId);
+    }
+
+    /**
+     * WordPress keeps the posts of a deleted user for post types without authors, so projects
+     * would keep the deleted user's ID unless they were given to another user.
+     */
+    private function forgetAuthor(int $userId): void
+    {
+        if ($this->wpdb === null) {
+            return;
+        }
+        $ids = $this->wpdb->get_col((string) $this->wpdb->prepare(
+            'SELECT ID FROM %i WHERE post_author = %d AND post_type = %s',
+            $this->wpdb->posts,
+            $userId,
+            ProjectPostType::NAME
+        ));
+        foreach ($ids as $id) {
+            $this->wpdb->update($this->wpdb->posts, ['post_author' => 0], ['ID' => (int) $id], ['%d'], ['%d']);
+            \clean_post_cache((int) $id);
+        }
     }
 
     /**

@@ -69,10 +69,14 @@ final class InformedRepository
     }
 
     /**
-     * A deleted user is no longer informed about anything.
+     * A deleted or erased user is no longer informed about anything.
+     *
+     * @return int the number of deleted rows
      */
-    public function deleteForUser(int $userId): void
+    public function deleteForUser(int $userId): int
     {
-        $this->wpdb->delete($this->schema->informedTable(), ['user_id' => $userId]);
+        $deleted = $this->wpdb->delete($this->schema->informedTable(), ['user_id' => $userId]);
+
+        return \is_int($deleted) ? $deleted : 0;
     }
 }
