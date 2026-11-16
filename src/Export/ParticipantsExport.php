@@ -14,8 +14,9 @@ use Orchestra\Projects\Participation\ParticipationStatus;
 
 /**
  * The accepted participants of a project as a table: last name, first name, email address, one
- * column per profile field, the member's comment and the organizers' note. Profile values, comments
- * and notes are for organizers; the caller checks the capabilities.
+ * column per profile field, the member's comment and the organizers' note. Below them, the number
+ * of participants per answer of every choice list (e.g. 5 vegetarian, 3 vegan). Profile values,
+ * comments and notes are for organizers; the caller checks the capabilities.
  */
 final class ParticipantsExport
 {
@@ -69,11 +70,12 @@ final class ParticipantsExport
      *
      * @param list<ProfileField> $fields
      * @param list<array{Member, ?Profile, string, string}> $people member, profile, comment and note
-     * @return list<list<string>> the headings first
+     * @return list<list<string>> the headings first, the counts of the choice lists last
      */
     public static function table(array $fields, array $people): array
     {
         $rows = [];
+        $answers = [];
         foreach ($people as [$member, $profile, $comment, $note]) {
             $lastName = $member->lastName;
             if ($lastName === '' && $member->firstName === '') {
@@ -82,6 +84,7 @@ final class ParticipantsExport
             $row = [$lastName, $member->firstName, $member->email];
             foreach ($fields as $field) {
                 $value = $profile?->value($field->id) ?? '';
+                $answers[$field->id][] = $value;
                 // An unchecked checkbox is stored as "" and exported as "No".
                 $row[] = $value === '' && $field->type !== ProfileField::TYPE_CHECKBOX ? '' : $field->display($value);
             }
@@ -100,6 +103,49 @@ final class ParticipantsExport
             \__('Organizer note', 'orchestra-projects'),
         ];
 
-        return [$headings, ...$rows];
+        return [$headings, ...$rows, ...self::counts($fields, $answers)];
+    }
+
+    /**
+     * After an empty line, every choice list with the number of participants per answer: the
+     * choices in their order (also those nobody chose), then free-text answers alphabetically, then
+     * those without an answer.
+     *
+     * @param list<ProfileField> $fields
+     * @param array<string, list<string>> $answers field ID => the answer of every participant
+     * @return list<list<string>>
+     */
+    private static function counts(array $fields, array $answers): array
+    {
+        $rows = [];
+        foreach ($fields as $field) {
+            if ($field->type !== ProfileField::TYPE_SELECT || !isset($answers[$field->id])) {
+                continue;
+            }
+            $counts = \array_fill_keys($field->choices, 0);
+            $others = [];
+            $unanswered = 0;
+            foreach ($answers[$field->id] as $value) {
+                if ($value === '') {
+                    $unanswered++;
+                } elseif (\array_key_exists($value, $counts)) {
+                    $counts[$value]++;
+                } else {
+                    $others[$value] = ($others[$value] ?? 0) + 1;
+                }
+            }
+            \uksort($others, static fn (string|int $a, string|int $b): int => \strcasecmp((string) $a, (string) $b));
+
+            $rows[] = [];
+            $rows[] = [$field->label, \__('Number', 'orchestra-projects')];
+            foreach ($counts + $others as $answer => $count) {
+                $rows[] = [(string) $answer, (string) $count];
+            }
+            if ($unanswered > 0) {
+                $rows[] = [\__('No answer', 'orchestra-projects'), (string) $unanswered];
+            }
+        }
+
+        return $rows;
     }
 }

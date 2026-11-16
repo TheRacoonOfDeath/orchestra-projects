@@ -204,7 +204,7 @@ views in **Projects** in wp-admin (views in `src/Ui`, shared by both).
 | Project → Overview | everyone who may see the project | details, staff, description, own response and parts; email buttons and status changes for staff |
 | Project → Who accepted | members | the names of everyone who accepted (conductors and organizers see them on the Participation tab) |
 | Project → Program | everyone who may see the project | members: the ordered list of pieces; conductors and organizers: add, order and remove pieces |
-| Project → Participation | conductors (read), organizers | accepted, pending, declined, with the last change and who entered it; organizers see the members' comments, write notes, change decisions and export the accepted participants. The number of a member's parts is shown as "3 parts". On phones the rows are compact (orchestra-core 0.15): name, then the last change and the parts on one line, then "Edit" with the comment, the note and the change |
+| Project → Participation | conductors (read), organizers | accepted, pending, declined, each a group that is closed until opened (since 0.39; the forms of a group return to `&orchestra_group=<status>#orchestra-participation-<status>`, which opens it again), with the last change and who entered it; organizers see the members' comments, write notes, change decisions and export the accepted participants. The number of a member's parts is shown as "3 parts". On phones the rows are compact (orchestra-core 0.15): name, then the last change and the parts on one line, then "Edit" with the comment, the note and the change |
 | Project → Assignments | everyone who may see the project | "By piece": parts with assigned members; conductors and organizers assign there, members only see it (no forms, history marks, warnings or PDF); "By member" (`&orchestra_assignments_view=members`): a read-only table with a row per member and a column per piece (`AssignmentMatrix`); in Parts assigned, the changed parts to inform the members about (see above) |
 | Project form | organizers | name, description, dates, staff (in wp-admin: the WordPress editor with the same fields) |
 
@@ -244,6 +244,12 @@ each for last name, first name and email address, then one per profile field of 
 in their order; checkboxes are exported as "Yes" or "No"; then the member's comment and the
 organizers' note. Users without first and last name get their display name as last name. Rows are
 ordered by last and first name.
+
+Below the participants, after an empty line, every choice list among the profile fields gets a
+small table of its own (since 0.39): the field's label and "Number", then each choice with the
+number of participants who chose it (in the order of the choices, also those nobody chose), then
+free-text answers ("Other") alphabetically, then "No answer" if anyone left it empty. Organizers
+use it for catering, e.g. "vegetarian 5, vegan 3".
 
 - Requires `orchestra_projects_participation_export` and, for every participant,
   `orchestra_members_profile_read`, because the profiles are sensitive.

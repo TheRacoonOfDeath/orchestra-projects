@@ -429,6 +429,15 @@ check(participation_of(spring, "mia")["organizer_note"] == "Room booked from the
 _, page = organizer.get(manage_url(spring, "participation"))
 check("Only from the 28th" in text(page) and "Room booked from the 28th" in text(page),
       "organizers see comments and notes on the participation tab")
+check(all(f'<details class="orchestra-group" id="orchestra-participation-{s}"><summary>' in page
+          for s in ("accepted", "open", "declined")),
+      "the accepted, pending and declined members are closed groups")
+check(re.search(r'name="redirect_to" value="[^"]*orchestra_group=accepted#orchestra-participation-accepted"', page)
+      is not None, "the forms of a group return to it")
+_, page = organizer.get(manage_url(spring, "participation") + "&orchestra_group=accepted")
+check('<details class="orchestra-group" id="orchestra-participation-accepted" open>' in page
+      and '<details class="orchestra-group" id="orchestra-participation-open"><summary>' in page,
+      "returning to a group opens only that group")
 _, page = conductor.get(manage_url(spring, "participation"))
 check("Only from the 28th" not in page and "Room booked" not in page, "conductors see neither comments nor notes")
 status, _ = act(conductor, spring, "participation_note", participation=mia_participation, note="x")
@@ -464,6 +473,14 @@ check(csv.lstrip("﻿").split("\r\n")[:3] == [
     '"Müller","Mia","mia@example.com","Yes","\'=1+1, ""vegan""\nno nuts","Only from the 28th","Room booked from the 28th"',
     '"Olga","","organizer@example.com","No","","",""',
 ] and "max@example.com" not in csv, "one column per property and profile field, accepted participants only, no formulas")
+wp_eval('update_option("orchestra_members_profile_fields", [["id" => "diet", "label" => "Diet", "type" => "select",'
+        ' "hint" => "", "choices" => ["vegetarian", "vegan"], "checked" => false, "other" => true]]);'
+        f' update_user_meta({ids["mia"]}, "orchestra_members_diet", "vegan");')
+_, _, body = organizer.request(EXPORT)
+tail = body.decode("utf-8").split("\r\n")[-6:]
+check(tail == ["", '"Diet","Number"', '"vegetarian","0"', '"vegan","1"', '"No answer","1"', ""],
+      f"the export counts the answers of every choice list: {tail}")
+wp("option", "delete", "orchestra_members_profile_fields")
 wp("option", "update", "orchestra_core_language", "de_DE")
 _, _, body = organizer.request(EXPORT)
 check(body.decode("utf-8").lstrip("﻿").startswith('"Nachname";"Vorname";"E-Mail-Adresse";'),

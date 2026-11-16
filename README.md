@@ -12,7 +12,10 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
   Preparation → Completed; the project list has tabs for the active and the completed projects
 - An ordered program of pieces from the library
 - Participation: opening a project asks every active member and organizer to accept or decline;
-  the decision is final, organizers can change it
+  the decision is final, organizers can change it. On the Participation tab, the accepted, pending
+  and declined members are groups that open with a click
+- Organizers export the accepted participants with their profile fields as a CSV file for Excel;
+  below them, every choice list is counted (e.g. "vegetarian 5, vegan 3")
 - Assignments of members to parts, with hints who played the part last time or in a completed
   project, and a button that gives everyone the part they played last time; the assignments can be
   downloaded as a PDF (with orchestra-core 0.8 or later)

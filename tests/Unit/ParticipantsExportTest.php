@@ -45,6 +45,41 @@ final class ParticipantsExportTest extends TestCase
         ], ParticipantsExport::table($fields, $people));
     }
 
+    public function testCountsTheAnswersOfChoiceLists(): void
+    {
+        $fields = [
+            new ProfileField(
+                'diet',
+                'Dietary restrictions',
+                ProfileField::TYPE_SELECT,
+                '',
+                ['vegetarian', 'vegan', 'halal'],
+                false,
+                true
+            ),
+            new ProfileField('note', 'Note', ProfileField::TYPE_TEXT),
+        ];
+        $people = [];
+        foreach (['vegan', 'vegetarian', 'vegan', 'no nuts', '', 'Lactose-free', 'vegan'] as $index => $diet) {
+            $profile = new Profile($index + 1, true, ['diet' => $diet]);
+            $people[] = [self::member($index + 1, 'P', 'P' . $index), $profile, '', ''];
+        }
+        $people[] = [self::member(9, 'Q', 'Q'), null, '', ''];
+
+        $rows = ParticipantsExport::table($fields, $people);
+
+        $this->assertSame([
+            [],
+            ['Dietary restrictions', 'Number'],
+            ['vegetarian', '1'],
+            ['vegan', '3'],
+            ['halal', '0'],
+            ['Lactose-free', '1'],
+            ['no nuts', '1'],
+            ['No answer', '2'],
+        ], \array_slice($rows, 9), 'only choice lists are counted; free-text answers and missing answers too');
+    }
+
     public function testUsesTheDisplayNameWithoutFirstAndLastName(): void
     {
         $rows = ParticipantsExport::table([], [[self::member(4, '', '', 'Conny'), null, '', '']]);

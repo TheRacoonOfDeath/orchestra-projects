@@ -6,6 +6,7 @@ namespace Orchestra\Projects\Ui;
 
 use Orchestra\Core\Ui\Form;
 use Orchestra\Core\Ui\Html;
+use Orchestra\Core\Ui\Redirect;
 use Orchestra\Projects\Admin\Names;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Capabilities;
@@ -18,10 +19,17 @@ use Orchestra\Projects\Project\Project;
 use Orchestra\Projects\Project\ProjectStatus;
 
 /**
- * Who accepted, declined or has not responded; organizers change decisions here.
+ * Who accepted, declined or has not responded; organizers change decisions here. Every group can
+ * be closed and opened and starts closed, because the lists are long.
  */
 final class ParticipationView
 {
+    /**
+     * `?orchestra_group=accepted` opens that group, which is otherwise closed: the forms of a group
+     * return to it, so that it stays open after each change.
+     */
+    public const GROUP_PARAMETER = 'orchestra_group';
+
     public function __construct(
         private readonly ParticipationRepository $participations,
         private readonly AssignmentRepository $assignments,
@@ -92,6 +100,7 @@ final class ParticipationView
             $assignmentCounts[$key] = ($assignmentCounts[$key] ?? 0) + 1;
         }
         $canManage = \current_user_can(Capabilities::PARTICIPATION_MANAGE);
+        $requested = \is_string($_GET[self::GROUP_PARAMETER] ?? null) ? $_GET[self::GROUP_PARAMETER] : '';
 
         $html = '<p class="orchestra-muted">' . \esc_html($this->summary($project)) . '</p>'
             . $this->exportButton($project, $all)
@@ -103,12 +112,14 @@ final class ParticipationView
                 $this->names->of($b->userId)
             ));
 
-            $html .= '<h3>' . \esc_html($status->label()) . ' <span class="orchestra-muted">(' . \count($group)
-                . ')</span></h3>';
+            $html .= '<details class="orchestra-group" id="' . self::anchor($status) . '"'
+                . ($requested === $status->value ? ' open' : '') . '><summary>' . \esc_html($status->label())
+                . ' <span class="orchestra-muted">(' . \count($group) . ')</span></summary>';
             if ($group === []) {
-                $html .= '<p class="orchestra-muted">' . \esc_html__('Nobody', 'orchestra-projects') . '</p>';
+                $html .= '<p class="orchestra-muted">' . \esc_html__('Nobody', 'orchestra-projects') . '</p></details>';
                 continue;
             }
+            $returnTo = self::returnTo($status);
 
             $headings = [
                 \__('Member', 'orchestra-projects'),
@@ -148,24 +159,46 @@ final class ParticipationView
                 }
                 if ($canManage) {
                     // On phones, the comment, the note and the change are behind "Edit" (compact rows).
-                    $row[] = '<div class="orchestra-desktop-only">' . self::notes($project, $participation, 'desktop')
-                        . '</div>';
                     $row[] = '<div class="orchestra-desktop-only">'
-                        . $this->changeForm($project, $participation, $count) . '</div>'
+                        . self::notes($project, $participation, 'desktop', $returnTo) . '</div>';
+                    $row[] = '<div class="orchestra-desktop-only">'
+                        . $this->changeForm($project, $participation, $count, $returnTo) . '</div>'
                         . '<div class="orchestra-phone-only"><details class="orchestra-disclosure"><summary>'
                         . \esc_html__('Edit', 'orchestra-projects') . '</summary><div class="orchestra-stack">'
-                        . self::notes($project, $participation, 'phone')
-                        . $this->changeForm($project, $participation, $count) . '</div></details></div>';
+                        . self::notes($project, $participation, 'phone', $returnTo)
+                        . $this->changeForm($project, $participation, $count, $returnTo) . '</div></details></div>';
                 }
                 $rows[] = $row;
             }
             $html .= Html::table($headings, $rows, '', false, true);
             if ($canManage) {
-                $html .= $this->bulkForm($project, $status, $bulkForm, $group, $assignmentCounts);
+                $html .= $this->bulkForm($project, $status, $bulkForm, $group, $assignmentCounts, $returnTo);
             }
+            $html .= '</details>';
         }
 
         return $html . '</div>';
+    }
+
+    private static function anchor(ParticipationStatus $status): string
+    {
+        return 'orchestra-participation-' . $status->value;
+    }
+
+    /**
+     * Where the forms of a group return to: this page with the group open, scrolled to it.
+     *
+     * @return array<string, string>
+     */
+    private static function returnTo(ParticipationStatus $status): array
+    {
+        $url = \add_query_arg(
+            self::GROUP_PARAMETER,
+            $status->value,
+            \remove_query_arg(self::GROUP_PARAMETER, Redirect::currentUrl())
+        );
+
+        return [Redirect::FIELD => $url . '#' . self::anchor($status)];
     }
 
     /**
@@ -194,6 +227,7 @@ final class ParticipationView
      *
      * @param list<Participation> $group
      * @param array<int, int> $assignmentCounts user ID => number of assignments in the project
+     * @param array<string, string> $returnTo
      */
     private function bulkForm(
         Project $project,
@@ -201,9 +235,10 @@ final class ParticipationView
         string $formId,
         array $group,
         array $assignmentCounts,
+        array $returnTo,
     ): string {
         $attributes = ['id' => $formId, 'class' => 'orchestra-actions'];
-        $fields = [];
+        $fields = $returnTo;
         $withAssignments = \array_filter(
             $group,
             static fn (Participation $p): bool => ($assignmentCounts[$p->userId ?? 0] ?? 0) > 0
@@ -234,12 +269,16 @@ final class ParticipationView
 
     /**
      * The member's comment and the organizers' note, which organizers change here.
-     */
-    /**
+     *
      * @param string $variant Makes the IDs unique when the form is shown twice (desktop and phone)
+     * @param array<string, string> $returnTo
      */
-    private static function notes(Project $project, Participation $participation, string $variant): string
-    {
+    private static function notes(
+        Project $project,
+        Participation $participation,
+        string $variant,
+        array $returnTo,
+    ): string {
         $comment = $participation->memberComment === null
             ? '<span class="orchestra-muted">' . \esc_html__('No comment', 'orchestra-projects') . '</span>'
             : '<span>' . \nl2br(\esc_html($participation->memberComment)) . '</span>';
@@ -251,9 +290,12 @@ final class ParticipationView
                 ? \esc_html__('Add a note', 'orchestra-projects')
                 : \esc_html__('Note:', 'orchestra-projects') . ' ' . \esc_html($note))
             . '</summary>'
-            . ProjectForms::open($project->id, 'participation_note', ['participation' => $participation->id], [
-                'class' => 'orchestra-stack',
-            ])
+            . ProjectForms::open(
+                $project->id,
+                'participation_note',
+                ['participation' => $participation->id] + $returnTo,
+                ['class' => 'orchestra-stack']
+            )
             . '<textarea id="' . \esc_attr($id) . '" name="note" rows="2"'
             . ' aria-label="' . \esc_attr__('Note for the organizers', 'orchestra-projects') . '" maxlength="'
             . ParticipationRules::NOTE_MAX_LENGTH . '">' . \esc_textarea($note ?? '') . '</textarea>'
@@ -262,9 +304,16 @@ final class ParticipationView
             . '</div></form></details></div>';
     }
 
-    private function changeForm(Project $project, Participation $participation, int $assignmentCount): string
-    {
-        $fields = ['participation' => $participation->id];
+    /**
+     * @param array<string, string> $returnTo
+     */
+    private function changeForm(
+        Project $project,
+        Participation $participation,
+        int $assignmentCount,
+        array $returnTo,
+    ): string {
+        $fields = ['participation' => $participation->id] + $returnTo;
         $attributes = ['class' => 'orchestra-actions'];
         if ($participation->status === ParticipationStatus::Accepted && $assignmentCount > 0) {
             $fields['confirm'] = 1;
