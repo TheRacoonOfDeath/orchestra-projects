@@ -135,9 +135,10 @@ final class MemberProjectView
     /**
      * The member's part in every piece of the program, with the sheet music; pieces in which they
      * have no part yet say so. Shown to members who take part or have parts. Until the parts are
-     * assigned, members only learn that ({@see AssignmentsView::hiddenFromMembers()}).
+     * assigned, members only learn that ({@see AssignmentsView::hiddenFromMembers()}). The cards of
+     * the project list show them collapsed, so the cards stay short.
      */
-    public function parts(Project $project): string
+    public function parts(Project $project, bool $collapsed = false): string
     {
         if (!\current_user_can(Capabilities::ASSIGNMENT_READ)) {
             return '';
@@ -151,8 +152,8 @@ final class MemberProjectView
         }
 
         if (AssignmentsView::hiddenFromMembers($project)) {
-            return self::partsTitle() . '<p class="orchestra-muted">'
-                . \esc_html(AssignmentsView::notAssignedYet()) . '</p>';
+            return self::partsSection('<p class="orchestra-muted">'
+                . \esc_html(AssignmentsView::notAssignedYet()) . '</p>', $collapsed);
         }
 
         $byPiece = [];
@@ -200,8 +201,7 @@ final class MemberProjectView
             return '';
         }
 
-        $html = self::partsTitle() . '<ul class="orchestra-list">' . $items
-            . '</ul>';
+        $html = '<ul class="orchestra-list">' . $items . '</ul>';
         if (\count($partIds) > 1) {
             $html .= '<div class="orchestra-actions">' . Form::link(
                 $this->library->bundleDownloadUrl($partIds, $project->title),
@@ -210,16 +210,21 @@ final class MemberProjectView
             ) . '</div>';
         }
 
-        return $html;
+        return self::partsSection($html, $collapsed);
     }
 
     /**
-     * "Your parts": a section label, smaller than the name of the project.
+     * "Your parts" with a section label, smaller than the name of the project; collapsed, the label
+     * opens the content.
      */
-    private static function partsTitle(): string
+    private static function partsSection(string $content, bool $collapsed): string
     {
-        return '<h4 class="orchestra-projects-section-title">' . \esc_html__('Your parts', 'orchestra-projects')
+        $title = '<h4 class="orchestra-projects-section-title">' . \esc_html__('Your parts', 'orchestra-projects')
             . '</h4>';
+
+        return $collapsed
+            ? '<details class="orchestra-projects-parts"><summary>' . $title . '</summary>' . $content . '</details>'
+            : $title . $content;
     }
 
     private function canRespond(Project $project, Participation $participation): bool

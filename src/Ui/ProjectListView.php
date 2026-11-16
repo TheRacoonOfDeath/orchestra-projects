@@ -86,7 +86,7 @@ final class ProjectListView
                 . '<h3 class="orchestra-card__title"><a class="orchestra-card__link" href="'
                 . \esc_url($urls->project($project->id)) . '">'
                 . \esc_html($project->title) . '</a></h3><div class="orchestra-card__meta">' . $meta . '</div>'
-                . $this->memberView->participation($project, false) . $this->memberView->parts($project)
+                . $this->memberView->participation($project, false) . $this->memberView->parts($project, true)
                 . '</article>';
         }
 

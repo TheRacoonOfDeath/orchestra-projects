@@ -22,6 +22,19 @@
     margin-bottom: 0;
 }
 
+/* "Your parts" on the cards of the project list: closed until the label is clicked. */
+.orchestra details.orchestra-projects-parts > summary {
+    cursor: pointer;
+}
+
+.orchestra details.orchestra-projects-parts > summary > .orchestra-projects-section-title {
+    display: inline;
+}
+
+.orchestra details.orchestra-projects-parts[open] > summary {
+    margin-bottom: 0.5rem;
+}
+
 /* The project list: more room between status, title, dates and parts than core's cards have. */
 .orchestra .orchestra-projects-card > * + * {
     margin-top: 0.9rem;

@@ -609,6 +609,8 @@ check("Your parts" in plain and "Pirates of the Caribbean (Klaus Badelt) Horn 1"
 check('<strong>Pirates of the Caribbean</strong>' in page and '</div><div class="orchestra-actions"><span>Horn 1</span>' in page,
       "the part, its label and its download are on a line below the piece and its composer")
 check(page.count(NEW_BADGE) == 2, "members see which of their parts they play for the first time")
+check('<details class="orchestra-projects-parts"><summary><h4 class="orchestra-projects-section-title">Your parts</h4>'
+      '</summary>' in page, "the cards of the project list show the parts closed")
 check("assets/orchestra-projects.css" in page, "the page loads the stylesheet of the label")
 match = re.search(r'href="([^"]*orchestra_library_download_bundle[^"]*)"', page)
 check(match is not None, "the dashboard offers the sheet music download")
@@ -924,6 +926,7 @@ wp("post", "meta", "update", str(summer), "orchestra_projects_status", "open")
 mo_parts = text(mo_page).split("Your parts", 1)[1] if "Your parts" in text(mo_page) else ""
 check("Pirates of the Caribbean" in mo_parts and "No part assigned yet" in mo_parts,
       "members who take part see every piece, also those without a part yet")
+check("orchestra-projects-parts" not in mo_page, "the project page shows the parts open")
 check(NEW_BADGE not in page and "plays this part for the first time" not in assignments_pdf_html(summer),
       "parts played in another project before are not new")
 check("At least one member has not been assigned a part yet" in page.split("<h3>Pirates of the Caribbean", 1)[1]
