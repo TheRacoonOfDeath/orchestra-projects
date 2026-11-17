@@ -33,12 +33,16 @@ final class StatusEmailsTest extends TestCase
         // Registering needs neither the email service nor the database.
         (new ReflectionClass(StatusEmails::class))->newInstanceWithoutConstructor()->registerEmails($registry);
 
-        foreach ([StatusEmails::OPEN_ID, StatusEmails::PARTS_ASSIGNED_ID] as $id) {
+        $expected = [
+            StatusEmails::OPEN_ID => ['dates', 'description', 'link', 'name', 'project'],
+            StatusEmails::PARTS_ASSIGNED_ID => ['dates', 'link', 'name', 'project'],
+        ];
+        foreach ($expected as $id => $placeholders) {
             $email = $registry->find($id);
             $this->assertInstanceOf(AutomaticEmail::class, $email);
             \preg_match_all('/\{([a-z0-9_]+)\}/', $email->defaultSubject . $email->defaultBody, $matches);
-            $this->assertSame(['dates', 'link', 'name', 'project'], $this->sorted($matches[1]));
-            $this->assertSame(['dates', 'link', 'name', 'project'], $this->sorted(\array_keys($email->placeholders)));
+            $this->assertSame($placeholders, $this->sorted($matches[1]));
+            $this->assertSame($placeholders, $this->sorted(\array_keys($email->placeholders)));
         }
     }
 

@@ -15,12 +15,19 @@ final class ProjectUrls
      * @param Closure(): string $list
      * @param Closure(int $projectId, string $tab): string $project
      * @param Closure(?int $projectId): string $edit The form for a new (null) or existing project
+     * @param Closure(): string $fields The project fields
      */
     public function __construct(
         private readonly Closure $list,
         private readonly Closure $project,
         private readonly Closure $edit,
+        private readonly Closure $fields,
     ) {
+    }
+
+    public function fields(): string
+    {
+        return ($this->fields)();
     }
 
     public function list(): string

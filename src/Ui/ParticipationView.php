@@ -11,6 +11,8 @@ use Orchestra\Projects\Admin\Names;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Capabilities;
 use Orchestra\Projects\Export\ParticipantsExportController;
+use Orchestra\Projects\Field\ProjectAnswers;
+use Orchestra\Projects\Field\ProjectField;
 use Orchestra\Projects\Participation\Participation;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationRules;
@@ -35,6 +37,7 @@ final class ParticipationView
         private readonly AssignmentRepository $assignments,
         private readonly Names $names,
         private readonly bool $exportAvailable,
+        private readonly ?ProjectAnswers $answers = null,
     ) {
     }
 
@@ -100,6 +103,13 @@ final class ParticipationView
             $assignmentCounts[$key] = ($assignmentCounts[$key] ?? 0) + 1;
         }
         $canManage = \current_user_can(Capabilities::PARTICIPATION_MANAGE);
+        // The answers to the project fields are for organizers, like the comments.
+        $fields = [];
+        $answers = [];
+        if ($canManage && $this->answers !== null) {
+            $fields = $this->answers->fields($project);
+            $answers = $fields === [] ? [] : $this->answers->forProject($project);
+        }
         $requested = \is_string($_GET[self::GROUP_PARAMETER] ?? null) ? $_GET[self::GROUP_PARAMETER] : '';
 
         $html = '<p class="orchestra-muted">' . \esc_html($this->summary($project)) . '</p>'
@@ -131,6 +141,10 @@ final class ParticipationView
             if ($canManage) {
                 \array_unshift($headings, \__('Select', 'orchestra-projects'));
             }
+            $withAnswers = $fields !== [] && $status === ParticipationStatus::Accepted;
+            if ($withAnswers) {
+                $headings[] = \__('Answers', 'orchestra-projects');
+            }
             if ($canManage) {
                 // The members' comments and the notes are for organizers only, not for conductors.
                 $headings[] = \__('Comment and note', 'orchestra-projects');
@@ -157,6 +171,9 @@ final class ParticipationView
                             $this->names->of($participation->userId)
                         )) . '">');
                 }
+                if ($withAnswers) {
+                    $row[] = self::answers($fields, $answers[$participation->userId ?? 0] ?? []);
+                }
                 if ($canManage) {
                     // On phones, the comment, the note and the change are behind "Edit" (compact rows).
                     $row[] = '<div class="orchestra-desktop-only">'
@@ -178,6 +195,37 @@ final class ParticipationView
         }
 
         return $html . '</div>';
+    }
+
+    /**
+     * A member's answers to the project fields, behind "N of M answered"; required ones not answered
+     * yet are marked.
+     *
+     * @param list<ProjectField> $fields
+     * @param array<string, string> $answers field ID => answer
+     */
+    private static function answers(array $fields, array $answers): string
+    {
+        $answered = 0;
+        $missing = false;
+        $items = [];
+        foreach ($fields as $field) {
+            $value = $answers[$field->id] ?? '';
+            if ($value !== '') {
+                $answered++;
+            } elseif ($field->required) {
+                $missing = true;
+            }
+            $items[] = [$field->label, FieldControl::value($field, $value)];
+        }
+
+        return '<details class="orchestra-disclosure"><summary>' . \esc_html(\sprintf(
+            /* translators: 1: number of answered questions, 2: number of questions */
+            \__('%1$d of %2$d answered', 'orchestra-projects'),
+            $answered,
+            \count($fields)
+        )) . ($missing ? ' ' . Html::badge(\__('Required missing', 'orchestra-projects'), 'warning') : '')
+            . '</summary>' . Html::details($items) . '</details>';
     }
 
     private static function anchor(ParticipationStatus $status): string

@@ -48,4 +48,14 @@ final class ProjectDatesTest extends TestCase
 
         $this->assertSame(['The end date must not be before the start date.'], $dates->errors);
     }
+
+    public function testTakesAnOptionalRegistrationDeadline(): void
+    {
+        $this->assertSame('2027-02-15', ProjectDates::fromInput('', '', [], '2027-02-15')->registrationDeadline);
+        $this->assertNull(ProjectDates::fromInput('', '', [], '')->registrationDeadline);
+
+        $invalid = ProjectDates::fromInput('', '', [], '2027-02-30');
+        $this->assertNull($invalid->registrationDeadline);
+        $this->assertSame(['Registration deadline is not a valid date.'], $invalid->errors);
+    }
 }

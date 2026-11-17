@@ -24,15 +24,15 @@ msgid "%s (inactive)"
 msgstr "%s (inaktiv)"
 
 #: src/Admin/ProjectActions.php:75 src/Admin/ProjectActions.php:286
-#: src/Admin/ProjectsPage.php:104 src/ProjectsService.php:140
-#: src/Ui/ProjectsShortcode.php:85
+#: src/Admin/ProjectsPage.php:124 src/ProjectsService.php:140
+#: src/Ui/ProjectsShortcode.php:99
 msgid "The project does not exist."
 msgstr "Das Projekt existiert nicht."
 
 #: src/Admin/ProjectActions.php:87 src/Admin/ProjectActions.php:130
 #: src/Export/AssignmentsPdfController.php:68
 #: src/Export/ParticipantsExportController.php:87
-#: src/Frontend/ResponseController.php:60
+#: src/Frontend/AnswersController.php:57 src/Frontend/ResponseController.php:60
 msgid "You are not allowed to do this."
 msgstr "Du darfst das nicht tun."
 
@@ -139,26 +139,36 @@ msgstr "Termine und Status"
 msgid "Conductors and organizers"
 msgstr "Dirigenten und Organisatoren"
 
-#: src/Admin/ProjectEditor.php:61
+#: src/Admin/ProjectEditor.php:47 src/Ui/MemberProjectView.php:192
+#: src/Ui/ProjectFormView.php:159
+msgid "Questions"
+msgstr "Fragen"
+
+#: src/Admin/ProjectEditor.php:62
 msgid "Manage project"
 msgstr "Projekt verwalten"
 
-#: src/Admin/ProjectsPage.php:63 src/Admin/ProjectsPage.php:64
-#: src/Admin/ProjectsPage.php:77 src/Admin/ProjectsPage.php:119
-#: src/Plugin.php:342 src/Project/ProjectPostType.php:41
+#: src/Admin/ProjectsPage.php:67 src/Admin/ProjectsPage.php:68
+#: src/Admin/ProjectsPage.php:81 src/Admin/ProjectsPage.php:139
+#: src/Plugin.php:378 src/Project/ProjectPostType.php:51
 msgid "Projects"
 msgstr "Projekte"
 
-#: src/Admin/ProjectsPage.php:78
+#: src/Admin/ProjectsPage.php:82
 msgid "All Projects"
 msgstr "Alle Projekte"
 
-#: src/Admin/ProjectsPage.php:84 src/Admin/ProjectsPage.php:85
-#: src/Project/ProjectPostType.php:43
+#: src/Admin/ProjectsPage.php:88 src/Admin/ProjectsPage.php:89
+#: src/Project/ProjectPostType.php:53
 msgid "Add Project"
 msgstr "Projekt hinzufügen"
 
-#: src/Admin/ProjectsPage.php:107
+#: src/Admin/ProjectsPage.php:95 src/Admin/ProjectsPage.php:96
+#: src/Admin/ProjectsPage.php:108
+msgid "Project Fields"
+msgstr "Projektfelder"
+
+#: src/Admin/ProjectsPage.php:127
 msgid "You are not allowed to view this page."
 msgstr "Du darfst diese Seite nicht ansehen."
 
@@ -240,11 +250,13 @@ msgstr ""
 "p>{changes}<p>Alle deine Stimmen und die Noten findest du auf der Seite des "
 "Projekts: {link}</p>"
 
-#: src/Email/ChangedPartsEmail.php:73 src/Email/StatusEmails.php:67
+#: src/Email/ChangedPartsEmail.php:73 src/Email/DeadlineReminder.php:76
+#: src/Email/StatusEmails.php:67
 msgid "The name of the member"
 msgstr "Der Name des Mitglieds"
 
-#: src/Email/ChangedPartsEmail.php:74 src/Email/StatusEmails.php:68
+#: src/Email/ChangedPartsEmail.php:74 src/Email/DeadlineReminder.php:77
+#: src/Email/StatusEmails.php:68
 msgid "The name of the project"
 msgstr "Der Name des Projekts"
 
@@ -252,7 +264,7 @@ msgstr "Der Name des Projekts"
 msgid "The list of the member's changed parts"
 msgstr "Die Liste der geänderten Stimmen des Mitglieds"
 
-#: src/Email/ChangedPartsEmail.php:76 src/Email/StatusEmails.php:103
+#: src/Email/ChangedPartsEmail.php:76 src/Email/StatusEmails.php:106
 msgid "The link to the parts of the project"
 msgstr "Der Link zu den Stimmen des Projekts"
 
@@ -288,6 +300,49 @@ msgstr "%1$s → %2$s"
 msgid "a removed part"
 msgstr "eine entfernte Stimme"
 
+#: src/Email/DeadlineReminder.php:58
+msgid "Registration deadline reminder"
+msgstr "Erinnerung an den Anmeldeschluss"
+
+#: src/Email/DeadlineReminder.php:62
+#, php-format
+msgid ""
+"Sent automatically %d days before the registration deadline of a project to "
+"all active members who have not responded yet."
+msgstr ""
+"Wird automatisch %d Tage vor dem Anmeldeschluss eines Projekts an alle "
+"aktiven Mitglieder geschickt, die noch unentschlossen sind."
+
+#: src/Email/DeadlineReminder.php:69
+msgid "Reminder: please respond to {project} by {deadline}"
+msgstr "Erinnerung: Bitte melde dich bis {deadline} für {project} an oder ab"
+
+#: src/Email/DeadlineReminder.php:71
+msgid ""
+"<p>Hello {name},</p><p>you have not told us yet whether you take part in the "
+"project {project} ({dates}). Please respond by {deadline}: {link}</p>"
+msgstr ""
+"<p>Hallo {name},</p><p>du hast uns noch nicht gesagt, ob du beim Projekt "
+"{project} ({dates}) dabei bist. Bitte antworte bis {deadline}: {link}</p>"
+
+#: src/Email/DeadlineReminder.php:78 src/Email/StatusEmails.php:69
+msgid "The dates of the project"
+msgstr "Die Termine des Projekts"
+
+#: src/Email/DeadlineReminder.php:79
+msgid "The registration deadline"
+msgstr "Der Anmeldeschluss"
+
+#: src/Email/DeadlineReminder.php:80 src/Email/StatusEmails.php:88
+msgid "The link to the project, where members respond"
+msgstr "Der Link zum Projekt, wo die Mitglieder antworten"
+
+#. translators: %s: project name
+#: src/Email/DeadlineReminder.php:175
+#, php-format
+msgid "Registration deadline: %s"
+msgstr "Anmeldeschluss: %s"
+
 #: src/Email/ProjectEmailGroups.php:74
 msgid "Accepted and pending participants"
 msgstr "Angemeldete und unentschlossene Teilnehmer"
@@ -299,10 +354,6 @@ msgstr "Angemeldete Teilnehmer"
 #: src/Email/ProjectEmailGroups.php:76
 msgid "Pending participants (no response yet)"
 msgstr "Unentschlossene Teilnehmer (noch keine Antwort)"
-
-#: src/Email/StatusEmails.php:69
-msgid "The dates of the project"
-msgstr "Die Termine des Projekts"
 
 #: src/Email/StatusEmails.php:73
 msgid "Project open for participation"
@@ -325,20 +376,22 @@ msgstr "Anmeldung für {project} ist offen"
 #: src/Email/StatusEmails.php:82
 msgid ""
 "<p>Hello {name},</p><p>the project {project} ({dates}) is open for "
-"participation.</p><p>Please tell us whether you take part: {link}</p>"
+"participation.</p>{description}<p>Please tell us whether you take part: "
+"{link}</p>"
 msgstr ""
 "<p>Hallo {name},</p><p>für das Projekt {project} ({dates}) kannst du dich "
-"jetzt anmelden.</p><p>Bitte sag uns, ob du dabei bist: {link}</p>"
+"jetzt anmelden.</p>{description}<p>Bitte sag uns, ob du dabei bist: {link}</"
+"p>"
 
-#: src/Email/StatusEmails.php:86
-msgid "The link to the project, where members respond"
-msgstr "Der Link zum Projekt, wo die Mitglieder antworten"
+#: src/Email/StatusEmails.php:87
+msgid "The description of the project"
+msgstr "Die Beschreibung des Projekts"
 
-#: src/Email/StatusEmails.php:90 src/Project/ProjectStatus.php:33
+#: src/Email/StatusEmails.php:93 src/Project/ProjectStatus.php:33
 msgid "Parts assigned"
 msgstr "Stimmverteilung abgeschlossen"
 
-#: src/Email/StatusEmails.php:92
+#: src/Email/StatusEmails.php:95
 msgid ""
 "Sent when organizers move a project from \"Preparation\" to \"Parts "
 "assigned\" and choose to inform the members. It goes to all members who "
@@ -348,11 +401,11 @@ msgstr ""
 "auf „Stimmverteilung abgeschlossen“ setzen und die Mitglieder informieren. "
 "Die E-Mail geht an alle Mitglieder, die zugesagt haben."
 
-#: src/Email/StatusEmails.php:97
+#: src/Email/StatusEmails.php:100
 msgid "Your parts in {project} are assigned"
 msgstr "Deine Stimmen in {project} sind verteilt"
 
-#: src/Email/StatusEmails.php:99
+#: src/Email/StatusEmails.php:102
 msgid ""
 "<p>Hello {name},</p><p>the parts in {project} ({dates}) are assigned.</"
 "p><p>Your parts and the sheet music are on the page of the project: {link}</"
@@ -363,7 +416,7 @@ msgstr ""
 "{link}</p>"
 
 #. translators: 1: project status, 2: project name
-#: src/Email/StatusEmails.php:163
+#: src/Email/StatusEmails.php:167
 #, php-format
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"
@@ -376,7 +429,7 @@ msgstr "Das Programm hat noch keine Stücke."
 msgid "The piece has no parts."
 msgstr "Das Stück hat keine Stimmen."
 
-#: src/Export/AssignmentsPdf.php:78 src/Privacy/PersonalData.php:129
+#: src/Export/AssignmentsPdf.php:78 src/Privacy/PersonalData.php:133
 #: src/Ui/AssignmentsView.php:277
 msgid "Part"
 msgstr "Stimme"
@@ -396,7 +449,7 @@ msgid "Assignments: %s"
 msgstr "Stimmverteilung: %s"
 
 #: src/Export/AssignmentsPdf.php:132 src/Ui/AssignmentsView.php:195
-#: src/Ui/PartChangesView.php:131 src/Ui/ParticipationView.php:125
+#: src/Ui/PartChangesView.php:131 src/Ui/ParticipationView.php:135
 msgid "Member"
 msgstr "Mitglied"
 
@@ -404,7 +457,7 @@ msgstr "Mitglied"
 msgid "Parts by member"
 msgstr "Stimmen nach Mitgliedern"
 
-#: src/Export/AssignmentsPdfController.php:73 src/Ui/ParticipationView.php:127
+#: src/Export/AssignmentsPdfController.php:73 src/Ui/ParticipationView.php:137
 #: src/Ui/ProgramView.php:112 src/Ui/ProjectView.php:95
 msgid "Assignments"
 msgstr "Stimmverteilung"
@@ -416,31 +469,31 @@ msgctxt "CSV column separator"
 msgid ","
 msgstr ";"
 
-#: src/Export/ParticipantsExport.php:98
+#: src/Export/ParticipantsExport.php:120
 msgid "Last name"
 msgstr "Nachname"
 
-#: src/Export/ParticipantsExport.php:99
+#: src/Export/ParticipantsExport.php:121
 msgid "First name"
 msgstr "Vorname"
 
-#: src/Export/ParticipantsExport.php:100
+#: src/Export/ParticipantsExport.php:122
 msgid "Email address"
 msgstr "E-Mail-Adresse"
 
-#: src/Export/ParticipantsExport.php:102
+#: src/Export/ParticipantsExport.php:125
 msgid "Comment"
 msgstr "Kommentar"
 
-#: src/Export/ParticipantsExport.php:103 src/Privacy/PersonalData.php:108
+#: src/Export/ParticipantsExport.php:126 src/Privacy/PersonalData.php:112
 msgid "Organizer note"
 msgstr "Notiz der Organisatoren"
 
-#: src/Export/ParticipantsExport.php:140
+#: src/Export/ParticipantsExport.php:175
 msgid "Number"
 msgstr "Anzahl"
 
-#: src/Export/ParticipantsExport.php:145
+#: src/Export/ParticipantsExport.php:180
 msgid "No answer"
 msgstr "Keine Angabe"
 
@@ -449,6 +502,99 @@ msgstr "Keine Angabe"
 #, php-format
 msgid "%s - participants.csv"
 msgstr "%s - Teilnehmende.csv"
+
+#: src/Field/ProjectAnswers.php:80
+msgid ""
+"The questions can only be answered while the project is open for "
+"participation."
+msgstr ""
+"Die Fragen können nur beantwortet werden, solange die Anmeldung offen ist."
+
+#. translators: %s: field label
+#: src/Field/ProjectField.php:114
+#, php-format
+msgid "Please tick \"%s\"."
+msgstr "Bitte kreuze „%s“ an."
+
+#. translators: %s: field label
+#: src/Field/ProjectField.php:116
+#, php-format
+msgid "Please answer \"%s\"."
+msgstr "Bitte beantworte „%s“."
+
+#. translators: 1: field label, 2: maximum number of characters
+#: src/Field/ProjectField.php:123
+#, php-format
+msgid "%1$s must not be longer than %2$d characters."
+msgstr "„%1$s“ darf höchstens %2$d Zeichen lang sein."
+
+#: src/Field/ProjectField.php:134
+msgid "No"
+msgstr "Nein"
+
+#: src/Field/ProjectField.php:134
+msgid "Yes"
+msgstr "Ja"
+
+#: src/Field/ProjectField.php:146
+msgid "Text"
+msgstr "Text"
+
+#: src/Field/ProjectField.php:147
+msgid "Long text"
+msgstr "Langer Text"
+
+#: src/Field/ProjectField.php:148
+msgid "Checkbox"
+msgstr "Ankreuzfeld"
+
+#: src/Field/ProjectField.php:149
+msgid "Choice list"
+msgstr "Auswahlliste"
+
+#. translators: %s: field label
+#: src/Field/ProjectFieldsInput.php:86
+#, php-format
+msgid "Please choose a type for \"%s\"."
+msgstr "Bitte wähle einen Typ für „%s“."
+
+#: src/Field/ProjectFieldsInput.php:130
+msgid "Every field needs a label."
+msgstr "Jedes Feld braucht eine Bezeichnung."
+
+#. translators: 1: field label, 2: maximum number of characters
+#: src/Field/ProjectFieldsInput.php:133
+#, php-format
+msgid "The label \"%1$s\" is longer than %2$d characters."
+msgstr "Die Bezeichnung „%1$s“ ist länger als %2$d Zeichen."
+
+#. translators: 1: field label, 2: maximum number of characters
+#: src/Field/ProjectFieldsInput.php:138
+#, php-format
+msgid "The hint of \"%1$s\" is longer than %2$d characters."
+msgstr "Der Hinweis zu „%1$s“ ist länger als %2$d Zeichen."
+
+#. translators: %s: field label
+#: src/Field/ProjectFieldsInput.php:166
+#, php-format
+msgid "Please enter the choices for \"%s\", one per line."
+msgstr "Bitte gib die Auswahlmöglichkeiten für „%s“ ein, eine pro Zeile."
+
+#. translators: 1: choice, 2: maximum number of characters
+#: src/Field/ProjectFieldsInput.php:171
+#, php-format
+msgid "The choice \"%1$s\" is longer than %2$d characters."
+msgstr "Die Auswahlmöglichkeit „%1$s“ ist länger als %2$d Zeichen."
+
+#. translators: %s: field label
+#: src/Field/ProjectFieldsInput.php:191
+#, php-format
+msgid "The label \"%s\" is used more than once."
+msgstr "Die Bezeichnung „%s“ wird mehrfach verwendet."
+
+#: src/Frontend/AnswersController.php:64
+msgid "Your answers have been saved."
+msgstr "Deine Antworten wurden gespeichert."
 
 #: src/Frontend/ResponseController.php:68
 msgid "Your comment has been saved."
@@ -511,20 +657,20 @@ msgstr "Angemeldet"
 msgid "Declined"
 msgstr "Abgesagt"
 
-#: src/Plugin.php:334
+#: src/Plugin.php:370
 msgid "Plan projects, respond to them and download your sheet music."
 msgstr "Projekte planen, dich anmelden und deine Noten herunterladen."
 
-#: src/Plugin.php:337
+#: src/Plugin.php:373
 msgid "Plan projects: program, participation, parts and seating."
 msgstr "Projekte planen: Programm, Teilnahme, Stimmverteilung und Sitzplan."
 
-#: src/Plugin.php:338
+#: src/Plugin.php:374
 msgid "Respond to projects, see your parts and download your sheet music."
 msgstr ""
 "Auf Projekte antworten, deine Stimmen sehen und deine Noten herunterladen."
 
-#: src/Plugin.php:367
+#: src/Plugin.php:403
 msgid ""
 "Orchestra Projects requires Orchestra Core 0.17, Orchestra Library and "
 "Orchestra Members to be active."
@@ -532,61 +678,66 @@ msgstr ""
 "Orchestra Projects benötigt aktive Plugins Orchestra Core 0.17, Orchestra "
 "Library und Orchestra Members."
 
-#: src/Privacy/PersonalData.php:53 src/Privacy/PersonalData.php:68
+#: src/Privacy/PersonalData.php:57 src/Privacy/PersonalData.php:72
 msgid "Orchestra projects"
 msgstr "Orchesterprojekte"
 
-#: src/Privacy/PersonalData.php:89
+#: src/Privacy/PersonalData.php:93
 msgid "Project participation"
 msgstr "Projektteilnahme"
 
-#: src/Privacy/PersonalData.php:93 src/Privacy/PersonalData.php:121
-#: src/Privacy/PersonalData.php:143 src/Project/ProjectPostType.php:42
+#: src/Privacy/PersonalData.php:97 src/Privacy/PersonalData.php:125
+#: src/Privacy/PersonalData.php:145 src/Privacy/PersonalData.php:168
+#: src/Project/ProjectPostType.php:52
 msgid "Project"
 msgstr "Projekt"
 
-#: src/Privacy/PersonalData.php:96 src/Ui/ProjectView.php:88
-#: src/Ui/ProjectView.php:205
+#: src/Privacy/PersonalData.php:100 src/Ui/ProjectView.php:88
+#: src/Ui/ProjectView.php:208
 msgid "Participation"
 msgstr "Teilnahme"
 
-#: src/Privacy/PersonalData.php:97
+#: src/Privacy/PersonalData.php:101
 msgid "Responded"
 msgstr "Geantwortet"
 
-#: src/Privacy/PersonalData.php:99
+#: src/Privacy/PersonalData.php:103
 msgid "Last changed"
 msgstr "Zuletzt geändert"
 
-#: src/Privacy/PersonalData.php:103
+#: src/Privacy/PersonalData.php:107
 msgid "Your comment"
 msgstr "Dein Kommentar"
 
-#: src/Privacy/PersonalData.php:117
+#: src/Privacy/PersonalData.php:121
 msgid "Assigned parts"
 msgstr "Eingeteilte Stimmen"
 
-#: src/Privacy/PersonalData.php:125 src/Ui/ProgramView.php:109
+#: src/Privacy/PersonalData.php:129 src/Ui/ProgramView.php:109
 msgid "Piece"
 msgstr "Stück"
 
-#: src/Privacy/PersonalData.php:139
+#: src/Privacy/PersonalData.php:155
+msgid "Answers to project questions"
+msgstr "Antworten auf Fragen von Projekten"
+
+#: src/Privacy/PersonalData.php:164
 msgid "Projects you run"
 msgstr "Projekte, die du leitest"
 
-#: src/Privacy/PersonalData.php:147
+#: src/Privacy/PersonalData.php:172
 msgid "Role"
 msgstr "Rolle"
 
-#: src/Privacy/PersonalData.php:149
+#: src/Privacy/PersonalData.php:174
 msgid "Conductor"
 msgstr "Dirigent"
 
-#: src/Privacy/PersonalData.php:150
+#: src/Privacy/PersonalData.php:175
 msgid "Organizer"
 msgstr "Organisator"
 
-#: src/Privacy/PersonalData.php:181
+#: src/Privacy/PersonalData.php:207
 msgid ""
 "Participation and assigned parts are kept as history and anonymized when the "
 "account is deleted."
@@ -594,13 +745,13 @@ msgstr ""
 "Teilnahmen und eingeteilte Stimmen bleiben als Verlauf erhalten und werden "
 "anonymisiert, wenn das Konto gelöscht wird."
 
-#: src/Privacy/PersonalData.php:200
+#: src/Privacy/PersonalData.php:226
 msgid "For each project, we store whether members accepted or declined."
 msgstr ""
 "Für jedes Projekt speichern wir, ob Mitglieder sich angemeldet oder abgesagt "
 "haben."
 
-#: src/Privacy/PersonalData.php:202
+#: src/Privacy/PersonalData.php:228
 msgid ""
 "Everyone who can see a project sees the names of those who accepted; who "
 "declined or has not responded yet is only visible to conductors and "
@@ -610,7 +761,7 @@ msgstr ""
 "angemeldet haben; wer abgesagt oder noch nicht geantwortet hat, sehen nur "
 "Dirigenten und Organisatoren."
 
-#: src/Privacy/PersonalData.php:207
+#: src/Privacy/PersonalData.php:233
 msgid ""
 "Members can add a comment for the organizers, and organizers can add a note; "
 "only organizers see them on the website."
@@ -618,7 +769,17 @@ msgstr ""
 "Mitglieder können einen Kommentar für die Organisatoren hinzufügen und "
 "Organisatoren eine Notiz; auf der Website sehen nur Organisatoren sie."
 
-#: src/Privacy/PersonalData.php:214
+#: src/Privacy/PersonalData.php:238
+msgid ""
+"Projects can ask the members who accepted a few questions, e.g. how they "
+"arrive. Only the member and the organizers see the answers; they are deleted "
+"on request and when the account is deleted."
+msgstr ""
+"Projekte können den angemeldeten Mitgliedern einige Fragen stellen, z. B. "
+"wie sie anreisen. Die Antworten sehen nur das Mitglied und die "
+"Organisatoren; sie werden auf Anfrage und mit dem Konto gelöscht."
+
+#: src/Privacy/PersonalData.php:246
 msgid ""
 "We store which parts members play in each project, to plan future projects. "
 "Once the parts are assigned, all members can see who plays which part; "
@@ -629,28 +790,30 @@ msgstr ""
 "Mitglieder sehen, wer welche Stimme spielt; Dirigenten und Organisatoren "
 "können dies als PDF herunterladen."
 
-#: src/Privacy/PersonalData.php:222
+#: src/Privacy/PersonalData.php:254
 msgid ""
 "Organizers can download the profiles of the members who accepted a project, "
-"including the information they entered in their profile, as a file to plan "
-"the project."
+"including the information they entered in their profile and their answers to "
+"the questions of the project, as a file to plan the project."
 msgstr ""
 "Organisatoren können die Profile der Mitglieder, die sich für ein Projekt "
-"angemeldet haben, einschließlich der Angaben in ihrem Profil als Datei "
-"herunterladen, um das Projekt zu planen."
+"angemeldet haben, einschließlich der Angaben in ihrem Profil und ihrer "
+"Antworten auf die Fragen des Projekts als Datei herunterladen, um das "
+"Projekt zu planen."
 
-#: src/Privacy/PersonalData.php:229
+#: src/Privacy/PersonalData.php:262
 msgid ""
 "This history is kept after members leave, based on the legitimate interest "
 "of the orchestra in its history, and no longer shows their name once their "
-"account is deleted. On request, comments and notes are deleted at once."
+"account is deleted. On request, comments, notes and answers are deleted at "
+"once."
 msgstr ""
 "Diese Geschichte bleibt auf Grundlage des berechtigten Interesses des "
 "Orchesters an seiner Geschichte erhalten, wenn Mitglieder ausscheiden, und "
 "zeigt ihren Namen nicht mehr, sobald ihr Konto gelöscht ist. Auf Anfrage "
-"werden Kommentare und Notizen sofort gelöscht."
+"werden Kommentare, Notizen und Antworten sofort gelöscht."
 
-#: src/Privacy/PersonalData.php:240
+#: src/Privacy/PersonalData.php:273
 msgid "Orchestra Projects"
 msgstr "Orchesterprojekte"
 
@@ -676,56 +839,61 @@ msgstr ""
 "Das Programm eines abgeschlossenen Projekts kann nicht geändert werden."
 
 #. translators: %s: project name
-#: src/Project/ProjectCleanup.php:98
+#: src/Project/ProjectCleanup.php:103
 #, php-format
 msgid "The piece is in the program of the project \"%s\"."
 msgstr "Das Stück ist im Programm des Projekts „%s“."
 
 #. translators: %s: project name
-#: src/Project/ProjectCleanup.php:118
+#: src/Project/ProjectCleanup.php:123
 #, php-format
 msgid "The part is assigned in the project \"%s\"."
 msgstr "Die Stimme ist im Projekt „%s“ eingeteilt."
 
 #. translators: %s: name of the date field, e.g. "Start date"
-#: src/Project/ProjectDates.php:38
+#: src/Project/ProjectDates.php:39
 #, php-format
 msgid "%s is not a valid date."
 msgstr "%s ist kein gültiges Datum."
 
-#: src/Project/ProjectDates.php:45 src/Ui/ProjectFormView.php:75
+#: src/Project/ProjectDates.php:46 src/Ui/ProjectFormView.php:83
 msgid "Start date"
 msgstr "Startdatum"
 
-#: src/Project/ProjectDates.php:46 src/Ui/ProjectFormView.php:76
+#: src/Project/ProjectDates.php:47 src/Ui/ProjectFormView.php:84
 msgid "End date"
 msgstr "Enddatum"
 
-#: src/Project/ProjectDates.php:49 src/Ui/ProjectFormView.php:123
+#: src/Project/ProjectDates.php:48 src/Ui/ProjectFormView.php:102
+#: src/Ui/ProjectView.php:196
+msgid "Registration deadline"
+msgstr "Anmeldeschluss"
+
+#: src/Project/ProjectDates.php:51 src/Ui/ProjectFormView.php:148
 msgid "Concert date"
 msgstr "Konzertdatum"
 
-#: src/Project/ProjectDates.php:55
+#: src/Project/ProjectDates.php:57
 msgid "The end date must not be before the start date."
 msgstr "Das Enddatum darf nicht vor dem Startdatum liegen."
 
-#: src/Project/ProjectPostType.php:44
+#: src/Project/ProjectPostType.php:54
 msgid "Add New Project"
 msgstr "Neues Projekt hinzufügen"
 
-#: src/Project/ProjectPostType.php:45
+#: src/Project/ProjectPostType.php:55
 msgid "Edit Project"
 msgstr "Projekt bearbeiten"
 
-#: src/Project/ProjectPostType.php:46
+#: src/Project/ProjectPostType.php:56
 msgid "New Project"
 msgstr "Neues Projekt"
 
-#: src/Project/ProjectPostType.php:47
+#: src/Project/ProjectPostType.php:57
 msgid "No projects found."
 msgstr "Keine Projekte gefunden."
 
-#: src/Project/ProjectPostType.php:48
+#: src/Project/ProjectPostType.php:58
 msgid "No projects found in Trash."
 msgstr "Keine Projekte im Papierkorb gefunden."
 
@@ -741,7 +909,7 @@ msgstr "Offen für Anmeldungen"
 msgid "Preparation"
 msgstr "Anmeldung geschlossen"
 
-#: src/Project/ProjectStatus.php:34 src/Ui/ProjectListView.php:46
+#: src/Project/ProjectStatus.php:34 src/Ui/ProjectListView.php:49
 msgid "Completed"
 msgstr "Abgeschlossen"
 
@@ -749,11 +917,11 @@ msgstr "Abgeschlossen"
 msgid "The project cannot be moved to this status."
 msgstr "Das Projekt kann nicht in diesen Status wechseln."
 
-#: src/Project/ProjectStatusService.php:49
+#: src/Project/ProjectStatusService.php:51
 msgid "Only running projects can be completed."
 msgstr "Nur laufende Projekte können abgeschlossen werden."
 
-#: src/Project/ProjectStatusService.php:52
+#: src/Project/ProjectStatusService.php:54
 msgid "The project is not over yet. Change its status step by step instead."
 msgstr ""
 "Das Projekt ist noch nicht vorbei. Ändere seinen Status stattdessen Schritt "
@@ -852,7 +1020,7 @@ msgid "Take over"
 msgstr "Übernehmen"
 
 #: src/Ui/AssignmentsView.php:416 src/Ui/ProgramView.php:97
-#: src/Ui/ProjectFormView.php:118
+#: src/Ui/ProjectFieldsView.php:112 src/Ui/ProjectFormView.php:143
 msgid "Remove"
 msgstr "Entfernen"
 
@@ -870,48 +1038,69 @@ msgstr "Mitglieder einteilen"
 msgid "Members"
 msgstr "Mitglieder"
 
-#: src/Ui/Dates.php:49
+#. translators: %s: date of the registration deadline
+#: src/Ui/Dates.php:48
+#, php-format
+msgid "Respond by %s"
+msgstr "Anmeldung bis %s"
+
+#: src/Ui/Dates.php:72
 msgid "Concert"
 msgid_plural "Concerts"
 msgstr[0] "Konzert"
 msgstr[1] "Konzerte"
 
 #. translators: date format, see https://www.php.net/manual/datetime.format.php; German: j. F Y
-#: src/Ui/Dates.php:98
+#: src/Ui/Dates.php:121
 msgid "F j, Y"
 msgstr "j. F Y"
 
-#: src/Ui/MemberProjectView.php:42
+#: src/Ui/FieldControl.php:53 src/Ui/ProjectFieldsView.php:75
+#: src/Ui/ProjectFieldsView.php:126
+msgid "Other"
+msgstr "Sonstiges"
+
+#. translators: %s: field label
+#: src/Ui/FieldControl.php:55
+#, php-format
+msgid "%s: other answer"
+msgstr "%s: eigene Antwort"
+
+#: src/Ui/FieldControl.php:60
+msgid "Other: please specify"
+msgstr "Sonstiges: bitte angeben"
+
+#: src/Ui/MemberProjectView.php:46
 msgid "Your participation:"
 msgstr "Deine Teilnahme:"
 
-#: src/Ui/MemberProjectView.php:48
+#: src/Ui/MemberProjectView.php:52
 msgid "Your decision is final. To change it later, contact an organizer."
 msgstr ""
 "Deine Entscheidung ist endgültig. Um sie später zu ändern, wende dich an "
 "einen Organisator."
 
-#: src/Ui/MemberProjectView.php:88
+#: src/Ui/MemberProjectView.php:92
 msgid "Your comment:"
 msgstr "Dein Kommentar:"
 
-#: src/Ui/MemberProjectView.php:96
+#: src/Ui/MemberProjectView.php:100
 msgid "Add a comment for the organizers"
 msgstr "Kommentar für die Organisatoren hinzufügen"
 
-#: src/Ui/MemberProjectView.php:97
+#: src/Ui/MemberProjectView.php:101
 msgid "Change your comment"
 msgstr "Kommentar ändern"
 
-#: src/Ui/MemberProjectView.php:104
+#: src/Ui/MemberProjectView.php:108
 msgid "Save comment"
 msgstr "Kommentar speichern"
 
-#: src/Ui/MemberProjectView.php:112
+#: src/Ui/MemberProjectView.php:116
 msgid "Comment for the organizers (optional)"
 msgstr "Kommentar für die Organisatoren (optional)"
 
-#: src/Ui/MemberProjectView.php:116
+#: src/Ui/MemberProjectView.php:120
 msgid ""
 "E.g. if you can only come to some of the concerts. Only the organizers see "
 "it."
@@ -919,43 +1108,55 @@ msgstr ""
 "Z. B. wenn du nur bei einigen Konzerten dabei sein kannst. Nur die "
 "Organisatoren sehen ihn."
 
-#: src/Ui/MemberProjectView.php:125 src/Ui/MemberProjectView.php:245
+#: src/Ui/MemberProjectView.php:129 src/Ui/MemberProjectView.php:330
 msgid "Accept to participate? Your decision is final."
 msgstr "Anmelden? Deine Entscheidung ist endgültig."
 
-#: src/Ui/MemberProjectView.php:126 src/Ui/MemberProjectView.php:246
+#: src/Ui/MemberProjectView.php:130 src/Ui/MemberProjectView.php:331
 msgid "Decline to participate? Your decision is final."
 msgstr "Teilnahme absagen? Deine Entscheidung ist endgültig."
 
-#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:242
+#: src/Ui/MemberProjectView.php:135 src/Ui/MemberProjectView.php:327
 msgid "Accept"
 msgstr "Anmelden"
 
-#: src/Ui/MemberProjectView.php:131 src/Ui/MemberProjectView.php:242
+#: src/Ui/MemberProjectView.php:135 src/Ui/MemberProjectView.php:327
 msgid "Decline"
 msgstr "Absagen"
 
-#: src/Ui/MemberProjectView.php:164
+#: src/Ui/MemberProjectView.php:177
+msgid "* Please answer."
+msgstr "* Bitte beantworten."
+
+#: src/Ui/MemberProjectView.php:179
+msgid "Save answers"
+msgstr "Antworten speichern"
+
+#: src/Ui/MemberProjectView.php:194
+msgid "Please answer"
+msgstr "Bitte beantworten"
+
+#: src/Ui/MemberProjectView.php:245
 msgid "No part assigned yet"
 msgstr "Noch keine Stimme zugeteilt"
 
-#: src/Ui/MemberProjectView.php:165
+#: src/Ui/MemberProjectView.php:246
 msgid "No part"
 msgstr "Keine Stimme"
 
-#: src/Ui/MemberProjectView.php:191
+#: src/Ui/MemberProjectView.php:272
 msgid "No sheet music yet"
 msgstr "Noch keine Noten"
 
-#: src/Ui/MemberProjectView.php:194
+#: src/Ui/MemberProjectView.php:275
 msgid "Download"
 msgstr "Herunterladen"
 
-#: src/Ui/MemberProjectView.php:208
+#: src/Ui/MemberProjectView.php:288
 msgid "Download all as a zip file"
 msgstr "Alle als ZIP-Datei herunterladen"
 
-#: src/Ui/MemberProjectView.php:221
+#: src/Ui/MemberProjectView.php:302
 msgid "Your parts"
 msgstr "Deine Stimmen"
 
@@ -989,7 +1190,7 @@ msgstr ""
 "Fortfahren?"
 
 #: src/Ui/PartChangesView.php:115 src/Ui/PartChangesView.php:133
-#: src/Ui/ProjectView.php:229
+#: src/Ui/ProjectView.php:233
 msgid "Email"
 msgstr "E-Mail"
 
@@ -1033,12 +1234,12 @@ msgid "No email: turned off in the profile"
 msgstr "Keine E-Mail: im Profil abgeschaltet"
 
 #. translators: 1: number accepted, 2: number declined, 3: number pending
-#: src/Ui/ParticipationView.php:53
+#: src/Ui/ParticipationView.php:56
 #, php-format
 msgid "%1$d accepted, %2$d declined, %3$d pending"
 msgstr "%1$d angemeldet, %2$d abgesagt, %3$d unentschlossen"
 
-#: src/Ui/ParticipationView.php:73
+#: src/Ui/ParticipationView.php:76
 msgid ""
 "Nobody has accepted yet. Everyone who registers for the project is listed "
 "here."
@@ -1047,45 +1248,49 @@ msgstr ""
 "stehen hier."
 
 #. translators: %d: number of people
-#: src/Ui/ParticipationView.php:81
+#: src/Ui/ParticipationView.php:84
 #, php-format
 msgid "%d person has accepted."
 msgid_plural "%d people have accepted."
 msgstr[0] "%d Person hat sich angemeldet."
 msgstr[1] "%d Personen haben sich angemeldet."
 
-#: src/Ui/ParticipationView.php:93
+#: src/Ui/ParticipationView.php:96
 msgid "Members are asked to respond when the project is opened."
 msgstr ""
 "Die Mitglieder werden um eine Antwort gebeten, sobald das Projekt geöffnet "
 "wird."
 
-#: src/Ui/ParticipationView.php:94
+#: src/Ui/ParticipationView.php:97
 msgid "Nobody has been asked to respond."
 msgstr "Noch niemand wurde um eine Antwort gebeten."
 
-#: src/Ui/ParticipationView.php:119
+#: src/Ui/ParticipationView.php:129
 msgid "Nobody"
 msgstr "Niemand"
 
-#: src/Ui/ParticipationView.php:126
+#: src/Ui/ParticipationView.php:136
 msgid "Last change"
 msgstr "Letzte Änderung"
 
-#: src/Ui/ParticipationView.php:132
+#: src/Ui/ParticipationView.php:142
 msgid "Select"
 msgstr "Auswählen"
 
-#: src/Ui/ParticipationView.php:136
+#: src/Ui/ParticipationView.php:146
+msgid "Answers"
+msgstr "Antworten"
+
+#: src/Ui/ParticipationView.php:150
 msgid "Comment and note"
 msgstr "Kommentar und Notiz"
 
-#: src/Ui/ParticipationView.php:137 src/Ui/ParticipationView.php:339
+#: src/Ui/ParticipationView.php:151 src/Ui/ParticipationView.php:387
 msgid "Change"
 msgstr "Ändern"
 
 #. translators: %d: number of parts the member plays in the project
-#: src/Ui/ParticipationView.php:148
+#: src/Ui/ParticipationView.php:162
 #, php-format
 msgid "%d part"
 msgid_plural "%d parts"
@@ -1093,20 +1298,30 @@ msgstr[0] "%d Stimme"
 msgstr[1] "%d Stimmen"
 
 #. translators: %s: member name
-#: src/Ui/ParticipationView.php:156
+#: src/Ui/ParticipationView.php:170
 #, php-format
 msgid "Select %s"
 msgstr "%s auswählen"
 
-#: src/Ui/ParticipationView.php:167 src/Ui/ProjectView.php:123
+#: src/Ui/ParticipationView.php:184 src/Ui/ProjectView.php:123
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: src/Ui/ParticipationView.php:219
+#. translators: 1: number of answered questions, 2: number of questions
+#: src/Ui/ParticipationView.php:224
+#, php-format
+msgid "%1$d of %2$d answered"
+msgstr "%1$d von %2$d beantwortet"
+
+#: src/Ui/ParticipationView.php:227
+msgid "Required missing"
+msgstr "Pflichtangabe fehlt"
+
+#: src/Ui/ParticipationView.php:267
 msgid "Export accepted participants (CSV)"
 msgstr "Angemeldete exportieren (CSV)"
 
-#: src/Ui/ParticipationView.php:249
+#: src/Ui/ParticipationView.php:297
 msgid ""
 "Selected members who are no longer accepted lose their parts in this "
 "project. Continue?"
@@ -1114,44 +1329,44 @@ msgstr ""
 "Ausgewählte Mitglieder, die nicht mehr angemeldet sind, verlieren ihre "
 "Stimmen in diesem Projekt. Fortfahren?"
 
-#: src/Ui/ParticipationView.php:264
+#: src/Ui/ParticipationView.php:312
 msgid "Selected:"
 msgstr "Ausgewählte:"
 
-#: src/Ui/ParticipationView.php:265 src/Ui/ParticipationView.php:337
+#: src/Ui/ParticipationView.php:313 src/Ui/ParticipationView.php:385
 msgid "New status"
 msgstr "Neuer Status"
 
-#: src/Ui/ParticipationView.php:267
+#: src/Ui/ParticipationView.php:315
 msgid "Change selected"
 msgstr "Ausgewählte ändern"
 
-#: src/Ui/ParticipationView.php:283
+#: src/Ui/ParticipationView.php:331
 msgid "No comment"
 msgstr "Kein Kommentar"
 
-#: src/Ui/ParticipationView.php:290
+#: src/Ui/ParticipationView.php:338
 msgid "Add a note"
 msgstr "Notiz hinzufügen"
 
-#: src/Ui/ParticipationView.php:291
+#: src/Ui/ParticipationView.php:339
 msgid "Note:"
 msgstr "Notiz:"
 
-#: src/Ui/ParticipationView.php:300
+#: src/Ui/ParticipationView.php:348
 msgid "Note for the organizers"
 msgstr "Notiz für die Organisatoren"
 
-#: src/Ui/ParticipationView.php:302
+#: src/Ui/ParticipationView.php:350
 msgid "Only organizers see the note."
 msgstr "Nur Organisatoren sehen die Notiz."
 
-#: src/Ui/ParticipationView.php:303
+#: src/Ui/ParticipationView.php:351
 msgid "Save note"
 msgstr "Notiz speichern"
 
 #. translators: %d: number of assignments
-#: src/Ui/ParticipationView.php:322
+#: src/Ui/ParticipationView.php:370
 #, php-format
 msgid "The member's %d assignments in this project will be removed. Continue?"
 msgstr ""
@@ -1159,7 +1374,7 @@ msgstr ""
 "Fortfahren?"
 
 #. translators: %s: name of the organizer
-#: src/Ui/ParticipationView.php:358
+#: src/Ui/ParticipationView.php:406
 #, php-format
 msgid "entered by %s"
 msgstr "eingetragen von %s"
@@ -1210,68 +1425,195 @@ msgstr "Ein Stück hinzufügen"
 msgid "Add to program"
 msgstr "Zum Programm hinzufügen"
 
-#: src/Ui/ProjectFormView.php:38 src/Ui/ProjectListView.php:43
-msgid "New project"
-msgstr "Neues Projekt"
+#: src/Ui/ProjectFieldsController.php:39
+msgid "You are not allowed to change the project fields."
+msgstr "Du darfst die Projektfelder nicht ändern."
 
-#: src/Ui/ProjectFormView.php:39
-msgid "Edit project"
-msgstr "Projekt bearbeiten"
+#: src/Ui/ProjectFieldsController.php:54
+msgid "The project fields have been saved."
+msgstr "Die Projektfelder wurden gespeichert."
 
-#: src/Ui/ProjectFormView.php:44 src/Ui/ProjectView.php:119
-#: src/Ui/ProjectsShortcode.php:84
-msgid "All projects"
-msgstr "Alle Projekte"
+#: src/Ui/ProjectFieldsView.php:32
+msgid ""
+"Choose in each project which of these questions it asks. Members who "
+"accepted answer them while the project is open for participation. Only they, "
+"the organizers and the administrators can see the answers."
+msgstr ""
+"Wähle in jedem Projekt, welche dieser Fragen es stellt. Angemeldete "
+"Mitglieder beantworten sie, solange die Anmeldung offen ist. Die Antworten "
+"sehen nur sie selbst, die Organisatoren und die Administratoren."
 
-#: src/Ui/ProjectFormView.php:51
-msgid "Name"
-msgstr "Name"
-
-#: src/Ui/ProjectFormView.php:54
-msgid "e.g. Spring Concert 2027"
-msgstr "z. B. Frühjahrskonzert 2027"
-
-#: src/Ui/ProjectFormView.php:59
-msgid "Description"
-msgstr "Beschreibung"
-
-#: src/Ui/ProjectFormView.php:62
-msgid "Shown to all members, e.g. rehearsal times and places."
-msgstr "Wird allen Mitgliedern angezeigt, z. B. Probenzeiten und -orte."
-
-#: src/Ui/ProjectFormView.php:67
+#: src/Ui/ProjectFieldsView.php:42 src/Ui/ProjectFieldsView.php:91
+#: src/Ui/ProjectFormView.php:72
 msgid "Save"
 msgstr "Speichern"
 
-#: src/Ui/ProjectFormView.php:68
+#: src/Ui/ProjectFieldsView.php:50
+#, php-format
+msgid "Delete the field \"%s\"? The answers of all projects are deleted too."
+msgstr ""
+"Das Feld „%s“ löschen? Die Antworten aller Projekte werden ebenfalls "
+"gelöscht."
+
+#: src/Ui/ProjectFieldsView.php:56
+msgid "Delete"
+msgstr "Löschen"
+
+#: src/Ui/ProjectFieldsView.php:65 src/Ui/ProjectFieldsView.php:115
+msgid "Label"
+msgstr "Bezeichnung"
+
+#: src/Ui/ProjectFieldsView.php:69 src/Ui/ProjectFieldsView.php:119
+msgid "Hint"
+msgstr "Hinweis"
+
+#: src/Ui/ProjectFieldsView.php:74 src/Ui/ProjectFieldsView.php:122
+msgid "Choices"
+msgstr "Auswahlmöglichkeiten"
+
+#: src/Ui/ProjectFieldsView.php:77 src/Ui/ProjectFieldsView.php:127
+#: src/Ui/ProjectFieldsView.php:171
+msgid "Required"
+msgstr "Pflichtfeld"
+
+#: src/Ui/ProjectFieldsView.php:85
+msgid "+ Add field"
+msgstr "+ Feld hinzufügen"
+
+#: src/Ui/ProjectFieldsView.php:87
+msgid ""
+"Change the order with the arrow buttons. For checkboxes, the hint is the "
+"text next to the box."
+msgstr ""
+"Ändere die Reihenfolge mit den Pfeilen. Bei Ankreuzfeldern steht der Hinweis "
+"neben dem Kästchen."
+
+#: src/Ui/ProjectFieldsView.php:108
+msgid "New field"
+msgstr "Neues Feld"
+
+#: src/Ui/ProjectFieldsView.php:110
+msgid "Type"
+msgstr "Typ"
+
+#: src/Ui/ProjectFieldsView.php:117
+msgid "New field, e.g. Arrival by bus"
+msgstr "Neues Feld, z. B. Anreise mit dem Bus"
+
+#: src/Ui/ProjectFieldsView.php:123
+msgid "One choice per line"
+msgstr "Eine Auswahlmöglichkeit pro Zeile"
+
+#: src/Ui/ProjectFieldsView.php:172
+msgid ""
+"Members who accepted are asked to answer it; a checkbox has to be ticked."
+msgstr ""
+"Angemeldete Mitglieder werden gebeten, es zu beantworten; ein Ankreuzfeld "
+"muss angekreuzt werden."
+
+#: src/Ui/ProjectFieldsView.php:181
+msgid "Offer \"Other\" with a free-text answer"
+msgstr "„Sonstiges“ mit eigener Antwort anbieten"
+
+#. translators: %d: maximum number of characters
+#: src/Ui/ProjectFieldsView.php:184
+#, php-format
+msgid "Members can write their own answer, at most %d characters."
+msgstr "Mitglieder können eine eigene Antwort schreiben, höchstens %d Zeichen."
+
+#: src/Ui/ProjectFieldsView.php:203
+msgid "Choices, one per line"
+msgstr "Auswahlmöglichkeiten, eine pro Zeile"
+
+#: src/Ui/ProjectFormView.php:42 src/Ui/ProjectListView.php:46
+msgid "New project"
+msgstr "Neues Projekt"
+
+#: src/Ui/ProjectFormView.php:43
+msgid "Edit project"
+msgstr "Projekt bearbeiten"
+
+#: src/Ui/ProjectFormView.php:48 src/Ui/ProjectView.php:119
+#: src/Ui/ProjectsShortcode.php:85 src/Ui/ProjectsShortcode.php:98
+msgid "All projects"
+msgstr "Alle Projekte"
+
+#: src/Ui/ProjectFormView.php:55
+msgid "Name"
+msgstr "Name"
+
+#: src/Ui/ProjectFormView.php:58
+msgid "e.g. Spring Concert 2027"
+msgstr "z. B. Frühjahrskonzert 2027"
+
+#: src/Ui/ProjectFormView.php:63
+msgid "Description"
+msgstr "Beschreibung"
+
+#: src/Ui/ProjectFormView.php:66
+msgid "Shown to all members, e.g. rehearsal times and places."
+msgstr "Wird allen Mitgliedern angezeigt, z. B. Probenzeiten und -orte."
+
+#: src/Ui/ProjectFormView.php:73
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: src/Ui/ProjectFormView.php:100
+#: src/Ui/ProjectFormView.php:106
+msgid ""
+"Until when members should respond. Shown while the project is open for "
+"participation."
+msgstr ""
+"Bis wann sich die Mitglieder an- oder abmelden sollen. Wird angezeigt, "
+"solange die Anmeldung offen ist."
+
+#: src/Ui/ProjectFormView.php:110
+msgid "Members who have not responded are reminded by email seven days before."
+msgstr ""
+"Unentschlossene Mitglieder werden sieben Tage vorher per E-Mail erinnert."
+
+#: src/Ui/ProjectFormView.php:125
 msgid "Concerts"
 msgstr "Konzerte"
 
-#: src/Ui/ProjectFormView.php:108
+#: src/Ui/ProjectFormView.php:133
 msgid "+ Add concert"
 msgstr "+ Konzert hinzufügen"
 
-#: src/Ui/ProjectFormView.php:110
+#: src/Ui/ProjectFormView.php:135
 msgid "A project can have any number of concerts, or none."
 msgstr "Ein Projekt kann beliebig viele Konzerte haben, auch keines."
 
-#: src/Ui/ProjectFormView.php:129 src/Ui/ProjectView.php:195
+#: src/Ui/ProjectFormView.php:166
+msgid "There are no project fields yet."
+msgstr "Es gibt noch keine Projektfelder."
+
+#: src/Ui/ProjectFormView.php:177
+msgid ""
+"Members who accepted answer the chosen questions while the project is open "
+"for participation; * marks required ones. Unticking a question hides its "
+"answers in this project."
+msgstr ""
+"Angemeldete Mitglieder beantworten die gewählten Fragen, solange die "
+"Anmeldung offen ist; * kennzeichnet Pflichtfragen. Wird eine Frage "
+"abgewählt, sind ihre Antworten in diesem Projekt ausgeblendet."
+
+#: src/Ui/ProjectFormView.php:183
+msgid "Manage the project fields"
+msgstr "Projektfelder verwalten"
+
+#: src/Ui/ProjectFormView.php:192 src/Ui/ProjectView.php:198
 msgid "Conductors"
 msgstr "Dirigenten"
 
-#: src/Ui/ProjectFormView.php:130 src/Ui/ProjectView.php:199
+#: src/Ui/ProjectFormView.php:193 src/Ui/ProjectView.php:202
 msgid "Organizers"
 msgstr "Organisatoren"
 
-#: src/Ui/ProjectFormView.php:140
+#: src/Ui/ProjectFormView.php:203
 msgid "Nobody has this role yet."
 msgstr "Noch niemand hat diese Rolle."
 
-#: src/Ui/ProjectFormView.php:153
+#: src/Ui/ProjectFormView.php:216
 msgid ""
 "Shown on the project page. Every conductor and organizer has their rights in "
 "all projects."
@@ -1279,11 +1621,15 @@ msgstr ""
 "Wird auf der Projektseite angezeigt. Alle Dirigenten und Organisatoren haben "
 "ihre Rechte in allen Projekten."
 
-#: src/Ui/ProjectListView.php:46
+#: src/Ui/ProjectListView.php:44 src/Ui/ProjectsShortcode.php:86
+msgid "Project fields"
+msgstr "Projektfelder"
+
+#: src/Ui/ProjectListView.php:49
 msgid "Active"
 msgstr "Aktiv"
 
-#: src/Ui/ProjectListView.php:53
+#: src/Ui/ProjectListView.php:56
 msgid ""
 "There are no completed projects yet. Projects move here once the organizers "
 "complete them."
@@ -1291,7 +1637,7 @@ msgstr ""
 "Es gibt noch keine abgeschlossenen Projekte. Projekte stehen hier, sobald "
 "die Organisatoren sie abschließen."
 
-#: src/Ui/ProjectListView.php:57
+#: src/Ui/ProjectListView.php:60
 msgid ""
 "There are no current projects. New projects appear here as soon as the "
 "organizers open them."
@@ -1299,7 +1645,7 @@ msgstr ""
 "Es gibt keine aktuellen Projekte. Neue Projekte erscheinen hier, sobald die "
 "Organisatoren sie öffnen."
 
-#: src/Ui/ProjectListView.php:81
+#: src/Ui/ProjectListView.php:87
 msgid "Ended, please complete"
 msgstr "Vorbei, bitte abschließen"
 
@@ -1355,7 +1701,7 @@ msgstr ""
 "Projekt abschließen? Programm, Teilnahme und Stimmverteilung können danach "
 "nicht mehr geändert werden."
 
-#: src/Ui/ProjectView.php:189 src/Ui/ProjectView.php:278
+#: src/Ui/ProjectView.php:189 src/Ui/ProjectView.php:282
 msgid "Status"
 msgstr "Status"
 
@@ -1363,25 +1709,25 @@ msgstr "Status"
 msgid "Dates"
 msgstr "Termine"
 
-#: src/Ui/ProjectView.php:222
+#: src/Ui/ProjectView.php:226
 msgid "Email accepted participants"
 msgstr "E-Mail an Angemeldete"
 
-#: src/Ui/ProjectView.php:224
+#: src/Ui/ProjectView.php:228
 msgid "Email pending participants"
 msgstr "E-Mail an Unentschlossene"
 
-#: src/Ui/ProjectView.php:226
+#: src/Ui/ProjectView.php:230
 msgid "Email accepted and pending"
 msgstr "E-Mail an Angemeldete und Unentschlossene"
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:249
+#: src/Ui/ProjectView.php:253
 #, php-format
 msgid "Change the status to \"%s\"?"
 msgstr "Den Status zu „%s“ ändern?"
 
-#: src/Ui/ProjectView.php:255
+#: src/Ui/ProjectView.php:259
 msgid ""
 "All active members and organizers who have not been asked yet will be asked "
 "to respond."
@@ -1390,28 +1736,35 @@ msgstr ""
 "werden um eine Antwort gebeten."
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:261
+#: src/Ui/ProjectView.php:265
 #, php-format
 msgid "Move to \"%s\""
 msgstr "Weiter zu „%s“"
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:263
+#: src/Ui/ProjectView.php:267
 #, php-format
 msgid "Back to \"%s\""
 msgstr "Zurück zu „%s“"
 
-#: src/Ui/ProjectView.php:304
+#: src/Ui/ProjectView.php:308
 msgid "Inform the members by email"
 msgstr "Mitglieder per E-Mail informieren"
 
-#: src/Ui/ProjectsShortcode.php:61
+#: src/Ui/ProjectsShortcode.php:64
 msgid "Please log in to see the projects."
 msgstr "Bitte logge dich ein, um die Projekte zu sehen."
 
-#: src/Ui/ProjectsShortcode.php:64
+#: src/Ui/ProjectsShortcode.php:67
 msgid "You are not allowed to see the projects."
 msgstr "Du darfst die Projekte nicht sehen."
+
+#~ msgid ""
+#~ "<p>Hello {name},</p><p>the project {project} ({dates}) is open for "
+#~ "participation.</p><p>Please tell us whether you take part: {link}</p>"
+#~ msgstr ""
+#~ "<p>Hallo {name},</p><p>für das Projekt {project} ({dates}) kannst du dich "
+#~ "jetzt anmelden.</p><p>Bitte sag uns, ob du dabei bist: {link}</p>"
 
 #~ msgid "Add pieces to the program first."
 #~ msgstr "Füge zuerst Stücke zum Programm hinzu."
@@ -1479,9 +1832,6 @@ msgstr "Du darfst die Projekte nicht sehen."
 #~ "Mitglieder können einen Kommentar für die Organisatoren hinterlassen, und "
 #~ "Organisatoren können eine Notiz hinzufügen; nur Organisatoren sehen sie."
 
-#~ msgid "No"
-#~ msgstr "Nein"
-
 #~ msgid "Nobody has accepted yet."
 #~ msgstr "Noch niemand hat sich angemeldet."
 
@@ -1509,6 +1859,15 @@ msgstr "Du darfst die Projekte nicht sehen."
 #~ msgstr ""
 #~ "Orchestra Projects benötigt aktive Plugins Orchestra Core 0.4, Orchestra "
 #~ "Library und Orchestra Members."
+
+#~ msgid ""
+#~ "Organizers can download the profiles of the members who accepted a "
+#~ "project, including the information they entered in their profile, as a "
+#~ "file to plan the project."
+#~ msgstr ""
+#~ "Organisatoren können die Profile der Mitglieder, die sich für ein Projekt "
+#~ "angemeldet haben, einschließlich der Angaben in ihrem Profil als Datei "
+#~ "herunterladen, um das Projekt zu planen."
 
 #~ msgid "Paid"
 #~ msgstr "Bezahlt"
@@ -1552,14 +1911,22 @@ msgstr "Du darfst die Projekte nicht sehen."
 #~ msgstr "Es gibt keine aktuellen Projekte."
 
 #~ msgid ""
+#~ "This history is kept after members leave, based on the legitimate "
+#~ "interest of the orchestra in its history, and no longer shows their name "
+#~ "once their account is deleted. On request, comments and notes are deleted "
+#~ "at once."
+#~ msgstr ""
+#~ "Diese Geschichte bleibt auf Grundlage des berechtigten Interesses des "
+#~ "Orchesters an seiner Geschichte erhalten, wenn Mitglieder ausscheiden, "
+#~ "und zeigt ihren Namen nicht mehr, sobald ihr Konto gelöscht ist. Auf "
+#~ "Anfrage werden Kommentare und Notizen sofort gelöscht."
+
+#~ msgid ""
 #~ "We store which parts members play in each project, to plan future "
 #~ "projects."
 #~ msgstr ""
 #~ "Wir speichern, welche Stimmen Mitglieder in jedem Projekt spielen, um "
 #~ "künftige Projekte zu planen."
-
-#~ msgid "Yes"
-#~ msgstr "Ja"
 
 #~ msgid "Your parts appear here once the conductors have assigned them."
 #~ msgstr ""

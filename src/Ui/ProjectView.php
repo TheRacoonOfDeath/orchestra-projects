@@ -191,6 +191,9 @@ final class ProjectView
             ...$facts,
             [\__('Dates', 'orchestra-projects'), \esc_html(Dates::range($project))],
             [Dates::concertsLabel($project), \esc_html(Dates::concerts($project) ?: '—')],
+            ...($project->registrationDeadline === null
+                ? []
+                : [[\__('Registration deadline', 'orchestra-projects'), Dates::deadline($project, false)]]),
             [
                 \__('Conductors', 'orchestra-projects'),
                 \esc_html($this->names->list($this->staff->userIds($project->id, StaffRepository::CONDUCTOR))),
@@ -211,7 +214,8 @@ final class ProjectView
         }
         $html .= '</div>';
 
-        $own = $this->memberView->participation($project) . $this->memberView->parts($project);
+        $own = $this->memberView->participation($project) . $this->memberView->answers($project)
+            . $this->memberView->parts($project);
         if ($own !== '') {
             $html .= '<div class="orchestra-card orchestra-stack">' . $own . '</div>';
         }

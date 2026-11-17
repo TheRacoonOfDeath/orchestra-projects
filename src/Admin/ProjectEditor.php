@@ -13,7 +13,7 @@ use Orchestra\Projects\Ui\ProjectFormView;
 use WP_Post;
 
 /**
- * The meta boxes for dates and staff on the project edit screen in wp-admin. They show the fields
+ * The meta boxes for dates, staff and project fields on the project edit screen in wp-admin. They show the fields
  * of {@see ProjectFormView} and are saved by {@see ProjectFormHandler}, like the projects page.
  */
 final class ProjectEditor
@@ -44,6 +44,7 @@ final class ProjectEditor
         $staff = \__('Conductors and organizers', 'orchestra-projects');
         \add_meta_box('orchestra-projects-dates', $dates, [$this, 'renderDates'], null, 'side');
         \add_meta_box('orchestra-projects-staff', $staff, [$this, 'renderStaff']);
+        \add_meta_box('orchestra-projects-fields', \__('Questions', 'orchestra-projects'), [$this, 'renderFields']);
     }
 
 
@@ -71,6 +72,14 @@ final class ProjectEditor
     public function renderStaff(WP_Post $post): void
     {
         echo '<div class="orchestra orchestra--admin">' . $this->form->staffFields($post->ID) . '</div>'; // escaped
+    }
+
+    /**
+     * @internal Meta box callback.
+     */
+    public function renderFields(WP_Post $post): void
+    {
+        echo '<div class="orchestra orchestra--admin">' . $this->form->fieldChoice($post->ID) . '</div>'; // escaped
     }
 
     /**

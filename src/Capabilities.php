@@ -59,6 +59,9 @@ final class Capabilities
     /** Email the project and assignment groups. Checked with the project ID. */
     public const EMAIL_SEND = 'orchestra_projects_email_send';
 
+    /** Define the project fields, the questions projects can ask their participants. */
+    public const FIELDS_MANAGE = 'orchestra_projects_fields_manage';
+
     /** Change the text of the automatic email about changed parts (orchestra-email 0.10). */
     public const NOTIFICATION_EDIT = 'orchestra_projects_notification_edit';
 
@@ -87,6 +90,7 @@ final class Capabilities
             ->register(self::ASSIGNMENT_HISTORY_READ, [Roles::CONDUCTOR, Roles::ORGANIZER])
             ->register(self::EMAIL_SEND, [Roles::CONDUCTOR, Roles::ORGANIZER])
             ->register(self::NOTIFICATION_EDIT, [Roles::ORGANIZER])
+            ->register(self::FIELDS_MANAGE, [Roles::ORGANIZER])
             ->registerMetaCapability(
                 self::PARTICIPATION_READ,
                 new OwnershipMapper(self::PARTICIPATION_READ_OWN, self::PARTICIPATION_READ_OTHERS, $participationOwner)

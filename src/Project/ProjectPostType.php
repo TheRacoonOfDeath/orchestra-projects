@@ -22,6 +22,16 @@ final class ProjectPostType
     public const META_END_DATE = 'orchestra_projects_end_date';
     /** One entry per concert; the name is kept from the time projects had one concert. */
     public const META_CONCERT_DATE = 'orchestra_projects_concert_date';
+    /** Until when members should respond (Y-m-d); information only, responses stay possible. */
+    public const META_DEADLINE = 'orchestra_projects_registration_deadline';
+    /** The day (Y-m-d) the current deadline was set, see {@see \Orchestra\Projects\Email\DeadlineReminder} */
+    public const META_DEADLINE_SET_ON = 'orchestra_projects_deadline_set_on';
+    /** The day (Y-m-d) the project was last opened for participation */
+    public const META_OPENED_ON = 'orchestra_projects_opened_on';
+    /** The deadline (Y-m-d) the reminder was sent for */
+    public const META_REMINDER_SENT = 'orchestra_projects_reminder_sent';
+    /** The IDs of the project fields shown in the project, see {@see \Orchestra\Projects\Field\ProjectFields} */
+    public const META_FIELDS = 'orchestra_projects_fields';
     /** The statuses whose automatic email was sent, see {@see \Orchestra\Projects\Email\StatusEmails} */
     public const META_STATUS_EMAILS = 'orchestra_projects_status_emails';
 

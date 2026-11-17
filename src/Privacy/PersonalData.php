@@ -7,6 +7,8 @@ namespace Orchestra\Projects\Privacy;
 use Orchestra\Library\LibraryService;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\InformedRepository;
+use Orchestra\Projects\Field\AnswerRepository;
+use Orchestra\Projects\Field\ProjectFields;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Project\ProjectRepository;
 use Orchestra\Projects\Project\StaffRepository;
@@ -17,9 +19,9 @@ use WP_User;
  *
  * The decisions and the assigned parts are the orchestra's history, so the eraser keeps them; when
  * the account is deleted they are anonymized ({@see \Orchestra\Projects\Project\ProjectCleanup::anonymizeUser()}).
- * Everything else about the person is erased: comments and notes, being named as conductor or
- * organizer of projects, who changed decisions or made assignments, and changed parts not yet
- * reported.
+ * Everything else about the person is erased: comments and notes, answers to the project fields,
+ * being named as conductor or organizer of projects, who changed decisions or made assignments, and
+ * changed parts not yet reported.
  */
 final class PersonalData
 {
@@ -32,6 +34,8 @@ final class PersonalData
         private readonly LibraryService $library,
         private readonly StaffRepository $staff,
         private readonly InformedRepository $informed,
+        private readonly AnswerRepository $answers,
+        private readonly ProjectFields $fields,
     ) {
     }
 
@@ -133,6 +137,27 @@ final class PersonalData
             ];
         }
 
+        $labels = [];
+        foreach ($this->fields->all() as $field) {
+            $labels[$field->id] = $field;
+        }
+        foreach ($this->answers->forUser($user->ID) as $projectId => $answers) {
+            $items = [['name' => \__('Project', 'orchestra-projects'), 'value' => $this->projectName($projectId)]];
+            foreach ($answers as $fieldId => $answer) {
+                $field = $labels[$fieldId] ?? null;
+                $items[] = [
+                    'name' => $field->label ?? $fieldId,
+                    'value' => $field === null ? $answer : $field->display($answer),
+                ];
+            }
+            $data[] = [
+                'group_id' => self::ID . '-answers',
+                'group_label' => \__('Answers to project questions', 'orchestra-projects'),
+                'item_id' => 'orchestra-answers-' . $projectId,
+                'data' => $items,
+            ];
+        }
+
         foreach ($this->staff->forUser($user->ID) as $index => $staff) {
             $data[] = [
                 'group_id' => self::ID . '-staff',
@@ -168,7 +193,8 @@ final class PersonalData
 
         $removed = $this->participations->clearTextsOf($user->ID)
             + $this->staff->deleteForUser($user->ID)
-            + $this->informed->deleteForUser($user->ID);
+            + $this->informed->deleteForUser($user->ID)
+            + $this->answers->deleteForUser($user->ID);
         $this->participations->forgetChanger($user->ID);
         $this->assignments->forgetCreator($user->ID);
         $retained = $this->participations->forUser($user->ID) !== [] || $this->assignments->forUser($user->ID) !== [];
@@ -208,6 +234,12 @@ final class PersonalData
                         . ' see them on the website.',
                     'orchestra-projects'
                 ),
+                \__(
+                    'Projects can ask the members who accepted a few questions, e.g. how they arrive. Only the'
+                        . ' member and the organizers see the answers; they are deleted on request and when the'
+                        . ' account is deleted.',
+                    'orchestra-projects'
+                ),
             ],
             [
                 \__(
@@ -220,7 +252,8 @@ final class PersonalData
             [
                 \__(
                     'Organizers can download the profiles of the members who accepted a project, including the'
-                        . ' information they entered in their profile, as a file to plan the project.',
+                        . ' information they entered in their profile and their answers to the questions of the'
+                        . ' project, as a file to plan the project.',
                     'orchestra-projects'
                 ),
             ],
@@ -228,7 +261,7 @@ final class PersonalData
                 \__(
                     'This history is kept after members leave, based on the legitimate interest of the orchestra in'
                         . ' its history, and no longer shows their name once their account is deleted. On request,'
-                        . ' comments and notes are deleted at once.',
+                        . ' comments, notes and answers are deleted at once.',
                     'orchestra-projects'
                 ),
             ],

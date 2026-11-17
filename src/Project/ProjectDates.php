@@ -18,13 +18,14 @@ final class ProjectDates
         public readonly array $concertDates,
         /** @var list<string> */
         public readonly array $errors,
+        public readonly ?string $registrationDeadline = null,
     ) {
     }
 
     /**
      * @param mixed $concerts The concert dates; empty fields are ignored
      */
-    public static function fromInput(mixed $start, mixed $end, mixed $concerts): self
+    public static function fromInput(mixed $start, mixed $end, mixed $concerts, mixed $deadline = ''): self
     {
         $errors = [];
         $parse = static function (mixed $value, string $label) use (&$errors): ?string {
@@ -44,6 +45,7 @@ final class ProjectDates
 
         $startDate = $parse($start, \__('Start date', 'orchestra-projects'));
         $endDate = $parse($end, \__('End date', 'orchestra-projects'));
+        $registrationDeadline = $parse($deadline, \__('Registration deadline', 'orchestra-projects'));
         $concertDates = [];
         foreach (\is_array($concerts) ? $concerts : [$concerts] as $concert) {
             $concertDates[] = $parse($concert, \__('Concert date', 'orchestra-projects'));
@@ -55,6 +57,6 @@ final class ProjectDates
             $errors[] = \__('The end date must not be before the start date.', 'orchestra-projects');
         }
 
-        return new self($startDate, $endDate, $concertDates, $errors);
+        return new self($startDate, $endDate, $concertDates, $errors, $registrationDeadline);
     }
 }

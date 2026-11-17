@@ -71,6 +71,16 @@ final class ProjectRepository
             }
         }
 
+        $previous = self::meta($projectId, ProjectPostType::META_DEADLINE);
+        if ($dates->registrationDeadline === null) {
+            \delete_post_meta($projectId, ProjectPostType::META_DEADLINE);
+            \delete_post_meta($projectId, ProjectPostType::META_DEADLINE_SET_ON);
+        } elseif ($dates->registrationDeadline !== $previous) {
+            \update_post_meta($projectId, ProjectPostType::META_DEADLINE, $dates->registrationDeadline);
+            // The reminder only goes out if the deadline was known at least seven days before it.
+            \update_post_meta($projectId, ProjectPostType::META_DEADLINE_SET_ON, \current_time('Y-m-d'));
+        }
+
         // One meta entry per concert.
         \delete_post_meta($projectId, ProjectPostType::META_CONCERT_DATE);
         foreach ($dates->concertDates as $concertDate) {
@@ -88,6 +98,7 @@ final class ProjectRepository
             self::meta($post->ID, ProjectPostType::META_START_DATE),
             self::meta($post->ID, ProjectPostType::META_END_DATE),
             self::concertDates($post->ID),
+            self::meta($post->ID, ProjectPostType::META_DEADLINE),
         );
     }
 
@@ -106,7 +117,10 @@ final class ProjectRepository
         return $dates;
     }
 
-    private static function meta(int $postId, string $key): ?string
+    /**
+     * Post meta of a project that is a string, or null.
+     */
+    public static function meta(int $postId, string $key): ?string
     {
         $value = \get_post_meta($postId, $key, true);
 

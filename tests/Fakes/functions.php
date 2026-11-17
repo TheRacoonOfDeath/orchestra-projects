@@ -15,3 +15,8 @@ function _x(string $text, string $context, string $domain = 'default'): string
 {
     return $text;
 }
+
+function remove_accents(string $text): string
+{
+    return strtr($text, ['ä' => 'a', 'ö' => 'o', 'ü' => 'u', 'ß' => 'ss', 'é' => 'e']);
+}

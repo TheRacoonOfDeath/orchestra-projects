@@ -80,10 +80,13 @@ final class StatusEmails
             \__('{project} is open for participation', 'orchestra-projects'),
             \__(
                 '<p>Hello {name},</p><p>the project {project} ({dates}) is open for participation.</p>'
-                    . '<p>Please tell us whether you take part: {link}</p>',
+                    . '{description}<p>Please tell us whether you take part: {link}</p>',
                 'orchestra-projects'
             ),
-            $placeholders + ['link' => \__('The link to the project, where members respond', 'orchestra-projects')]
+            $placeholders + [
+                'description' => \__('The description of the project', 'orchestra-projects'),
+                'link' => \__('The link to the project, where members respond', 'orchestra-projects'),
+            ]
         ));
         $registry->add(new AutomaticEmail(
             self::PARTS_ASSIGNED_ID,
@@ -152,6 +155,7 @@ final class StatusEmails
                 'name' => \esc_html($user->display_name),
                 'project' => \esc_html($project->title),
                 'dates' => \esc_html(Dates::range($project)),
+                'description' => self::description($project),
                 'link' => '<a href="' . \esc_url($link) . '">' . \esc_html($link) . '</a>',
             ];
         }
@@ -197,7 +201,15 @@ final class StatusEmails
         return \is_array($stored) ? \array_values(\array_filter($stored, 'is_string')) : [];
     }
 
-    private static function link(Project $project): string
+    /**
+     * The description of the project as HTML paragraphs, as on the project page; "" if it has none.
+     */
+    public static function description(Project $project): string
+    {
+        return \trim($project->description) === '' ? '' : \wpautop(\wp_kses_post($project->description));
+    }
+
+    public static function link(Project $project): string
     {
         $base = Pages::url(ProjectsShortcode::TAG);
         if ($base === null) {

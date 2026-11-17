@@ -6,6 +6,7 @@ namespace Orchestra\Projects\Project;
 
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\InformedRepository;
+use Orchestra\Projects\Field\AnswerRepository;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Program\ProgramRepository;
 use wpdb;
@@ -24,6 +25,7 @@ final class ProjectCleanup
         private readonly AssignmentRepository $assignments,
         private readonly ?InformedRepository $informed = null,
         private readonly ?wpdb $wpdb = null,
+        private readonly ?AnswerRepository $answers = null,
     ) {
     }
 
@@ -46,13 +48,15 @@ final class ProjectCleanup
 
         $this->assignments->deleteForProject($postId);
         $this->informed?->delete($postId);
+        $this->answers?->deleteForProject($postId);
         $this->participations->deleteForProject($postId);
         $this->program->deleteForProject($postId);
         $this->staff->deleteForProject($postId);
     }
 
     /**
-     * Participation and assignments stay in the history without a reference to the person.
+     * Participation and assignments stay in the history without a reference to the person; answers
+     * to the project fields are deleted.
      *
      * @internal Hooked to `deleted_user`.
      */
@@ -62,6 +66,7 @@ final class ProjectCleanup
         $this->participations->anonymizeUser($userId);
         $this->assignments->anonymizeUser($userId);
         $this->informed?->deleteForUser($userId);
+        $this->answers?->deleteForUser($userId);
         $this->forgetAuthor($userId);
     }
 

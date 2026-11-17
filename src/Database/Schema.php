@@ -16,7 +16,7 @@ use wpdb;
 final class Schema
 {
     /** Increase whenever a table definition changes; dbDelta() applies the difference. */
-    public const VERSION = 6;
+    public const VERSION = 7;
 
     public const OPTION_VERSION = 'orchestra_projects_schema_version';
 
@@ -50,6 +50,12 @@ final class Schema
         return $this->wpdb->prefix . 'orchestra_projects_informed';
     }
 
+    /** Since version 7: the answers of the participants to the project fields. */
+    public function answersTable(): string
+    {
+        return $this->wpdb->prefix . 'orchestra_projects_answers';
+    }
+
     /**
      * @return list<string>
      */
@@ -61,6 +67,7 @@ final class Schema
             $this->participationTable(),
             $this->assignmentsTable(),
             $this->informedTable(),
+            $this->answersTable(),
         ];
     }
 
@@ -152,6 +159,19 @@ final class Schema
   PRIMARY KEY  (id),
   KEY project_id (project_id),
   KEY user_id (user_id)
+) {$charsetCollate};");
+
+        // One answer per project, member and project field; deleted with the account (no history).
+        \dbDelta("CREATE TABLE {$this->answersTable()} (
+  id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  project_id bigint(20) unsigned NOT NULL,
+  user_id bigint(20) unsigned NOT NULL,
+  field_id varchar(40) NOT NULL,
+  answer text NOT NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY project_user_field (project_id,user_id,field_id),
+  KEY user_id (user_id),
+  KEY field_id (field_id)
 ) {$charsetCollate};");
 
         $this->removeFees();

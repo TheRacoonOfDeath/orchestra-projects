@@ -10,6 +10,9 @@ active status, only through their public services.
 |------|---------|
 | Project: name, description | custom post type `orchestra_project` (title, content) |
 | Project status and dates | post meta `orchestra_projects_status`, `_start_date`, `_end_date` (Y-m-d); `_concert_date` once per concert |
+| Registration deadline (since 0.41) | post meta `orchestra_projects_registration_deadline` (Y-m-d), `_deadline_set_on` (the day it was set), `_opened_on` (the day the project was last opened), `_reminder_sent` (the deadline the reminder was sent for) |
+| Project fields (since 0.41) | option `orchestra_projects_fields` (the fields, in display order); post meta `orchestra_projects_fields` (the IDs of the fields a project shows) |
+| Answers to the project fields (since 0.41) | table `orchestra_projects_answers` (project, user, field ID, answer; schema version 7); empty answers are not stored |
 | Conductors and organizers of a project | table `orchestra_projects_staff` |
 | Program | table `orchestra_projects_program` (project, piece, position) |
 | Participation | table `orchestra_projects_participation` (project, user, status, responded at, changed by and at, member's comment, organizers' note; schema version 4) |
@@ -25,25 +28,27 @@ active status, only through their public services.
 - When a user is deleted, the user ID in participation and assignments becomes NULL, and so do
   who changed a participation (`changed_by`) and who made an assignment (`created_by`, nullable
   since schema version 6). The history stays complete and shows "Former member". Staff entries,
-  comments, notes and changed parts of the user are deleted, and projects they authored get
-  `post_author` 0.
+  comments, notes, answers to project fields and changed parts of the user are deleted, and projects
+  they authored get `post_author` 0.
 
 ## Privacy
 
 See also the [GDPR documentation of orchestra-core](https://github.com/TheRacoonOfDeath/orchestra-core/blob/main/docs/gdpr.md).
 
 - **Tools → Export Personal Data**: every participation (project, decision, responded, last
-  changed, comment, organizers' note), every assigned part and the projects the person runs as
-  conductor or organizer. The note is exported because it is data about the member, although the
+  changed, comment, organizers' note), the answers to the project fields per project, every
+  assigned part and the projects the person runs as conductor or organizer. The note is exported because it is data about the member, although the
   site shows it to organizers only.
-- **Tools → Erase Personal Data** (since 0.38): deletes comments and notes, the staff entries and
-  the changed parts not yet reported, and removes the person as the one who changed decisions or
+- **Tools → Erase Personal Data** (since 0.38): deletes comments and notes, the answers to the
+  project fields (since 0.41), the staff entries and the changed parts not yet reported, and removes the person as the one who changed decisions or
   made assignments. The decisions and the assigned parts are the orchestra's history and are
   kept; the eraser reports them as retained. Deleting the account then anonymizes them (above).
 - Whether someone is inactive ("Name (inactive)", `Admin\Names`) is shown only to users with
   `orchestra_projects_participation_read_others` (conductors, organizers); members see the name.
 - **Settings → Privacy** suggests a text for the privacy policy: who sees decisions, comments,
-  assignments, the participants export, and why the history is kept.
+  answers to project fields, assignments, the participants export, and why the history is kept.
+- The answers to the project fields are not history: only the member and the organizers
+  (`orchestra_projects_participation_manage`) see them, like the comments; conductors do not.
 - Deleting a project (administrators only) deletes its rows in all tables.
 
 ## Rules
@@ -102,6 +107,58 @@ See also the [GDPR documentation of orchestra-core](https://github.com/TheRacoon
 - orchestra-library refuses to delete pieces in a program and parts with assignments
   (`orchestra_library_piece_delete_blockers`, `orchestra_library_part_delete_blockers`).
 
+## Registration deadline
+
+Since 0.41. The project form (and the "Dates and status" box in wp-admin) has an optional
+**Registration deadline**: until when members should respond. It is information only: members can
+respond until the organizers move the project on, also after the deadline.
+
+- While the project is open for participation, the deadline is shown slightly highlighted in red
+  (`Dates::deadline()`, `.orchestra-projects-deadline`): on the card ("Respond by …") and on the
+  project page ("Registration deadline"). In other statuses the project page shows it without the
+  highlight and the card not at all.
+- **Reminder** (`Email\DeadlineReminder`, with orchestra-email 0.10): seven days before the
+  deadline, the automatic email `orchestra_projects_deadline_reminder` goes to every player whose
+  participation is still pending (orchestra-email leaves out inactive members and those who turned
+  automatic emails off). The WP-Cron event `orchestra_projects_deadline_reminders` checks the open
+  projects every hour; it is removed when the plugin is deactivated or deleted. A late WP-Cron still
+  sends it up to the day of the deadline, never after it.
+  - It is sent once per deadline (`_reminder_sent`). A new deadline gets its own reminder.
+  - It is skipped if the project was opened (`_opened_on`) or the deadline set (`_deadline_set_on`)
+    after the day of the reminder, i.e. with less than seven days left. Projects opened before 0.41
+    count as open.
+  - Its sender is the user who created the project (`post_author`), so replies go to them; once
+    that account is deleted (`post_author` 0), it has no reply address.
+  - Placeholders `{name}`, `{project}`, `{dates}`, `{deadline}` and `{link}` (the project page);
+    organizers change the text on the Email page under "Automatic emails".
+
+## Project fields
+
+Since 0.41. Questions a project asks its participants, e.g. how they arrive or which room they want
+(`Field\…`). They work like the profile fields of orchestra-members, which they copy: text, long
+text (with line breaks), checkbox and choice list (optionally with "Other" and a free-text answer),
+with the same lengths; instead of "ticked by default" every field can be **required** (a checkbox
+then has to be ticked).
+
+- Organizers (`orchestra_projects_fields_manage`) define them centrally: **Project fields** next to
+  "New project" on the project list (`?orchestra_project_fields=1`), or **Projects → Project Fields**
+  in wp-admin (`ProjectFieldsView`, `ProjectFieldsController`). The type of a field cannot be
+  changed. Deleting a field deletes its answers in all projects and removes it from every project, so
+  a new field with the same ID does not show up there.
+- Each project chooses which fields it shows ("Questions" in the project form and in a box of the
+  wp-admin editor). Unticking a field hides it and its answers in the project; ticking it again
+  brings them back.
+- Members who **accepted** answer them while the project is **open for participation**
+  (`ProjectAnswers::open()`, `AnswersController`, `admin-post.php?action=orchestra_projects_answer`
+  with a nonce per participation; only for the member's own participation). Afterwards they see
+  their answers without changing them. Pending and declined members do not see them.
+- On the cards of the project list, "Questions" is a section above "Your parts", closed until opened
+  (`<details class="orchestra-projects-parts">`); on the project page it is open. While required
+  fields are not answered, it is marked "Please answer". A save with a required field left empty
+  saves nothing and names the field.
+- Organizers see the answers of the accepted participants on the Participation tab ("2 of 3
+  answered", opened for the answers, "Required missing" if needed) and in the participants export.
+
 ## Informing members about changed parts
 
 Since 0.33, with orchestra-email 0.10. Members see their parts from Parts assigned on, so changes
@@ -158,7 +215,9 @@ Since 0.37, with orchestra-email 0.10 (`Email\StatusEmails`):
   left out by orchestra-email. The notice after the status change says how many of the meant
   members were emailed, or that the members were not informed when the box was unticked.
 - "Complete the project" passes through Parts assigned without sending anything.
-- Placeholders `{name}`, `{project}`, `{dates}` and `{link}`; organizers
+- Placeholders `{name}`, `{project}`, `{dates}` and `{link}`, and in the email of Open for
+  Participation `{description}` (since 0.41, the description of the project as on the project page;
+  in the default text, texts changed before keep theirs); organizers
   (`orchestra_projects_notification_edit`) change the texts on the Email page under "Automatic
   emails". Replies go to the organizer who changed the status.
 - Without orchestra-email 0.10, the status buttons have no checkbox and nothing is sent.
@@ -200,13 +259,13 @@ views in **Projects** in wp-admin (views in `src/Ui`, shared by both).
 
 | View | Who | Content |
 |------|-----|---------|
-| Project list | everyone | a card per project: the status above the title, the dates (the concerts only on the project page); members who take part: response, and "Your parts", closed until opened (since 0.40, `<details class="orchestra-projects-parts">`): every piece of the program with its composer, below it their part with "new" and the download, or "No part assigned yet"; staff: all projects; organizers: "New project". The whole card opens the project (`orchestra-card--linked` of orchestra-core 0.15; its buttons and downloads stay clickable); the cards fill the width, up to three per row, and are as high as their content |
-| Project → Overview | everyone who may see the project | details, staff, description, own response and parts (always open); email buttons and status changes for staff |
+| Project list | everyone | a card per project: the status above the title, the dates (the concerts only on the project page) and, while open for participation, the registration deadline in red; members who take part: response, "Questions" (members who accepted, see [Project fields](#project-fields)) and "Your parts", closed until opened (since 0.40, `<details class="orchestra-projects-parts">`): every piece of the program with its composer, below it their part with "new" and the download, or "No part assigned yet"; staff: all projects; organizers: "New project". The whole card opens the project (`orchestra-card--linked` of orchestra-core 0.15; its buttons and downloads stay clickable); the cards fill the width, up to three per row, and are as high as their content |
+| Project → Overview | everyone who may see the project | details (with the registration deadline), staff, description, own response, questions and parts (always open); email buttons and status changes for staff |
 | Project → Who accepted | members | the names of everyone who accepted (conductors and organizers see them on the Participation tab) |
 | Project → Program | everyone who may see the project | members: the ordered list of pieces; conductors and organizers: add, order and remove pieces |
 | Project → Participation | conductors (read), organizers | accepted, pending, declined, each a group that is closed until opened (since 0.39; the forms of a group return to `&orchestra_group=<status>#orchestra-participation-<status>`, which opens it again), with the last change and who entered it; organizers see the members' comments, write notes, change decisions and export the accepted participants. The number of a member's parts is shown as "3 parts". On phones the rows are compact (orchestra-core 0.15): name, then the last change and the parts on one line, then "Edit" with the comment, the note and the change |
 | Project → Assignments | everyone who may see the project | "By piece": parts with assigned members; conductors and organizers assign there, members only see it (no forms, history marks, warnings or PDF); "By member" (`&orchestra_assignments_view=members`): a read-only table with a row per member and a column per piece (`AssignmentMatrix`); in Parts assigned, the changed parts to inform the members about (see above) |
-| Project form | organizers | name, description, dates, staff (in wp-admin: the WordPress editor with the same fields) |
+| Project form | organizers | name, description, dates and registration deadline, staff, questions (in wp-admin: the WordPress editor with the same fields). The end date takes the start date while it is empty or earlier, and cannot be before it (`min`), so its date picker opens in the month of the project (`assets/orchestra-projects.js`, the plugin's only script, enqueued by the form; the server checks the dates too) |
 
 URLs on the projects page: `?orchestra_project=ID&orchestra_tab=program`, `&orchestra_edit=1`,
 `?orchestra_project=new`. All forms post to `admin-post.php` with a nonce per project (or per
@@ -241,12 +300,12 @@ after their name, explained below the last piece. It is created by orchestra-cor
 Organizers download the accepted participants of a project as a CSV file from the Participation
 tab (`admin-post.php?action=orchestra_projects_export_participants&project=ID`). It has one column
 each for last name, first name and email address, then one per profile field of orchestra-members
-in their order; checkboxes are exported as "Yes" or "No"; then the member's comment and the
-organizers' note. Users without first and last name get their display name as last name. Rows are
+in their order; checkboxes are exported as "Yes" or "No"; then one per project field the project
+shows (since 0.41), the same way; then the member's comment and the organizers' note. Users without first and last name get their display name as last name. Rows are
 ordered by last and first name.
 
-Below the participants, after an empty line, every choice list among the profile fields gets a
-small table of its own (since 0.39): the field's label and "Number", then each choice with the
+Below the participants, after an empty line, every choice list among the profile fields and the
+project fields gets a small table of its own (since 0.39; project fields since 0.41): the field's label and "Number", then each choice with the
 number of participants who chose it (in the order of the choices, also those nobody chose), then
 free-text answers ("Other") alphabetically, then "No answer" if anyone left it empty. Organizers
 use it for catering, e.g. "vegetarian 5, vegan 3".

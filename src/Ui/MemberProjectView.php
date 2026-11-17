@@ -10,6 +10,9 @@ use Orchestra\Library\LibraryService;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Capabilities;
+use Orchestra\Projects\Field\ProjectAnswers;
+use Orchestra\Projects\Field\ProjectField;
+use Orchestra\Projects\Frontend\AnswersController;
 use Orchestra\Projects\Frontend\ResponseController;
 use Orchestra\Projects\Participation\Participation;
 use Orchestra\Projects\Participation\ParticipationRepository;
@@ -29,6 +32,7 @@ final class MemberProjectView
         private readonly ProgramRepository $program,
         private readonly LibraryService $library,
         private readonly AssignmentService $assignmentService,
+        private readonly ProjectAnswers $answers,
     ) {
     }
 
@@ -130,6 +134,82 @@ final class MemberProjectView
             . ' data-orchestra-confirm="' . \esc_attr($confirm) . '">'
             . \esc_html($accept ? \__('Accept', 'orchestra-projects') : \__('Decline', 'orchestra-projects'))
             . '</button>';
+    }
+
+    /**
+     * "Questions": the fields of the project for a member who accepted, answered while the project is
+     * open for participation and shown afterwards. Required fields not answered yet are marked. The
+     * cards of the project list show it collapsed, above "Your parts".
+     */
+    public function answers(Project $project, bool $collapsed = false): string
+    {
+        $fields = $this->answers->fields($project);
+        $userId = \get_current_user_id();
+        $participation = $fields === [] ? null : $this->participations->findFor($project->id, $userId);
+        if (
+            $participation === null
+            || $participation->status !== ParticipationStatus::Accepted
+            || !\current_user_can(Capabilities::PARTICIPATION_READ, $participation->id)
+        ) {
+            return '';
+        }
+
+        $answers = $this->answers->of($project, $userId);
+        $open = ProjectAnswers::open($project, $participation);
+        $missing = $open ? $this->answers->missing($project, $userId) : [];
+        if ($open) {
+            $content = Form::open(
+                AnswersController::ACTION,
+                AnswersController::nonceAction($participation->id),
+                ['participation' => $participation->id],
+                ['class' => 'orchestra-stack']
+            );
+            foreach ($fields as $field) {
+                $id = 'orchestra-projects-answer-' . $project->id . '-' . $field->id;
+                $content .= Html::field(
+                    $id,
+                    $field->label . ($field->required ? ' *' : ''),
+                    FieldControl::control($field, $answers[$field->id] ?? '', $id),
+                    FieldControl::hint($field)
+                );
+            }
+            $content .= ($this->hasRequired($fields)
+                ? '<p class="orchestra-muted">' . \esc_html__('* Please answer.', 'orchestra-projects') . '</p>'
+                : '')
+                . '<div class="orchestra-actions">' . Form::submit(\__('Save answers', 'orchestra-projects'), 'small')
+                . '</div></form>';
+        } else {
+            $content = Html::details(\array_map(
+                static fn (ProjectField $field): array => [
+                    $field->label,
+                    FieldControl::value($field, $answers[$field->id] ?? ''),
+                ],
+                $fields
+            ));
+        }
+
+        Assets::enqueue();
+        $title = '<h4 class="orchestra-projects-section-title">' . \esc_html__('Questions', 'orchestra-projects')
+            . '</h4>'
+            . ($missing === [] ? '' : ' ' . Html::badge(\__('Please answer', 'orchestra-projects'), 'warning'));
+
+        return $collapsed
+            ? '<details class="orchestra-projects-parts"><summary>' . $title . '</summary>' . $content . '</details>'
+            : '<div class="orchestra-stack"><div class="orchestra-actions">' . $title . '</div>' . $content . '</div>';
+    }
+
+    /**
+     * @param list<ProjectField> $fields
+     */
+    private function hasRequired(array $fields): bool
+    {
+        foreach ($fields as $field) {
+            if ($field->required) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

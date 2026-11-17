@@ -25,12 +25,17 @@ use Orchestra\Projects\Assignment\AssignmentService;
 use Orchestra\Projects\Assignment\InformedRepository;
 use Orchestra\Projects\Database\Schema;
 use Orchestra\Projects\Email\ChangedPartsEmail;
+use Orchestra\Projects\Email\DeadlineReminder;
 use Orchestra\Projects\Email\ProjectEmailGroups;
 use Orchestra\Projects\Email\StatusEmails;
 use Orchestra\Projects\Export\AssignmentsPdf;
 use Orchestra\Projects\Export\AssignmentsPdfController;
 use Orchestra\Projects\Export\ParticipantsExport;
 use Orchestra\Projects\Export\ParticipantsExportController;
+use Orchestra\Projects\Field\AnswerRepository;
+use Orchestra\Projects\Field\ProjectAnswers;
+use Orchestra\Projects\Field\ProjectFields;
+use Orchestra\Projects\Frontend\AnswersController;
 use Orchestra\Projects\Frontend\ResponseController;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationService;
@@ -48,6 +53,8 @@ use Orchestra\Projects\Ui\MemberProjectView;
 use Orchestra\Projects\Ui\ParticipationView;
 use Orchestra\Projects\Ui\PartChangesView;
 use Orchestra\Projects\Ui\ProgramView;
+use Orchestra\Projects\Ui\ProjectFieldsController;
+use Orchestra\Projects\Ui\ProjectFieldsView;
 use Orchestra\Projects\Ui\ProjectFormView;
 use Orchestra\Projects\Ui\ProjectListView;
 use Orchestra\Projects\Ui\ProjectsShortcode;
@@ -75,6 +82,8 @@ final class Plugin
     private readonly ParticipationRepository $participations;
     private readonly AssignmentRepository $assignments;
     private readonly InformedRepository $informed;
+    private readonly AnswerRepository $answers;
+    private readonly ProjectFields $fields;
     private readonly ProjectsService $projects;
     private ?PartChangesView $partChangesView = null;
 
@@ -88,6 +97,8 @@ final class Plugin
         $this->participations = new ParticipationRepository($wpdb, $this->schema);
         $this->assignments = new AssignmentRepository($wpdb, $this->schema);
         $this->informed = new InformedRepository($wpdb, $this->schema);
+        $this->answers = new AnswerRepository($wpdb, $this->schema);
+        $this->fields = new ProjectFields();
         $this->projects = new ProjectsService(
             $this->projectRepository,
             $this->program,
@@ -137,6 +148,17 @@ final class Plugin
         $this->registerUpdateChecker();
         \add_action('init', [$this, 'loadTextDomain'], 0);
         \add_action('plugins_loaded', [$this, 'registerFeatures']);
+        \register_deactivation_hook($this->pluginFile, [self::class, 'deactivate']);
+    }
+
+    /**
+     * Stops the WP-Cron event of the deadline reminders; it is scheduled again on activation.
+     *
+     * @internal Deactivation hook.
+     */
+    public static function deactivate(): void
+    {
+        \wp_clear_scheduled_hook(DeadlineReminder::CRON_HOOK);
     }
 
     /**
@@ -187,7 +209,8 @@ final class Plugin
             $library
         );
         $statusService = new ProjectStatusService($this->projectRepository, $participation);
-        $formHandler = new ProjectFormHandler($this->projectRepository, $this->staff, $members);
+        $formHandler = new ProjectFormHandler($this->projectRepository, $this->staff, $members, $this->fields);
+        $projectAnswers = new ProjectAnswers($this->fields, $this->answers);
         $names = new Names($members);
         // The export needs the names and profile fields of orchestra-members 0.9. Plugins are
         // updated one by one, so an older version may still be running.
@@ -214,6 +237,11 @@ final class Plugin
             ? new StatusEmails($email, $this->participations)
             : null;
         $statusEmails?->register();
+        // The reminder before the registration deadline as well.
+        $deadlineReminder = $email === null || $statusEmails === null
+            ? null
+            : new DeadlineReminder($email, $this->projectRepository, $this->participations);
+        $deadlineReminder?->register();
         $partChangesView = $changedPartsEmail === null
             ? null
             : new PartChangesView($changes, $changedPartsEmail, $names, $members);
@@ -234,7 +262,8 @@ final class Plugin
             $this->participations,
             $this->assignments,
             $this->informed,
-            $this->wpdb
+            $this->wpdb,
+            $this->answers
         ))->register();
         $this->registerParticipationTriggers($participation);
         (new PersonalData(
@@ -243,7 +272,9 @@ final class Plugin
             $this->assignments,
             $library,
             $this->staff,
-            $this->informed
+            $this->informed,
+            $this->answers,
+            $this->fields
         ))->register();
 
         // The views are shared by the projects page and the wp-admin screens.
@@ -252,16 +283,19 @@ final class Plugin
             $this->assignments,
             $this->program,
             $library,
-            $assignmentService
+            $assignmentService,
+            $projectAnswers
         );
         $participationView = new ParticipationView(
             $this->participations,
             $this->assignments,
             $names,
-            $exportAvailable
+            $exportAvailable,
+            $projectAnswers
         );
         $listView = new ProjectListView($this->projectRepository, $memberView, $participationView);
-        $formView = new ProjectFormView($this->staff, $members);
+        $formView = new ProjectFormView($this->staff, $members, $this->fields, $deadlineReminder !== null);
+        $fieldsView = new ProjectFieldsView($this->fields);
         $projectView = new ProjectView(
             $this->staff,
             $names,
@@ -283,10 +317,12 @@ final class Plugin
         );
 
         (new ResponseController($this->participations, $participation))->register();
+        (new AnswersController($this->participations, $this->projectRepository, $projectAnswers))->register();
+        (new ProjectFieldsController($this->fields, $this->answers))->register();
         if ($exportAvailable) {
             (new ParticipantsExportController(
                 $this->projectRepository,
-                new ParticipantsExport($this->participations, $members)
+                new ParticipantsExport($this->participations, $members, $projectAnswers)
             ))->register();
         }
         (new AssignmentsPdfController(
@@ -312,12 +348,12 @@ final class Plugin
             $changedPartsEmail,
             $statusEmails
         ))->register();
-        (new ProjectsShortcode($this->projectRepository, $listView, $projectView, $formView))->register();
+        (new ProjectsShortcode($this->projectRepository, $listView, $projectView, $formView, $fieldsView))->register();
         \add_action(Menu::REGISTER_ACTION, [self::class, 'registerMenuItem']);
 
         if (\is_admin()) {
             (new ProjectEditor($this->projectRepository, $formView, $formHandler))->register();
-            (new ProjectsPage($this->projectRepository, $listView, $projectView))->register();
+            (new ProjectsPage($this->projectRepository, $listView, $projectView, $fieldsView))->register();
         }
     }
 

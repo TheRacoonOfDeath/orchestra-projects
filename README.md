@@ -9,13 +9,24 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
 ## Features
 
 - Projects with dates, conductors and organizers, moving through Draft → Open for Participation →
-  Preparation → Completed; the project list has tabs for the active and the completed projects
+  Preparation → Parts assigned → Completed; the project list has tabs for the active and the
+  completed projects
+- A registration deadline per project, shown in red on the card and the project page while the
+  project is open for participation; seven days before it, the members who have not responded yet
+  get a reminder email (with orchestra-email 0.10 or later; organizers change the text on the Email
+  page)
+- Project fields: questions to the participants (text, long text, checkbox or choice list, optionally
+  required), defined centrally by the organizers (**Project fields** on the projects page, or
+  **Projects → Project Fields**) and chosen per project. Members who accepted answer them while the
+  project is open for participation, in "Questions" on the card (closed until opened) and on the
+  project page; organizers see the answers on the Participation tab and in the CSV export
 - An ordered program of pieces from the library
 - Participation: opening a project asks every active member and organizer to accept or decline;
   the decision is final, organizers can change it. On the Participation tab, the accepted, pending
   and declined members are groups that open with a click
-- Organizers export the accepted participants with their profile fields as a CSV file for Excel;
-  below them, every choice list is counted (e.g. "vegetarian 5, vegan 3")
+- Organizers export the accepted participants with their profile fields and their answers to the
+  project fields as a CSV file for Excel; below them, every choice list is counted (e.g. "vegetarian
+  5, vegan 3")
 - Assignments of members to parts, with hints who played the part last time or in a completed
   project, and a button that gives everyone the part they played last time; the assignments can be
   downloaded as a PDF (with orchestra-core 0.8 or later)
@@ -28,8 +39,10 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
   affected members by email, each with only their own changes, or dismiss the changes (with
   orchestra-email 0.10 or later; organizers change the text on the Email page)
 - Moving a draft to Open for Participation or a project to Parts assigned can inform the members
-  by email: all active members, or the accepted participants (with orchestra-email 0.10 or later;
-  organizers change the texts on the Email page)
+  by email: all active members (with the description of the project), or the accepted participants
+  (with orchestra-email 0.10 or later; organizers change the texts on the Email page)
+- In the project form, the end date takes the start date while it is empty, so its date picker opens
+  in the month of the project
 - `[orchestra_projects]`: members see their projects, respond, see their parts and download the
   sheet music of each part, or all of it in one zip; organizers and conductors create projects, change their status and manage
   program, participation and assignments on the same page (or in **Projects** in wp-admin)
@@ -37,7 +50,7 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
   installed: the accepted and pending participants of each project
 - Pieces and parts used in projects cannot be deleted in the library
 - Privacy (GDPR): export and erasure with the WordPress privacy tools (erasing deletes comments,
-  notes and staff entries and keeps decisions and parts as history; deleting an account anonymizes
+  notes, answers to project fields and staff entries and keeps decisions and parts as history; deleting an account anonymizes
   it), a suggested privacy policy text, and the inactive status only shown to conductors and
   organizers
 - An API for other plugins

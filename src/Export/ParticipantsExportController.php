@@ -55,7 +55,7 @@ final class ParticipantsExportController
             }
         }
 
-        $csv = Csv::document($this->export->rows($project->id, $userIds), Csv::separator());
+        $csv = Csv::document($this->export->rows($project, $userIds), Csv::separator());
         /* translators: %s: project name */
         $fileName = \sprintf(\__('%s - participants.csv', 'orchestra-projects'), $project->title);
 

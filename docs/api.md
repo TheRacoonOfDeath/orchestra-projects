@@ -24,8 +24,9 @@ meta of orchestra-projects directly. It only reads, except for `setPart()`.
 | `static reviewingPartChanges(): bool` | Since 0.35: whether the page asks for the review (`&orchestra_changes=review`); show nothing but `partChanges()` then, unless it is empty |
 
 `Project` has `id`, `title`, `description`, `status` (`ProjectStatus`), `startDate` and `endDate`
-(Y-m-d or null), and `concertDates` (list of Y-m-d in chronological order, empty if the project has
-no concert; until 0.11 a single `concertDate`). Deleted users are left out of the user ID lists; their
+(Y-m-d or null), `concertDates` (list of Y-m-d in chronological order, empty if the project has
+no concert; until 0.11 a single `concertDate`) and, since 0.41, `registrationDeadline` (Y-m-d or
+null). Deleted users are left out of the user ID lists; their
 `Assignment::$userId` is null.
 
 ## Email groups
@@ -69,7 +70,9 @@ With orchestra-email 0.10, orchestra-projects registers the automatic emails
 [Informing members about changed parts](architecture.md#informing-members-about-changed-parts),
 and since 0.37 `Email\StatusEmails::OPEN_ID` (`orchestra_projects_open`) and
 `Email\StatusEmails::PARTS_ASSIGNED_ID` (`orchestra_projects_parts_assigned`), see
-[Informing members about status changes](architecture.md#informing-members-about-status-changes).
+[Informing members about status changes](architecture.md#informing-members-about-status-changes),
+and since 0.41 `Email\DeadlineReminder::ID` (`orchestra_projects_deadline_reminder`), see
+[Registration deadline](architecture.md#registration-deadline).
 
 ## Hooks used
 

@@ -34,6 +34,29 @@ final class Dates
     }
 
     /**
+     * The registration deadline, e.g. "Respond by May 8, 2027", slightly highlighted in red while
+     * members can respond; "" if the project has none. Escaped.
+     */
+    public static function deadline(Project $project, bool $withLabel = true): string
+    {
+        if ($project->registrationDeadline === null) {
+            return '';
+        }
+        $date = self::unbreakable(self::format($project->registrationDeadline));
+        $text = $withLabel
+            /* translators: %s: date of the registration deadline */
+            ? \sprintf(\__('Respond by %s', 'orchestra-projects'), $date)
+            : $date;
+
+        if (!$project->showsDeadline()) {
+            return \esc_html($text);
+        }
+        Assets::enqueue();
+
+        return '<span class="orchestra-projects-deadline">' . \esc_html($text) . '</span>';
+    }
+
+    /**
      * Joins the words of a date with non-breaking spaces, e.g. "29. Oktober 2026".
      */
     public static function unbreakable(string $date): string

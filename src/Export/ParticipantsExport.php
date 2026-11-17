@@ -8,21 +8,26 @@ use Orchestra\Members\Member;
 use Orchestra\Members\MembersService;
 use Orchestra\Members\Profile\Profile;
 use Orchestra\Members\Profile\ProfileField;
+use Orchestra\Projects\Field\ProjectAnswers;
+use Orchestra\Projects\Field\ProjectField;
 use Orchestra\Projects\Participation\Participation;
+use Orchestra\Projects\Project\Project;
 use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationStatus;
 
 /**
  * The accepted participants of a project as a table: last name, first name, email address, one
- * column per profile field, the member's comment and the organizers' note. Below them, the number
- * of participants per answer of every choice list (e.g. 5 vegetarian, 3 vegan). Profile values,
- * comments and notes are for organizers; the caller checks the capabilities.
+ * column per profile field, one per project field the project shows, the member's comment and the
+ * organizers' note. Below them, the number of participants per answer of every choice list (e.g. 5
+ * vegetarian, 3 vegan). Profile values, answers, comments and notes are for organizers; the caller
+ * checks the capabilities.
  */
 final class ParticipantsExport
 {
     public function __construct(
         private readonly ParticipationRepository $participations,
         private readonly MembersService $members,
+        private readonly ?ProjectAnswers $answers = null,
     ) {
     }
 
@@ -41,8 +46,9 @@ final class ParticipantsExport
      * @param list<int> $userIds
      * @return list<list<string>> the headings first
      */
-    public function rows(int $projectId, array $userIds): array
+    public function rows(Project $project, array $userIds): array
     {
+        $projectId = $project->id;
         $participations = [];
         foreach ($this->participations->forProject($projectId, ParticipationStatus::Accepted) as $participation) {
             $participations[$participation->userId ?? 0] = $participation;
@@ -61,7 +67,12 @@ final class ParticipantsExport
             }
         }
 
-        return self::table($this->members->profileFields(), $people);
+        return self::table(
+            $this->members->profileFields(),
+            $people,
+            $this->answers?->fields($project) ?? [],
+            $this->answers?->forProject($project) ?? []
+        );
     }
 
     /**
@@ -70,10 +81,16 @@ final class ParticipantsExport
      *
      * @param list<ProfileField> $fields
      * @param list<array{Member, ?Profile, string, string}> $people member, profile, comment and note
+     * @param list<ProjectField> $projectFields
+     * @param array<int, array<string, string>> $projectAnswers user ID => field ID => answer
      * @return list<list<string>> the headings first, the counts of the choice lists last
      */
-    public static function table(array $fields, array $people): array
-    {
+    public static function table(
+        array $fields,
+        array $people,
+        array $projectFields = [],
+        array $projectAnswers = [],
+    ): array {
         $rows = [];
         $answers = [];
         foreach ($people as [$member, $profile, $comment, $note]) {
@@ -88,6 +105,11 @@ final class ParticipantsExport
                 // An unchecked checkbox is stored as "" and exported as "No".
                 $row[] = $value === '' && $field->type !== ProfileField::TYPE_CHECKBOX ? '' : $field->display($value);
             }
+            foreach ($projectFields as $field) {
+                $value = $projectAnswers[$member->id][$field->id] ?? '';
+                $answers['project:' . $field->id][] = $value;
+                $row[] = $value === '' && $field->type !== ProjectField::TYPE_CHECKBOX ? '' : $field->display($value);
+            }
             $row[] = $comment;
             $row[] = $note;
             $rows[] = $row;
@@ -99,11 +121,24 @@ final class ParticipantsExport
             \__('First name', 'orchestra-projects'),
             \__('Email address', 'orchestra-projects'),
             ...\array_map(static fn (ProfileField $field): string => $field->label, $fields),
+            ...\array_map(static fn (ProjectField $field): string => $field->label, $projectFields),
             \__('Comment', 'orchestra-projects'),
             \__('Organizer note', 'orchestra-projects'),
         ];
 
-        return [$headings, ...$rows, ...self::counts($fields, $answers)];
+        $choiceLists = [];
+        foreach ($fields as $field) {
+            if ($field->type === ProfileField::TYPE_SELECT) {
+                $choiceLists[] = [$field->label, $field->choices, $answers[$field->id] ?? []];
+            }
+        }
+        foreach ($projectFields as $field) {
+            if ($field->type === ProjectField::TYPE_SELECT) {
+                $choiceLists[] = [$field->label, $field->choices, $answers['project:' . $field->id] ?? []];
+            }
+        }
+
+        return [$headings, ...$rows, ...self::counts($choiceLists)];
     }
 
     /**
@@ -111,21 +146,21 @@ final class ParticipantsExport
      * choices in their order (also those nobody chose), then free-text answers alphabetically, then
      * those without an answer.
      *
-     * @param list<ProfileField> $fields
-     * @param array<string, list<string>> $answers field ID => the answer of every participant
+     * @param list<array{string, list<string>, list<string>}> $choiceLists label, choices and the
+     *     answer of every participant
      * @return list<list<string>>
      */
-    private static function counts(array $fields, array $answers): array
+    private static function counts(array $choiceLists): array
     {
         $rows = [];
-        foreach ($fields as $field) {
-            if ($field->type !== ProfileField::TYPE_SELECT || !isset($answers[$field->id])) {
+        foreach ($choiceLists as [$label, $choices, $values]) {
+            if ($values === []) {
                 continue;
             }
-            $counts = \array_fill_keys($field->choices, 0);
+            $counts = \array_fill_keys($choices, 0);
             $others = [];
             $unanswered = 0;
-            foreach ($answers[$field->id] as $value) {
+            foreach ($values as $value) {
                 if ($value === '') {
                     $unanswered++;
                 } elseif (\array_key_exists($value, $counts)) {
@@ -137,7 +172,7 @@ final class ParticipantsExport
             \uksort($others, static fn (string|int $a, string|int $b): int => \strcasecmp((string) $a, (string) $b));
 
             $rows[] = [];
-            $rows[] = [$field->label, \__('Number', 'orchestra-projects')];
+            $rows[] = [$label, \__('Number', 'orchestra-projects')];
             foreach ($counts + $others as $answer => $count) {
                 $rows[] = [(string) $answer, (string) $count];
             }

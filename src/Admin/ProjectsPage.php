@@ -8,6 +8,7 @@ use Orchestra\Core\Ui\Html;
 use Orchestra\Projects\Capabilities;
 use Orchestra\Projects\Project\ProjectPostType;
 use Orchestra\Projects\Project\ProjectRepository;
+use Orchestra\Projects\Ui\ProjectFieldsView;
 use Orchestra\Projects\Ui\ProjectListView;
 use Orchestra\Projects\Ui\ProjectUrls;
 use Orchestra\Projects\Ui\ProjectView;
@@ -19,11 +20,13 @@ use Orchestra\Projects\Ui\ProjectView;
 final class ProjectsPage
 {
     public const SLUG = 'orchestra-projects';
+    public const FIELDS_SLUG = 'orchestra-project-fields';
 
     public function __construct(
         private readonly ProjectRepository $projects,
         private readonly ProjectListView $listView,
         private readonly ProjectView $projectView,
+        private readonly ProjectFieldsView $fieldsView,
     ) {
     }
 
@@ -50,7 +53,8 @@ final class ProjectsPage
             static fn (int $projectId, string $tab): string => self::url($projectId, $tab),
             static fn (?int $projectId): string => $projectId === null
                 ? \admin_url('post-new.php?post_type=' . ProjectPostType::NAME)
-                : (string) \get_edit_post_link($projectId, 'url')
+                : (string) \get_edit_post_link($projectId, 'url'),
+            static fn (): string => \add_query_arg('page', self::FIELDS_SLUG, \admin_url('admin.php'))
         );
     }
 
@@ -86,6 +90,22 @@ final class ProjectsPage
             Capabilities::PROJECT_MANAGE,
             'post-new.php?post_type=' . ProjectPostType::NAME
         );
+        \add_submenu_page(
+            self::SLUG,
+            \__('Project Fields', 'orchestra-projects'),
+            \__('Project Fields', 'orchestra-projects'),
+            Capabilities::FIELDS_MANAGE,
+            self::FIELDS_SLUG,
+            [$this, 'renderFields']
+        );
+    }
+
+    /**
+     * @internal Submenu page callback.
+     */
+    public function renderFields(): void
+    {
+        echo Html::adminPage(\__('Project Fields', 'orchestra-projects'), $this->fieldsView->form()); // escaped
     }
 
     /**

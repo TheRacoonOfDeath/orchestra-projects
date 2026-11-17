@@ -29,6 +29,8 @@ final class ProjectStatusService
         $this->projects->setStatus($project->id, $target);
         if ($target === ProjectStatus::Open) {
             $this->participation->createForProject($project->id);
+            // The deadline reminder only goes out if the project was open seven days before the deadline.
+            \update_post_meta($project->id, ProjectPostType::META_OPENED_ON, \current_time('Y-m-d'));
         }
 
         \do_action(self::ACTION_STATUS_CHANGED, $project->id, $target->value, $project->status->value);

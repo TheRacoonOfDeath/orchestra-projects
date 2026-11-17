@@ -14,7 +14,7 @@ use Orchestra\Projects\Project\ProjectRepository;
  * respond and download their sheet music; conductors and organizers manage projects here.
  *
  * `?orchestra_project=ID&orchestra_tab=…` shows a project, `&orchestra_edit=1` (or
- * `orchestra_project=new`) its form.
+ * `orchestra_project=new`) its form, `?orchestra_project_fields=1` the project fields.
  */
 final class ProjectsShortcode
 {
@@ -22,12 +22,14 @@ final class ProjectsShortcode
     public const PROJECT_PARAMETER = 'orchestra_project';
     public const TAB_PARAMETER = 'orchestra_tab';
     public const EDIT_PARAMETER = 'orchestra_edit';
+    public const FIELDS_PARAMETER = 'orchestra_project_fields';
 
     public function __construct(
         private readonly ProjectRepository $projects,
         private readonly ProjectListView $listView,
         private readonly ProjectView $projectView,
         private readonly ProjectFormView $formView,
+        private readonly ProjectFieldsView $fieldsView,
     ) {
     }
 
@@ -48,7 +50,8 @@ final class ProjectsShortcode
             ),
             static fn (?int $projectId): string => $projectId === null
                 ? \add_query_arg(self::PROJECT_PARAMETER, 'new', $base)
-                : \add_query_arg([self::PROJECT_PARAMETER => $projectId, self::EDIT_PARAMETER => 1], $base)
+                : \add_query_arg([self::PROJECT_PARAMETER => $projectId, self::EDIT_PARAMETER => 1], $base),
+            static fn (): string => \add_query_arg(self::FIELDS_PARAMETER, '1', $base)
         );
     }
 
@@ -65,12 +68,23 @@ final class ProjectsShortcode
         }
 
         $base = \remove_query_arg(
-            [self::PROJECT_PARAMETER, self::TAB_PARAMETER, self::EDIT_PARAMETER, ProjectListView::COMPLETED_PARAMETER],
+            [
+                self::PROJECT_PARAMETER,
+                self::TAB_PARAMETER,
+                self::EDIT_PARAMETER,
+                self::FIELDS_PARAMETER,
+                ProjectListView::COMPLETED_PARAMETER,
+            ],
             Redirect::currentUrl()
         );
         $urls = self::urls($base);
         $requested = \is_string($_GET[self::PROJECT_PARAMETER] ?? null) ? $_GET[self::PROJECT_PARAMETER] : '';
 
+        if (($_GET[self::FIELDS_PARAMETER] ?? '') === '1' && \current_user_can(Capabilities::FIELDS_MANAGE)) {
+            return Html::page('<p class="orchestra-back"><a href="' . \esc_url($base) . '">&larr; '
+                . \esc_html__('All projects', 'orchestra-projects') . '</a></p><h2>'
+                . \esc_html__('Project fields', 'orchestra-projects') . '</h2>' . $this->fieldsView->form());
+        }
         if ($requested === 'new' && \current_user_can(Capabilities::PROJECT_MANAGE)) {
             return Html::page($this->formView->render(null, $urls));
         }

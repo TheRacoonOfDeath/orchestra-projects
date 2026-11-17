@@ -16,6 +16,8 @@ final class Project
         public readonly ?string $endDate,
         /** @var list<string> Y-m-d, in chronological order; projects may have no concert */
         public readonly array $concertDates = [],
+        /** Y-m-d or null: until when members should respond */
+        public readonly ?string $registrationDeadline = null,
     ) {
     }
 
@@ -48,6 +50,14 @@ final class Project
         $lastDay = $this->lastDay();
 
         return $lastDay !== null && $lastDay < $today;
+    }
+
+    /**
+     * Whether the registration deadline is shown highlighted: while members can respond.
+     */
+    public function showsDeadline(): bool
+    {
+        return $this->registrationDeadline !== null && $this->status === ProjectStatus::Open;
     }
 
     /**

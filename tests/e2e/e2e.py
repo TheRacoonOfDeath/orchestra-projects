@@ -369,6 +369,7 @@ check(sorted(m["to"] for m in sent) == ["max@example.com", "mia@example.com", "m
 check(sent and sent[0]["subject"] == "Spring Concert 2027 is open for participation"
       and f"orchestra_project={spring}" in sent[0]["message"],
       "the email links to the project, where the members respond")
+check(sent and "Description of Spring Concert 2027" in sent[0]["message"], "the email contains the description")
 check('The status is now "Open for Participation". 4 of 4 members were informed by email.' in text(page),
       "the organizer is told how many members were informed")
 
@@ -1144,6 +1145,124 @@ _, page = act(organizer, bulk, "participation_bulk", status="declined")
 check("Select at least one member" in text(page), "changing nobody shows an error")
 wp("post", "delete", str(bulk), "--force")
 
+# --- Registration deadline, reminder and project fields --------------------------------------
+import datetime
+
+TODAY = datetime.date.fromisoformat(wp_eval('echo current_time("Y-m-d");'))
+
+
+def day(offset):
+    return (TODAY + datetime.timedelta(days=offset)).isoformat()
+
+
+def form_with(page, marker):
+    return next((f for f in re.findall(r"<form.*?</form>", page, flags=re.S) if marker in f), "")
+
+
+FIELDS_PAGE = f"{DASHBOARD}&orchestra_project_fields=1"
+status, page = conductor.get(FIELDS_PAGE)
+check("orchestra_new_project_fields" not in page, "conductors do not manage the project fields")
+status, _ = conductor.post("/wp-admin/admin-post.php", {"action": "orchestra_projects_save_fields", "_wpnonce": "x"})
+check(status == 403, "conductors cannot save project fields")
+_, page = organizer.get(DASHBOARD)
+check("orchestra_project_fields=1" in page, "organizers find the project fields on the project list")
+_, page = organizer.get(FIELDS_PAGE)
+_, page = organizer.post("/wp-admin/admin-post.php", {
+    "action": "orchestra_projects_save_fields", "_wpnonce": field(page, "_wpnonce") or "missing",
+    "redirect_to": FIELDS_PAGE,
+    "orchestra_project_field_order[]": ["new:0", "new:1", "new:2"],
+    "orchestra_new_project_fields[0][label]": "Arrival", "orchestra_new_project_fields[0][type]": "text",
+    "orchestra_new_project_fields[0][required]": "1",
+    "orchestra_new_project_fields[1][label]": "Bus", "orchestra_new_project_fields[1][type]": "checkbox",
+    "orchestra_new_project_fields[1][hint]": "I take the bus",
+    "orchestra_new_project_fields[2][label]": "Room", "orchestra_new_project_fields[2][type]": "select",
+    "orchestra_new_project_fields[2][choices]": "Single\nDouble",
+})
+check("The project fields have been saved." in text(page)
+      and [f["id"] for f in json.loads(wp_eval('echo json_encode(get_option("orchestra_projects_fields"));'))]
+      == ["arrival", "bus", "room"], "organizers define the project fields")
+
+_, page = organizer.get(f"{DASHBOARD}&orchestra_project=new")
+check('data-orchestra-projects-date="end"' in page and "orchestra_projects_registration_deadline" in page
+      and 'value="arrival"' in page, "the project form has the deadline, the end date script and the fields")
+_, page = organizer.post("/wp-admin/admin-post.php", {
+    "action": "orchestra_projects", "op": "save", "project": "0", "_wpnonce": field(page, "_wpnonce") or "missing",
+    "redirect_to": DASHBOARD, "orchestra_projects_title": "Autumn Workshop",
+    "orchestra_projects_description": "Bring a stand.", "orchestra_projects_start_date": day(30),
+    "orchestra_projects_end_date": day(32), "orchestra_projects_registration_deadline": day(10),
+    "orchestra_projects_fields_shown": "1", "orchestra_projects_fields[]": ["arrival", "room"],
+})
+autumn = int(wp_eval('echo (new WP_Query(["post_type" => "orchestra_project", "title" => "Autumn Workshop",'
+                     ' "fields" => "ids"]))->posts[0] ?? 0;') or 0)
+_, page = organizer.get(f"{DASHBOARD}&orchestra_project={autumn}&orchestra_edit=1")
+check(f'value="{day(10)}"' in page and f'min="{day(30)}"' in page,
+      "the deadline is saved and the end date cannot be before the start date")
+_, page = organizer.get(DASHBOARD)
+check("orchestra-projects-deadline" not in page, "drafts show no deadline on their card")
+act(organizer, autumn, "status", target="open")
+_, page = mia.get(DASHBOARD)
+check('<span class="orchestra-projects-deadline">Respond by' in page, "open projects show the deadline in red")
+_, page = mia.get(f"{DASHBOARD}&orchestra_project={autumn}")
+check("Registration deadline" in text(page) and "orchestra_projects_answer" not in page,
+      "the project page shows the deadline; no questions before accepting")
+
+autumn_mia = participation_of(autumn, "mia")["id"]
+respond(mia, autumn_mia, "accepted", page)
+_, page = mia.get(DASHBOARD)
+card = page.split("Autumn Workshop", 1)[1].split("</article>", 1)[0] if "Autumn Workshop" in page else ""
+check('<details class="orchestra-projects-parts"><summary><h4 class="orchestra-projects-section-title">Questions'
+      in card and 'orchestra-badge--warning">Please answer' in card and "Bus" not in card,
+      "after accepting, the card has the collapsed questions of the project, marked while required ones are missing")
+answer_form = form_with(card, 'value="orchestra_projects_answer"')
+answer = {"action": "orchestra_projects_answer", "participation": str(autumn_mia),
+          "_wpnonce": field(answer_form, "_wpnonce") or "missing", "redirect_to": DASHBOARD}
+_, page = mia.post("/wp-admin/admin-post.php", {**answer, "orchestra_projects_answer[room]": "Double"})
+check('Please answer "Arrival".' in text(page), "required questions must be answered")
+_, page = mia.post("/wp-admin/admin-post.php", {**answer, "orchestra_projects_answer[arrival]": "Friday evening",
+                                                 "orchestra_projects_answer[room]": "Double"})
+check("Your answers have been saved." in text(page) and 'orchestra-badge--warning">Please answer'
+      not in page.split("Autumn Workshop", 1)[1].split("</article>", 1)[0], "members answer the questions on the card")
+status, _ = max_.post("/wp-admin/admin-post.php", {**answer, "orchestra_projects_answer[arrival]": "Never"})
+check(status == 403, "members cannot answer for others")
+_, page = organizer.get(manage_url(autumn, "participation"))
+check("2 of 2 answered" in text(page) and "Friday evening" in text(page), "organizers see the answers")
+_, page = conductor.get(manage_url(autumn, "participation"))
+check("Friday evening" not in page, "conductors do not see the answers")
+status, _, body = organizer.request(f"/wp-admin/admin-post.php?action=orchestra_projects_export_participants&project={autumn}")
+csv_text = body.decode("utf-8-sig")
+check("Arrival" in csv_text and "Friday evening" in csv_text and "Bus" not in csv_text,
+      "the export has a column per field of the project")
+
+before = len(mails())
+wp_eval(f'update_post_meta({autumn}, "orchestra_projects_registration_deadline", "{day(7)}");'
+        f' update_post_meta({autumn}, "orchestra_projects_deadline_set_on", "{day(-1)}");'
+        f' update_post_meta({autumn}, "orchestra_projects_opened_on", "{day(-1)}");')
+wp("cron", "event", "run", "orchestra_projects_deadline_reminders")
+pending = sorted(projects_api(
+    f'$m = Orchestra\\Members\\Plugin::instance()->members(); echo json_encode(array_values(array_map('
+    f'fn ($u) => get_userdata($u)->user_email, array_filter($p->participantIds({autumn},'
+    f' Orchestra\\Projects\\Participation\\ParticipationStatus::Open), fn ($u) => $m->isActive($u)))));'
+))
+sent = mails()[before:]
+check(sorted(m["to"] for m in sent) == pending and "mia@example.com" not in pending and pending != [],
+      f"seven days before the deadline, the undecided members are reminded: {[m['to'] for m in sent]}")
+check(sent and sent[0]["subject"].startswith("Reminder: please respond to Autumn Workshop"),
+      "the reminder has its own subject")
+check(sent and "organizer@example.com" in json.dumps(sent[0].get("headers", "")),
+      "replies to the reminder go to the user who created the project")
+wp("cron", "event", "run", "orchestra_projects_deadline_reminders")
+check(len(mails()) == before + len(sent), "the reminder is sent once")
+wp_eval(f'update_post_meta({autumn}, "orchestra_projects_registration_deadline", "{day(6)}");'
+        f' update_post_meta({autumn}, "orchestra_projects_deadline_set_on", "{day(0)}");')
+wp("cron", "event", "run", "orchestra_projects_deadline_reminders")
+check(len(mails()) == before + len(sent), "a deadline set with less than seven days left gets no reminder")
+
+act(organizer, autumn, "status", target="preparation")
+_, page = mia.get(f"{DASHBOARD}&orchestra_project={autumn}")
+check("orchestra_projects_answer" not in page and "Friday evening" in text(page)
+      and "orchestra-projects-deadline" not in page,
+      "after the registration, members see their answers without changing them, and no red deadline")
+
 # --- Upgrading from the fees of 0.23 and 0.24 ------------------------------------------------
 wp_eval('global $wpdb; $wpdb->query("ALTER TABLE {$wpdb->prefix}orchestra_projects_participation'
         ' ADD COLUMN fee_paid tinyint(1) NOT NULL DEFAULT 0");'
@@ -1152,7 +1271,7 @@ organizer.get(DASHBOARD)
 columns = wp_json('global $wpdb; echo json_encode($wpdb->get_col("SHOW COLUMNS FROM {$wpdb->prefix}orchestra_projects_participation"));')
 check("fee_paid" not in columns and "organizer_note" in columns
       and wp_eval(f'echo get_post_meta({spring}, "orchestra_projects_fee", true);') == ""
-      and wp_eval('echo get_option("orchestra_projects_schema_version");') == "6",
+      and wp_eval('echo get_option("orchestra_projects_schema_version");') == "7",
       "updating removes the fees and who paid them")
 created_by = wp_json('global $wpdb; echo json_encode($wpdb->get_row("SHOW COLUMNS FROM'
                      ' {$wpdb->prefix}orchestra_projects_assignments LIKE \'created_by\'", ARRAY_A));')
@@ -1168,6 +1287,7 @@ check("Spring Concert 2027" in values and "Horn 1" in values and "Accepted" in v
       "personal data export contains participation and parts")
 check("Only from the 28th" in values and "Room booked from the 28th" in values,
       "the personal data export contains the member's comment and the organizers' note")
+check("Friday evening" in values, "the personal data export contains the answers to project fields")
 erased = wp_json(
     '$e = apply_filters("wp_privacy_personal_data_erasers", [])["orchestra-projects"];'
     'echo json_encode(call_user_func($e["callback"], "mia@example.com", 1));'
@@ -1176,6 +1296,8 @@ check(erased["items_retained"] and erased["items_removed"], "the eraser keeps th
 check(participation_of(spring, "mia")["member_comment"] is None and participation_of(spring, "mia")["organizer_note"] is None
       and participation_of(spring, "mia")["status"] == "accepted",
       "the eraser deletes comments and notes but keeps the decision")
+check(wp_eval('global $wpdb; echo $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}orchestra_projects_answers'
+              f' WHERE user_id = {ids["mia"]}");') == "0", "the eraser deletes the answers")
 _, page = admin.get("/wp-admin/options-privacy.php?tab=policyguide")
 check("Orchestra Projects" in page, "suggests a privacy policy text")
 
@@ -1200,6 +1322,9 @@ wp("plugin", "uninstall", "orchestra-projects")
 tables = wp_eval('global $wpdb; echo json_encode($wpdb->get_col("SHOW TABLES LIKE \'%orchestra_projects%\'"));')
 check(tables == "[]" and wp_eval(f'echo (int) (get_post({spring}) !== null);') == "0",
       "uninstall removes the tables and projects")
+check(wp_eval('echo json_encode(get_option("orchestra_projects_fields"));') == "false"
+      and wp("cron", "event", "list", "--hook=orchestra_projects_deadline_reminders", "--format=count") == "0",
+      "uninstall removes the project fields and the reminder event")
 
 wp("plugin", "deactivate", "orchestra-members", "orchestra-library", "orchestra-email", "orchestra-core")
 wp("plugin", "uninstall", "orchestra-core")

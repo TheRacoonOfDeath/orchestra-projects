@@ -8,6 +8,7 @@ use Orchestra\Members\Member;
 use Orchestra\Members\Profile\Profile;
 use Orchestra\Members\Profile\ProfileField;
 use Orchestra\Projects\Export\ParticipantsExport;
+use Orchestra\Projects\Field\ProjectField;
 use PHPUnit\Framework\TestCase;
 
 final class ParticipantsExportTest extends TestCase
@@ -85,6 +86,28 @@ final class ParticipantsExportTest extends TestCase
         $rows = ParticipantsExport::table([], [[self::member(4, '', '', 'Conny'), null, '', '']]);
 
         $this->assertSame(['Conny', '', 'user4@example.com', '', ''], $rows[1]);
+    }
+
+    public function testHasAColumnPerProjectFieldAndCountsItsChoices(): void
+    {
+        $projectFields = [
+            new ProjectField('bus', 'Bus', ProjectField::TYPE_CHECKBOX),
+            new ProjectField('room', 'Room', ProjectField::TYPE_SELECT, '', ['Single', 'Double']),
+        ];
+        $people = [[self::member(1, 'Mia', 'Muster'), null, '', ''], [self::member(2, 'Ben', 'Albers'), null, '', '']];
+
+        $rows = ParticipantsExport::table([], $people, $projectFields, [1 => ['bus' => '1', 'room' => 'Double']]);
+
+        $this->assertSame([
+            ['Last name', 'First name', 'Email address', 'Bus', 'Room', 'Comment', 'Organizer note'],
+            ['Albers', 'Ben', 'user2@example.com', 'No', '', '', ''],
+            ['Muster', 'Mia', 'user1@example.com', 'Yes', 'Double', '', ''],
+            [],
+            ['Room', 'Number'],
+            ['Single', '0'],
+            ['Double', '1'],
+            ['No answer', '1'],
+        ], $rows);
     }
 
     private static function member(int $id, string $firstName, string $lastName, string $displayName = ''): Member

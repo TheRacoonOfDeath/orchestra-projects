@@ -7,6 +7,8 @@ namespace Orchestra\Projects\Ui;
 use Orchestra\Core\Ui\Form;
 use Orchestra\Core\Ui\Html;
 use Orchestra\Members\MembersService;
+use Orchestra\Projects\Capabilities;
+use Orchestra\Projects\Field\ProjectFields;
 use Orchestra\Projects\Project\Project;
 use Orchestra\Projects\Project\ProjectFormHandler;
 use Orchestra\Projects\Project\ProjectPostType;
@@ -27,6 +29,8 @@ final class ProjectFormView
     public function __construct(
         private readonly StaffRepository $staff,
         private readonly MembersService $members,
+        private readonly ProjectFields $fields,
+        private readonly bool $reminders = false,
     ) {
     }
 
@@ -64,6 +68,7 @@ final class ProjectFormView
             . $this->dateFields($project)
             . '</div>'
             . '<div class="orchestra-card orchestra-stack">' . $this->staffFields($projectId) . '</div>'
+            . '<div class="orchestra-card orchestra-stack">' . $this->fieldChoice($projectId, $urls) . '</div>'
             . '<div class="orchestra-actions">' . Form::submit(\__('Save', 'orchestra-projects'), 'primary')
             . Form::link($back, \__('Cancel', 'orchestra-projects')) . '</div></form>';
     }
@@ -71,21 +76,41 @@ final class ProjectFormView
 
     public function dateFields(?Project $project): string
     {
+        // The end date follows the start date while it is empty or earlier, so its picker opens in the
+        // right month (assets/orchestra-projects.js).
+        Assets::enqueueScript();
         $fields = [
-            [ProjectPostType::META_START_DATE, \__('Start date', 'orchestra-projects'), $project?->startDate],
-            [ProjectPostType::META_END_DATE, \__('End date', 'orchestra-projects'), $project?->endDate],
+            [ProjectPostType::META_START_DATE, \__('Start date', 'orchestra-projects'), $project?->startDate, 'start'],
+            [ProjectPostType::META_END_DATE, \__('End date', 'orchestra-projects'), $project?->endDate, 'end'],
         ];
         $html = '<div class="orchestra-row">';
-        foreach ($fields as [$name, $label, $value]) {
+        foreach ($fields as [$name, $label, $value, $role]) {
             $html .= Html::field(
                 $name,
                 $label,
                 '<input type="date" id="' . \esc_attr($name) . '" name="' . \esc_attr($name) . '" value="'
-                    . \esc_attr($value ?? '') . '">'
+                    . \esc_attr($value ?? '') . '" data-orchestra-projects-date="' . $role . '"'
+                    . ($role === 'end' && $project?->startDate !== null
+                        ? ' min="' . \esc_attr($project->startDate) . '"'
+                        : '')
+                    . '>'
             );
         }
 
-        return $html . '</div>' . self::concertFields($project->concertDates ?? []);
+        return $html . '</div>' . Html::field(
+            ProjectPostType::META_DEADLINE,
+            \__('Registration deadline', 'orchestra-projects'),
+            '<input type="date" id="' . ProjectPostType::META_DEADLINE . '" name="' . ProjectPostType::META_DEADLINE
+                . '" value="' . \esc_attr($project->registrationDeadline ?? '') . '" style="width:auto">',
+            \__(
+                'Until when members should respond. Shown while the project is open for participation.',
+                'orchestra-projects'
+            )
+                . ($this->reminders ? ' ' . \__(
+                    'Members who have not responded are reminded by email seven days before.',
+                    'orchestra-projects'
+                ) : '')
+        ) . self::concertFields($project->concertDates ?? []);
     }
 
     /**
@@ -121,6 +146,44 @@ final class ProjectFormView
         return '<div class="orchestra-actions" data-orchestra-row><input type="date" name="'
             . ProjectPostType::META_CONCERT_DATE . '[]" value="' . \esc_attr($date) . '" aria-label="'
             . \esc_attr__('Concert date', 'orchestra-projects') . '" style="width:auto">' . $remove . '</div>';
+    }
+
+    /**
+     * Which of the project fields the project asks its participants.
+     *
+     * @param ?ProjectUrls $urls For the link to the project fields; none in the meta box of wp-admin,
+     *     which has a menu entry for them
+     */
+    public function fieldChoice(int $projectId, ?ProjectUrls $urls = null): string
+    {
+        $html = '<fieldset class="orchestra-fieldset"><legend>' . \esc_html__('Questions', 'orchestra-projects')
+            . '</legend>'
+            // Tells the handler that the choice was in the form, also when nothing is ticked.
+            . Form::hidden(ProjectFormHandler::FIELD_FIELDS_SHOWN, '1');
+        $fields = $this->fields->all();
+        if ($fields === []) {
+            $html .= '<p class="orchestra-muted">'
+                . \esc_html__('There are no project fields yet.', 'orchestra-projects') . '</p>';
+        }
+        $selected = $projectId > 0 ? $this->fields->selectedIds($projectId) : [];
+        $html .= '<div class="orchestra-checklist">';
+        foreach ($fields as $field) {
+            $html .= '<label class="orchestra-checkbox"><input type="checkbox" name="'
+                . ProjectFormHandler::FIELD_FIELDS . '[]" value="' . \esc_attr($field->id) . '"'
+                . \checked(\in_array($field->id, $selected, true), true, false) . '> <span>'
+                . \esc_html($field->label . ($field->required ? ' *' : '')) . '</span></label>';
+        }
+        $html .= '</div></fieldset><p class="orchestra-muted">' . \esc_html__(
+            'Members who accepted answer the chosen questions while the project is open for participation;'
+                . ' * marks required ones. Unticking a question hides its answers in this project.',
+            'orchestra-projects'
+        ) . '</p>';
+        if ($urls !== null && \current_user_can(Capabilities::FIELDS_MANAGE)) {
+            $html .= '<p><a href="' . \esc_url($urls->fields()) . '">'
+                . \esc_html__('Manage the project fields', 'orchestra-projects') . '</a></p>';
+        }
+
+        return $html;
     }
 
     public function staffFields(int $projectId): string

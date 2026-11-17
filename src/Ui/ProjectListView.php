@@ -39,8 +39,11 @@ final class ProjectListView
 
         $html = '';
         if (\current_user_can(Capabilities::PROJECT_MANAGE)) {
-            $html .= '<div class="orchestra-toolbar"><span></span>'
-                . Form::link($urls->edit(null), \__('New project', 'orchestra-projects'), 'primary') . '</div>';
+            $html .= '<div class="orchestra-toolbar"><span></span><div class="orchestra-actions">'
+                . (\current_user_can(Capabilities::FIELDS_MANAGE)
+                    ? Form::link($urls->fields(), \__('Project fields', 'orchestra-projects'))
+                    : '')
+                . Form::link($urls->edit(null), \__('New project', 'orchestra-projects'), 'primary') . '</div></div>';
         }
         $html .= Html::tabs(
             ['active' => \__('Active', 'orchestra-projects'), 'completed' => \__('Completed', 'orchestra-projects')],
@@ -73,6 +76,9 @@ final class ProjectListView
         foreach ($projects as $project) {
             // The concerts are on the project page; the list stays short.
             $meta = '<span>' . \esc_html(Dates::range($project)) . '</span>';
+            if ($project->showsDeadline()) {
+                $meta .= Dates::deadline($project);
+            }
             if ($staff) {
                 $meta .= '<span>' . \esc_html($this->participationView->summary($project)) . '</span>';
             }
@@ -86,7 +92,8 @@ final class ProjectListView
                 . '<h3 class="orchestra-card__title"><a class="orchestra-card__link" href="'
                 . \esc_url($urls->project($project->id)) . '">'
                 . \esc_html($project->title) . '</a></h3><div class="orchestra-card__meta">' . $meta . '</div>'
-                . $this->memberView->participation($project, false) . $this->memberView->parts($project, true)
+                . $this->memberView->participation($project, false) . $this->memberView->answers($project, true)
+                . $this->memberView->parts($project, true)
                 . '</article>';
         }
 
