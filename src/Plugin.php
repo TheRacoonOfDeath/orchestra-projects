@@ -43,6 +43,7 @@ use Orchestra\Projects\Privacy\PersonalData;
 use Orchestra\Projects\Program\ProgramRepository;
 use Orchestra\Projects\Program\ProgramService;
 use Orchestra\Projects\Project\ProjectCleanup;
+use Orchestra\Projects\Project\ProjectDeletion;
 use Orchestra\Projects\Project\ProjectFormHandler;
 use Orchestra\Projects\Project\ProjectPostType;
 use Orchestra\Projects\Project\ProjectRepository;
@@ -294,7 +295,14 @@ final class Plugin
             $projectAnswers
         );
         $listView = new ProjectListView($this->projectRepository, $memberView, $participationView);
-        $formView = new ProjectFormView($this->staff, $members, $this->fields, $deadlineReminder !== null);
+        $deletion = new ProjectDeletion($this->participations);
+        $formView = new ProjectFormView(
+            $this->staff,
+            $members,
+            $this->fields,
+            $deletion,
+            $deadlineReminder !== null
+        );
         $fieldsView = new ProjectFieldsView($this->fields);
         $projectView = new ProjectView(
             $this->staff,
@@ -345,6 +353,7 @@ final class Plugin
             $assignmentService,
             $formHandler,
             $changes,
+            $deletion,
             $changedPartsEmail,
             $statusEmails
         ))->register();

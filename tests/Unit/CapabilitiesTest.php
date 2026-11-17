@@ -56,6 +56,7 @@ final class CapabilitiesTest extends TestCase
             Capabilities::PARTICIPATION_READ_OWN,
             Capabilities::PARTICIPATION_RESPOND_OWN,
             Capabilities::PROGRAM_MANAGE,
+            Capabilities::PROJECT_DELETE_UNOPENED,
             Capabilities::PROJECT_MANAGE,
             Capabilities::PROJECT_READ,
         ], $byRole[Roles::ORGANIZER]);

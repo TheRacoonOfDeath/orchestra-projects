@@ -23,8 +23,11 @@ final class Capabilities
     /** Create and edit projects, change their status and staff. */
     public const PROJECT_MANAGE = 'orchestra_projects_project_manage';
 
-    /** Delete projects. Projects are normally completed instead. */
+    /** Delete every project. Projects are normally completed instead. */
     public const PROJECT_DELETE = 'orchestra_projects_project_delete';
+
+    /** Delete projects that were never opened for participation, see {@see Project\ProjectDeletion}. */
+    public const PROJECT_DELETE_UNOPENED = 'orchestra_projects_project_delete_unopened';
 
     /** Add, remove and reorder the pieces of a program. Also opens the project screens in wp-admin. */
     public const PROGRAM_MANAGE = 'orchestra_projects_program_manage';
@@ -78,6 +81,7 @@ final class Capabilities
             ->register(self::PROJECT_READ, $everyone)
             ->register(self::PROJECT_MANAGE, [Roles::ORGANIZER])
             ->register(self::PROJECT_DELETE)
+            ->register(self::PROJECT_DELETE_UNOPENED, [Roles::ORGANIZER])
             ->register(self::PROGRAM_MANAGE, [Roles::CONDUCTOR, Roles::ORGANIZER])
             ->register(self::PARTICIPATION_READ_OWN, $players)
             ->register(self::PARTICIPATION_READ_OTHERS, [Roles::CONDUCTOR, Roles::ORGANIZER])

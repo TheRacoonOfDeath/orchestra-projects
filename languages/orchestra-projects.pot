@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-17 18:03+0100\n"
+"POT-Creation-Date: 2026-11-17 21:56+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,102 +28,112 @@ msgstr ""
 msgid "%s (inactive)"
 msgstr ""
 
-#: src/Admin/ProjectActions.php:75 src/Admin/ProjectActions.php:286
+#: src/Admin/ProjectActions.php:77 src/Admin/ProjectActions.php:309
 #: src/Admin/ProjectsPage.php:124 src/ProjectsService.php:140
 #: src/Ui/ProjectsShortcode.php:99
 msgid "The project does not exist."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:87 src/Admin/ProjectActions.php:130
-#: src/Export/AssignmentsPdfController.php:68
+#: src/Admin/ProjectActions.php:92 src/Admin/ProjectActions.php:135
+#: src/Admin/ProjectActions.php:176 src/Export/AssignmentsPdfController.php:68
 #: src/Export/ParticipantsExportController.php:87
 #: src/Frontend/AnswersController.php:57 src/Frontend/ResponseController.php:60
 msgid "You are not allowed to do this."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:99
+#: src/Admin/ProjectActions.php:104
 msgid "The changes are no longer listed. The members were not informed."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:112 src/Admin/ProjectActions.php:291
+#: src/Admin/ProjectActions.php:117 src/Admin/ProjectActions.php:314
 msgid "Saved."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:139
+#: src/Admin/ProjectActions.php:144
 msgid "Please enter a name."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:158
+#: src/Admin/ProjectActions.php:163
 msgid "The project has been saved."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:199
+#. translators: %s: name of the project
+#: src/Admin/ProjectActions.php:181
+#, php-format
+msgid "The project %s has been deleted."
+msgstr ""
+
+#: src/Admin/ProjectActions.php:183
+msgid "The project could not be deleted."
+msgstr ""
+
+#: src/Admin/ProjectActions.php:222
 msgid "There are no changes to inform the members about."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:204
+#: src/Admin/ProjectActions.php:227
 msgid ""
 "The parts changed in the meantime. Please check the changes again before "
 "informing the members."
 msgstr ""
 
 #. translators: 1: number of members emailed, 2: number of members with changes
-#: src/Admin/ProjectActions.php:215
+#: src/Admin/ProjectActions.php:238
 #, php-format
 msgid "%1$d of %2$d members with changed parts are informed by email."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:229
+#: src/Admin/ProjectActions.php:252
 msgid ""
 "Nobody was assigned: no member without a part has played one of these pieces "
 "before."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:236
+#: src/Admin/ProjectActions.php:259
 #, php-format
 msgid "%d part was assigned to the member who played it last time."
 msgid_plural "%d parts were assigned to the members who played them last time."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Admin/ProjectActions.php:262
+#: src/Admin/ProjectActions.php:285
 #, php-format
 msgid "The assignment was taken over: %d part was assigned."
 msgid_plural "The assignment was taken over: %d parts were assigned."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Admin/ProjectActions.php:282
+#: src/Admin/ProjectActions.php:305
 msgid "Unknown status."
 msgstr ""
 
 #. translators: %s: project status
-#: src/Admin/ProjectActions.php:296
+#: src/Admin/ProjectActions.php:319
 #, php-format
 msgid "The status is now \"%s\"."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:298
+#: src/Admin/ProjectActions.php:321
 msgid "The members were not informed by email."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:304
+#: src/Admin/ProjectActions.php:327
 msgid "There was nobody to inform by email."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:308
+#: src/Admin/ProjectActions.php:331
 #, php-format
 msgid "%1$d of %2$d member was informed by email."
 msgid_plural "%1$d of %2$d members were informed by email."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Admin/ProjectActions.php:327
+#: src/Admin/ProjectActions.php:350
 msgid "Select at least one member and a status."
 msgstr ""
 
-#: src/Admin/ProjectActions.php:334 src/Admin/ProjectActions.php:350
-#: src/Admin/ProjectActions.php:363
+#: src/Admin/ProjectActions.php:357 src/Admin/ProjectActions.php:373
+#: src/Admin/ProjectActions.php:386
 msgid "The participation does not exist."
 msgstr ""
 
@@ -136,7 +146,7 @@ msgid "Conductors and organizers"
 msgstr ""
 
 #: src/Admin/ProjectEditor.php:47 src/Ui/MemberProjectView.php:192
-#: src/Ui/ProjectFormView.php:159
+#: src/Ui/ProjectFormView.php:190
 msgid "Questions"
 msgstr ""
 
@@ -146,7 +156,7 @@ msgstr ""
 
 #: src/Admin/ProjectsPage.php:67 src/Admin/ProjectsPage.php:68
 #: src/Admin/ProjectsPage.php:81 src/Admin/ProjectsPage.php:139
-#: src/Plugin.php:378 src/Project/ProjectPostType.php:51
+#: src/Plugin.php:387 src/Project/ProjectPostType.php:51
 msgid "Projects"
 msgstr ""
 
@@ -322,7 +332,7 @@ msgid "The link to the project, where members respond"
 msgstr ""
 
 #. translators: %s: project name
-#: src/Email/DeadlineReminder.php:175
+#: src/Email/DeadlineReminder.php:178
 #, php-format
 msgid "Registration deadline: %s"
 msgstr ""
@@ -623,19 +633,19 @@ msgstr ""
 msgid "Declined"
 msgstr ""
 
-#: src/Plugin.php:370
+#: src/Plugin.php:379
 msgid "Plan projects, respond to them and download your sheet music."
 msgstr ""
 
-#: src/Plugin.php:373
+#: src/Plugin.php:382
 msgid "Plan projects: program, participation, parts and seating."
 msgstr ""
 
-#: src/Plugin.php:374
+#: src/Plugin.php:383
 msgid "Respond to projects, see your parts and download your sheet music."
 msgstr ""
 
-#: src/Plugin.php:403
+#: src/Plugin.php:412
 msgid ""
 "Orchestra Projects requires Orchestra Core 0.17, Orchestra Library and "
 "Orchestra Members to be active."
@@ -794,20 +804,20 @@ msgstr ""
 msgid "%s is not a valid date."
 msgstr ""
 
-#: src/Project/ProjectDates.php:46 src/Ui/ProjectFormView.php:83
+#: src/Project/ProjectDates.php:46 src/Ui/ProjectFormView.php:114
 msgid "Start date"
 msgstr ""
 
-#: src/Project/ProjectDates.php:47 src/Ui/ProjectFormView.php:84
+#: src/Project/ProjectDates.php:47 src/Ui/ProjectFormView.php:115
 msgid "End date"
 msgstr ""
 
-#: src/Project/ProjectDates.php:48 src/Ui/ProjectFormView.php:102
+#: src/Project/ProjectDates.php:48 src/Ui/ProjectFormView.php:133
 #: src/Ui/ProjectView.php:196
 msgid "Registration deadline"
 msgstr ""
 
-#: src/Project/ProjectDates.php:51 src/Ui/ProjectFormView.php:148
+#: src/Project/ProjectDates.php:51 src/Ui/ProjectFormView.php:179
 msgid "Concert date"
 msgstr ""
 
@@ -945,7 +955,7 @@ msgid "Take over"
 msgstr ""
 
 #: src/Ui/AssignmentsView.php:416 src/Ui/ProgramView.php:97
-#: src/Ui/ProjectFieldsView.php:112 src/Ui/ProjectFormView.php:143
+#: src/Ui/ProjectFieldsView.php:112 src/Ui/ProjectFormView.php:174
 msgid "Remove"
 msgstr ""
 
@@ -1343,7 +1353,7 @@ msgid ""
 msgstr ""
 
 #: src/Ui/ProjectFieldsView.php:42 src/Ui/ProjectFieldsView.php:91
-#: src/Ui/ProjectFormView.php:72
+#: src/Ui/ProjectFormView.php:74
 msgid "Save"
 msgstr ""
 
@@ -1418,89 +1428,100 @@ msgstr ""
 msgid "Choices, one per line"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:42 src/Ui/ProjectListView.php:46
+#: src/Ui/ProjectFormView.php:44 src/Ui/ProjectListView.php:46
 msgid "New project"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:43
+#: src/Ui/ProjectFormView.php:45
 msgid "Edit project"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:48 src/Ui/ProjectView.php:119
+#: src/Ui/ProjectFormView.php:50 src/Ui/ProjectView.php:119
 #: src/Ui/ProjectsShortcode.php:85 src/Ui/ProjectsShortcode.php:98
 msgid "All projects"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:55
+#: src/Ui/ProjectFormView.php:57
 msgid "Name"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:58
+#: src/Ui/ProjectFormView.php:60
 msgid "e.g. Spring Concert 2027"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:63
+#: src/Ui/ProjectFormView.php:65
 msgid "Description"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:66
+#: src/Ui/ProjectFormView.php:68
 msgid "Shown to all members, e.g. rehearsal times and places."
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:73
+#: src/Ui/ProjectFormView.php:75
 msgid "Cancel"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:106
+#: src/Ui/ProjectFormView.php:92
+msgid "Delete project"
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:97
+#, php-format
+msgid ""
+"Delete the project %s permanently, with its program, participation and "
+"assignments? This cannot be undone."
+msgstr ""
+
+#: src/Ui/ProjectFormView.php:137
 msgid ""
 "Until when members should respond. Shown while the project is open for "
 "participation."
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:110
+#: src/Ui/ProjectFormView.php:141
 msgid "Members who have not responded are reminded by email seven days before."
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:125
+#: src/Ui/ProjectFormView.php:156
 msgid "Concerts"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:133
+#: src/Ui/ProjectFormView.php:164
 msgid "+ Add concert"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:135
+#: src/Ui/ProjectFormView.php:166
 msgid "A project can have any number of concerts, or none."
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:166
+#: src/Ui/ProjectFormView.php:197
 msgid "There are no project fields yet."
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:177
+#: src/Ui/ProjectFormView.php:208
 msgid ""
 "Members who accepted answer the chosen questions while the project is open "
 "for participation; * marks required ones. Unticking a question hides its "
 "answers in this project."
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:183
+#: src/Ui/ProjectFormView.php:214
 msgid "Manage the project fields"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:192 src/Ui/ProjectView.php:198
+#: src/Ui/ProjectFormView.php:223 src/Ui/ProjectView.php:198
 msgid "Conductors"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:193 src/Ui/ProjectView.php:202
+#: src/Ui/ProjectFormView.php:224 src/Ui/ProjectView.php:202
 msgid "Organizers"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:203
+#: src/Ui/ProjectFormView.php:234
 msgid "Nobody has this role yet."
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:216
+#: src/Ui/ProjectFormView.php:247
 msgid ""
 "Shown on the project page. Every conductor and organizer has their rights in "
 "all projects."

@@ -10,6 +10,7 @@ use Orchestra\Members\MembersService;
 use Orchestra\Projects\Capabilities;
 use Orchestra\Projects\Field\ProjectFields;
 use Orchestra\Projects\Project\Project;
+use Orchestra\Projects\Project\ProjectDeletion;
 use Orchestra\Projects\Project\ProjectFormHandler;
 use Orchestra\Projects\Project\ProjectPostType;
 use Orchestra\Projects\Project\StaffRepository;
@@ -30,6 +31,7 @@ final class ProjectFormView
         private readonly StaffRepository $staff,
         private readonly MembersService $members,
         private readonly ProjectFields $fields,
+        private readonly ProjectDeletion $deletion,
         private readonly bool $reminders = false,
     ) {
     }
@@ -70,7 +72,36 @@ final class ProjectFormView
             . '<div class="orchestra-card orchestra-stack">' . $this->staffFields($projectId) . '</div>'
             . '<div class="orchestra-card orchestra-stack">' . $this->fieldChoice($projectId, $urls) . '</div>'
             . '<div class="orchestra-actions">' . Form::submit(\__('Save', 'orchestra-projects'), 'primary')
-            . Form::link($back, \__('Cancel', 'orchestra-projects')) . '</div></form>';
+            . Form::link($back, \__('Cancel', 'orchestra-projects')) . '</div></form>'
+            . ($project === null ? '' : $this->deleteForm($project, $urls));
+    }
+
+    /**
+     * "Delete project" below the form, for those who may delete this project. Its own form, since
+     * forms cannot be nested; it returns to the project list.
+     */
+    private function deleteForm(Project $project, ProjectUrls $urls): string
+    {
+        if (!$this->deletion->canDelete($project)) {
+            return '';
+        }
+
+        return '<div class="orchestra-actions">' . ProjectForms::button(
+            $project->id,
+            'delete',
+            \__('Delete project', 'orchestra-projects'),
+            ['redirect_to' => $urls->list()],
+            \sprintf(
+                /* translators: %s: name of the project */
+                \__(
+                    'Delete the project %s permanently, with its program, participation and assignments?'
+                        . ' This cannot be undone.',
+                    'orchestra-projects'
+                ),
+                $project->title
+            ),
+            'danger'
+        ) . '</div>';
     }
 
 

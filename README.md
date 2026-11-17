@@ -48,6 +48,8 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
   program, participation and assignments on the same page (or in **Projects** in wp-admin)
 - Email groups for [orchestra-email](https://github.com/TheRacoonOfDeath/orchestra-email), if it is
   installed: the accepted and pending participants of each project
+- "Delete project" at the bottom of the project form: organizers delete projects that were never opened
+  for participation, administrators every project (permanently, after a confirmation)
 - Pieces and parts used in projects cannot be deleted in the library
 - Privacy (GDPR): export and erasure with the WordPress privacy tools (erasing deletes comments,
   notes, answers to project fields and staff entries and keeps decisions and parts as history; deleting an account anonymizes

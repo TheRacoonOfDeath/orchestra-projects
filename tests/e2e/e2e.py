@@ -1310,7 +1310,30 @@ _, page = organizer.get(manage_url(spring, "participation"))
 check("Former member" in page, "anonymized participation is shown as former member")
 
 # --- Deleting projects and uninstalling -----------------------------------------------------
-wp("post", "delete", str(summer), "--force")
+def delete_form(session, project):
+    """The edit form of a project and the delete request its button sends."""
+    _, page = session.get(f"{DASHBOARD}&orchestra_project={project}&orchestra_edit=1")
+    return page, {"action": "orchestra_projects", "op": "delete", "project": str(project),
+                  "_wpnonce": field(page, "_wpnonce") or "missing", "redirect_to": DASHBOARD}
+
+
+scratch, _ = create_project(organizer, "Scratch Project", "2027-09-01", "2027-09-02")
+page, request = delete_form(organizer, scratch)
+check("Delete project" in page and "permanently" in page, "organizers can delete projects that were never opened")
+_, page = organizer.post("/wp-admin/admin-post.php", request)
+check("The project Scratch Project has been deleted." in text(page)
+      and wp_eval(f"echo (int) (get_post({scratch}) !== null);") == "0", "deleting returns to the project list")
+
+participants = wp_eval('global $wpdb; echo (int) $wpdb->get_var("SELECT COUNT(*) FROM'
+                       f' {{$wpdb->prefix}}orchestra_projects_participation WHERE project_id = {summer}");')
+page, request = delete_form(organizer, summer)
+status, _ = organizer.post("/wp-admin/admin-post.php", request)
+check(int(participants) > 0 and "Delete project" not in page and status == 403
+      and wp_eval(f"echo get_post_status({summer});") == "publish",
+      "organizers cannot delete projects that were opened")
+page, request = delete_form(admin, summer)
+check("Delete project" in page, "administrators can delete every project")
+admin.post("/wp-admin/admin-post.php", request)
 left = wp_eval('global $wpdb; echo (int) $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}orchestra_projects_participation'
                f' WHERE project_id = {summer}");')
 check(left == "0", "deleting a project deletes its participation")

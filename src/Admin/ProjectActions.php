@@ -17,6 +17,7 @@ use Orchestra\Projects\Participation\ParticipationService;
 use Orchestra\Projects\Participation\ParticipationStatus;
 use Orchestra\Projects\Program\ProgramService;
 use Orchestra\Projects\Project\Project;
+use Orchestra\Projects\Project\ProjectDeletion;
 use Orchestra\Projects\Project\ProjectRepository;
 use Orchestra\Projects\Project\ProjectStatus;
 use Orchestra\Projects\Project\ProjectFormHandler;
@@ -43,6 +44,7 @@ final class ProjectActions
         private readonly AssignmentService $assignments,
         private readonly ProjectFormHandler $formHandler,
         private readonly AssignmentChangeService $changes,
+        private readonly ProjectDeletion $deletion,
         private readonly ?ChangedPartsEmail $changedPartsEmail = null,
         private readonly ?StatusEmails $statusEmails = null,
     ) {
@@ -73,6 +75,9 @@ final class ProjectActions
         $project = $this->projects->find($projectId);
         if ($project === null) {
             \wp_die(\esc_html__('The project does not exist.', 'orchestra-projects'), 404);
+        }
+        if ($operation === 'delete') {
+            $this->delete($project);
         }
 
         $capability = match ($operation) {
@@ -160,6 +165,24 @@ final class ProjectActions
 
         // A new project is shown right away.
         Redirect::back($projectId === 0 ? [ProjectsShortcode::PROJECT_PARAMETER => $result] : []);
+    }
+
+    /**
+     * Deletes a project permanently and returns to the project list (`redirect_to` of the form).
+     */
+    private function delete(Project $project): never
+    {
+        if (!$this->deletion->canDelete($project)) {
+            \wp_die(\esc_html__('You are not allowed to do this.', 'orchestra-projects'), 403);
+        }
+
+        if ($this->deletion->delete($project)) {
+            /* translators: %s: name of the project */
+            Notices::success(\sprintf(\__('The project %s has been deleted.', 'orchestra-projects'), $project->title));
+        } else {
+            Notices::error(\__('The project could not be deleted.', 'orchestra-projects'));
+        }
+        Redirect::back();
     }
 
     /**

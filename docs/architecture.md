@@ -49,7 +49,7 @@ See also the [GDPR documentation of orchestra-core](https://github.com/TheRacoon
   answers to project fields, assignments, the participants export, and why the history is kept.
 - The answers to the project fields are not history: only the member and the organizers
   (`orchestra_projects_participation_manage`) see them, like the comments; conductors do not.
-- Deleting a project (administrators only) deletes its rows in all tables.
+- Deleting a project deletes its rows in all tables (`ProjectCleanup`, on `before_delete_post`).
 
 ## Rules
 
@@ -65,6 +65,14 @@ See also the [GDPR documentation of orchestra-core](https://github.com/TheRacoon
 - Versions before 0.8 had an Archived status after Completed; such projects count as completed.
 
 - Projects move one step forward or back, e.g. back to Open for late responses.
+- **Deleting** (since 0.42, `op=delete`, `Project\ProjectDeletion`): "Delete project" at the bottom of
+  the project form deletes the project permanently after a confirmation and returns to the list.
+  Administrators (`orchestra_projects_project_delete`) delete every project, organizers
+  (`orchestra_projects_project_delete_unopened`) only projects that were never opened: drafts without
+  participation records and without `_opened_on`, so a project moved back to Draft stays protected.
+  In wp-admin, administrators also have WordPress's Trash in the project list
+  (`edit.php?post_type=orchestra_project`); a project in the Trash keeps its data until it is
+  deleted permanently.
 - **Parts assigned** (since 0.28, German "Stimmverteilung abgeschlossen", stored as
   `parts_assigned`) comes between Preparation and Completed. The project is still running: it is
   listed as active, keeps its email groups, and assignments and program can still be changed.
