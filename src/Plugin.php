@@ -14,6 +14,7 @@ use Orchestra\Email\Plugin as EmailPlugin;
 use Orchestra\Library\Plugin as LibraryPlugin;
 use Orchestra\Members\MembersService;
 use Orchestra\Members\Plugin as MembersPlugin;
+use Orchestra\Members\Profile\Profile;
 use Orchestra\Projects\Admin\EmailLinks;
 use Orchestra\Projects\Admin\Names;
 use Orchestra\Projects\Admin\ProjectActions;
@@ -216,6 +217,8 @@ final class Plugin
         // The export needs the names and profile fields of orchestra-members 0.9. Plugins are
         // updated one by one, so an older version may still be running.
         $exportAvailable = \in_array('profileFields', \get_class_methods($members), true);
+        // The birth date exists since orchestra-members 0.22.
+        $birthDates = \property_exists(Profile::class, 'birthDate');
 
         // orchestra-email is optional.
         $email = \class_exists(EmailPlugin::class) && EmailPlugin::running()
@@ -291,6 +294,7 @@ final class Plugin
             $this->participations,
             $this->assignments,
             $names,
+            $members,
             $exportAvailable,
             $projectAnswers
         );
@@ -330,7 +334,7 @@ final class Plugin
         if ($exportAvailable) {
             (new ParticipantsExportController(
                 $this->projectRepository,
-                new ParticipantsExport($this->participations, $members, $projectAnswers)
+                new ParticipantsExport($this->participations, $members, $projectAnswers, $birthDates)
             ))->register();
         }
         (new AssignmentsPdfController(

@@ -168,7 +168,7 @@
     margin-top: 0;
 }
 
-/* The registration deadline while members can respond: a slight red highlight. */
+/* The registration deadline while the member still has to respond: a slight red highlight. */
 .orchestra .orchestra-projects-deadline {
     background: color-mix(in srgb, var(--orchestra-danger) 10%, transparent);
     border-radius: 0.3em;

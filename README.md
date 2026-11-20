@@ -11,8 +11,8 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
 - Projects with dates, conductors and organizers, moving through Draft → Open for Participation →
   Preparation → Parts assigned → Completed; the project list has tabs for the active and the
   completed projects
-- A registration deadline per project, shown in red on the card and the project page while the
-  project is open for participation; seven days before it, the members who have not responded yet
+- A registration deadline per project, shown on the card and the project page while the project is
+  open for participation, in red for members who have not responded yet; seven days before it, the members who have not responded yet
   get a reminder email (with orchestra-email 0.10 or later; organizers change the text on the Email
   page)
 - Project fields: questions to the participants (text, long text, checkbox or choice list, optionally
@@ -24,8 +24,9 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
 - Participation: opening a project asks every active member and organizer to accept or decline;
   the decision is final, organizers can change it. On the Participation tab, the accepted, pending
   and declined members are groups that open with a click
-- Organizers export the accepted participants with their profile fields and their answers to the
-  project fields as a CSV file for Excel; below them, every choice list is counted (e.g. "vegetarian
+- Organizers export the accepted participants with their birth date, their age at the start of the
+  project (orchestra-members 0.22 or later), their profile fields and their answers to the project
+  fields as a CSV file for Excel; below them, every choice list is counted (e.g. "vegetarian
   5, vegan 3")
 - Assignments of members to parts, with hints who played the part last time or in a completed
   project, and a button that gives everyone the part they played last time; the assignments can be

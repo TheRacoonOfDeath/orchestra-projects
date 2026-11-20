@@ -470,9 +470,10 @@ check(status == 200 and headers.get("content-type") == "text/csv; charset=UTF-8"
       "organizers download the participants as a CSV file")
 check(body.startswith(b"\xef\xbb\xbf") and csv.endswith("\r\n"), "the export is UTF-8 with BOM and Windows line endings")
 check(csv.lstrip("﻿").split("\r\n")[:3] == [
-    '"Last name","First name","Email address","Financial support","Dietary restrictions","Comment","Organizer note"',
-    '"Müller","Mia","mia@example.com","Yes","\'=1+1, ""vegan""\nno nuts","Only from the 28th","Room booked from the 28th"',
-    '"Olga","","organizer@example.com","No","","",""',
+    '"Last name","First name","Email address","Birth date","Age at project start","Financial support",'
+    '"Dietary restrictions","Comment","Organizer note"',
+    '"Müller","Mia","mia@example.com","","","Yes","\'=1+1, ""vegan""\nno nuts","Only from the 28th","Room booked from the 28th"',
+    '"Olga","","organizer@example.com","","","No","","",""',
 ] and "max@example.com" not in csv, "one column per property and profile field, accepted participants only, no formulas")
 wp_eval('update_option("orchestra_members_profile_fields", [["id" => "diet", "label" => "Diet", "type" => "select",'
         ' "hint" => "", "choices" => ["vegetarian", "vegan"], "checked" => false, "other" => true]]);'
@@ -805,6 +806,8 @@ wp_eval(f'update_user_meta({ids["mo"]}, "orchestra_members_inactive", "1");')
 _, page = send_email(organizer, [f"orchestra_projects_{spring}_open"], "Please respond", "review")
 check("Mo" not in text(page).split("Recipients", 1)[1].split("Subject", 1)[0] and "Nia" in page,
       "inactive members are left out of project groups")
+_, page = organizer.get(manage_url(spring, "participation"))
+check("Mo (inactive)" not in text(page), "inactive members who did not accept are not listed on the participation tab")
 wp_eval(f'delete_user_meta({ids["mo"]}, "orchestra_members_inactive");')
 
 wp_eval(f'update_user_meta({ids["mia"]}, "orchestra_members_inactive", "1");')
@@ -1213,6 +1216,11 @@ card = page.split("Autumn Workshop", 1)[1].split("</article>", 1)[0] if "Autumn 
 check('<details class="orchestra-projects-parts"><summary><h4 class="orchestra-projects-section-title">Questions'
       in card and 'orchestra-badge--warning">Please answer' in card and "Bus" not in card,
       "after accepting, the card has the collapsed questions of the project, marked while required ones are missing")
+check("Respond by" in card and "orchestra-projects-deadline" not in card,
+      "after responding, the card shows the deadline without the red")
+_, project_page = mia.get(f"{DASHBOARD}&orchestra_project={autumn}")
+check("Registration deadline" in text(project_page) and "orchestra-projects-deadline" not in project_page,
+      "after responding, the project page shows the deadline without the red")
 answer_form = form_with(card, 'value="orchestra_projects_answer"')
 answer = {"action": "orchestra_projects_answer", "participation": str(autumn_mia),
           "_wpnonce": field(answer_form, "_wpnonce") or "missing", "redirect_to": DASHBOARD}
@@ -1232,6 +1240,14 @@ status, _, body = organizer.request(f"/wp-admin/admin-post.php?action=orchestra_
 csv_text = body.decode("utf-8-sig")
 check("Arrival" in csv_text and "Friday evening" in csv_text and "Bus" not in csv_text,
       "the export has a column per field of the project")
+start = datetime.date.fromisoformat(day(30))
+birth = start.replace(year=start.year - 20) - datetime.timedelta(days=1)
+wp("user", "meta", "update", str(ids["mia"]), "orchestra_members_birth_date", birth.isoformat())
+status, _, body = organizer.request(f"/wp-admin/admin-post.php?action=orchestra_projects_export_participants&project={autumn}")
+mia_row = next((line for line in body.decode("utf-8-sig").splitlines() if "mia@example.com" in line), "")
+check('"Birth date","Age at project start"' in body.decode("utf-8-sig")
+      and f'"{birth.isoformat()}","20"' in mia_row,
+      f"the export has the birth date and the age at the start of the project: {mia_row}")
 
 before = len(mails())
 wp_eval(f'update_post_meta({autumn}, "orchestra_projects_registration_deadline", "{day(7)}");'

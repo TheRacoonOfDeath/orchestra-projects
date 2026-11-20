@@ -77,7 +77,7 @@ final class ProjectListView
             // The concerts are on the project page; the list stays short.
             $meta = '<span>' . \esc_html(Dates::range($project)) . '</span>';
             if ($project->showsDeadline()) {
-                $meta .= Dates::deadline($project);
+                $meta .= Dates::deadline($project, $this->memberView->awaitsResponse($project));
             }
             if ($staff) {
                 $meta .= '<span>' . \esc_html($this->participationView->summary($project)) . '</span>';

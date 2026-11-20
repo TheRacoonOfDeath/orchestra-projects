@@ -36,6 +36,20 @@ final class MemberProjectView
     ) {
     }
 
+    /**
+     * Whether the current user still has to respond to the project: it is open for participation
+     * and their participation is pending. Only then is the registration deadline shown in red.
+     */
+    public function awaitsResponse(Project $project): bool
+    {
+        if (!$project->showsDeadline()) {
+            return false;
+        }
+        $participation = $this->participations->findFor($project->id, \get_current_user_id());
+
+        return $participation !== null && $participation->status === ParticipationStatus::Open;
+    }
+
     public function participation(Project $project, bool $explain = true): string
     {
         $participation = $this->participations->findFor($project->id, \get_current_user_id());

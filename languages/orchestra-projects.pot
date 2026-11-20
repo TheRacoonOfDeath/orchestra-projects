@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-17 21:56+0100\n"
+"POT-Creation-Date: 2026-11-20 12:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -145,7 +145,7 @@ msgstr ""
 msgid "Conductors and organizers"
 msgstr ""
 
-#: src/Admin/ProjectEditor.php:47 src/Ui/MemberProjectView.php:192
+#: src/Admin/ProjectEditor.php:47 src/Ui/MemberProjectView.php:206
 #: src/Ui/ProjectFormView.php:190
 msgid "Questions"
 msgstr ""
@@ -156,7 +156,7 @@ msgstr ""
 
 #: src/Admin/ProjectsPage.php:67 src/Admin/ProjectsPage.php:68
 #: src/Admin/ProjectsPage.php:81 src/Admin/ProjectsPage.php:139
-#: src/Plugin.php:387 src/Project/ProjectPostType.php:51
+#: src/Plugin.php:390 src/Project/ProjectPostType.php:51
 msgid "Projects"
 msgstr ""
 
@@ -451,31 +451,45 @@ msgctxt "CSV column separator"
 msgid ","
 msgstr ""
 
-#: src/Export/ParticipantsExport.php:120
+#: src/Export/ParticipantsExport.php:136
 msgid "Last name"
 msgstr ""
 
-#: src/Export/ParticipantsExport.php:121
+#: src/Export/ParticipantsExport.php:137
 msgid "First name"
 msgstr ""
 
-#: src/Export/ParticipantsExport.php:122
+#: src/Export/ParticipantsExport.php:138
 msgid "Email address"
 msgstr ""
 
-#: src/Export/ParticipantsExport.php:125
+#: src/Export/ParticipantsExport.php:140
+msgid "Age at project start"
+msgstr ""
+
+#: src/Export/ParticipantsExport.php:140
+msgid "Birth date"
+msgstr ""
+
+#: src/Export/ParticipantsExport.php:144
 msgid "Comment"
 msgstr ""
 
-#: src/Export/ParticipantsExport.php:126 src/Privacy/PersonalData.php:112
+#: src/Export/ParticipantsExport.php:145 src/Privacy/PersonalData.php:112
 msgid "Organizer note"
 msgstr ""
 
-#: src/Export/ParticipantsExport.php:175
+#. translators: PHP date format of dates in the participants export, which Excel reads as dates
+#: src/Export/ParticipantsExport.php:192
+msgctxt "CSV date format"
+msgid "Y-m-d"
+msgstr ""
+
+#: src/Export/ParticipantsExport.php:236
 msgid "Number"
 msgstr ""
 
-#: src/Export/ParticipantsExport.php:180
+#: src/Export/ParticipantsExport.php:241
 msgid "No answer"
 msgstr ""
 
@@ -633,19 +647,19 @@ msgstr ""
 msgid "Declined"
 msgstr ""
 
-#: src/Plugin.php:379
+#: src/Plugin.php:382
 msgid "Plan projects, respond to them and download your sheet music."
 msgstr ""
 
-#: src/Plugin.php:382
+#: src/Plugin.php:385
 msgid "Plan projects: program, participation, parts and seating."
 msgstr ""
 
-#: src/Plugin.php:383
+#: src/Plugin.php:386
 msgid "Respond to projects, see your parts and download your sheet music."
 msgstr ""
 
-#: src/Plugin.php:412
+#: src/Plugin.php:415
 msgid ""
 "Orchestra Projects requires Orchestra Core 0.17, Orchestra Library and "
 "Orchestra Members to be active."
@@ -666,7 +680,7 @@ msgid "Project"
 msgstr ""
 
 #: src/Privacy/PersonalData.php:100 src/Ui/ProjectView.php:88
-#: src/Ui/ProjectView.php:208
+#: src/Ui/ProjectView.php:211
 msgid "Participation"
 msgstr ""
 
@@ -813,7 +827,7 @@ msgid "End date"
 msgstr ""
 
 #: src/Project/ProjectDates.php:48 src/Ui/ProjectFormView.php:133
-#: src/Ui/ProjectView.php:196
+#: src/Ui/ProjectView.php:197
 msgid "Registration deadline"
 msgstr ""
 
@@ -974,19 +988,19 @@ msgid "Members"
 msgstr ""
 
 #. translators: %s: date of the registration deadline
-#: src/Ui/Dates.php:48
+#: src/Ui/Dates.php:50
 #, php-format
 msgid "Respond by %s"
 msgstr ""
 
-#: src/Ui/Dates.php:72
+#: src/Ui/Dates.php:74
 msgid "Concert"
 msgid_plural "Concerts"
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: date format, see https://www.php.net/manual/datetime.format.php; German: j. F Y
-#: src/Ui/Dates.php:121
+#: src/Ui/Dates.php:123
 msgid "F j, Y"
 msgstr ""
 
@@ -1005,89 +1019,89 @@ msgstr ""
 msgid "Other: please specify"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:46
+#: src/Ui/MemberProjectView.php:60
 msgid "Your participation:"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:52
+#: src/Ui/MemberProjectView.php:66
 msgid "Your decision is final. To change it later, contact an organizer."
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:92
+#: src/Ui/MemberProjectView.php:106
 msgid "Your comment:"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:100
+#: src/Ui/MemberProjectView.php:114
 msgid "Add a comment for the organizers"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:101
+#: src/Ui/MemberProjectView.php:115
 msgid "Change your comment"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:108
+#: src/Ui/MemberProjectView.php:122
 msgid "Save comment"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:116
+#: src/Ui/MemberProjectView.php:130
 msgid "Comment for the organizers (optional)"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:120
+#: src/Ui/MemberProjectView.php:134
 msgid ""
 "E.g. if you can only come to some of the concerts. Only the organizers see "
 "it."
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:129 src/Ui/MemberProjectView.php:330
+#: src/Ui/MemberProjectView.php:143 src/Ui/MemberProjectView.php:344
 msgid "Accept to participate? Your decision is final."
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:130 src/Ui/MemberProjectView.php:331
+#: src/Ui/MemberProjectView.php:144 src/Ui/MemberProjectView.php:345
 msgid "Decline to participate? Your decision is final."
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:135 src/Ui/MemberProjectView.php:327
+#: src/Ui/MemberProjectView.php:149 src/Ui/MemberProjectView.php:341
 msgid "Accept"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:135 src/Ui/MemberProjectView.php:327
+#: src/Ui/MemberProjectView.php:149 src/Ui/MemberProjectView.php:341
 msgid "Decline"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:177
+#: src/Ui/MemberProjectView.php:191
 msgid "* Please answer."
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:179
+#: src/Ui/MemberProjectView.php:193
 msgid "Save answers"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:194
+#: src/Ui/MemberProjectView.php:208
 msgid "Please answer"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:245
+#: src/Ui/MemberProjectView.php:259
 msgid "No part assigned yet"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:246
+#: src/Ui/MemberProjectView.php:260
 msgid "No part"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:272
+#: src/Ui/MemberProjectView.php:286
 msgid "No sheet music yet"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:275
+#: src/Ui/MemberProjectView.php:289
 msgid "Download"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:288
+#: src/Ui/MemberProjectView.php:302
 msgid "Download all as a zip file"
 msgstr ""
 
-#: src/Ui/MemberProjectView.php:302
+#: src/Ui/MemberProjectView.php:316
 msgid "Your parts"
 msgstr ""
 
@@ -1114,7 +1128,7 @@ msgid ""
 msgstr ""
 
 #: src/Ui/PartChangesView.php:115 src/Ui/PartChangesView.php:133
-#: src/Ui/ProjectView.php:233
+#: src/Ui/ProjectView.php:236
 msgid "Email"
 msgstr ""
 
@@ -1509,11 +1523,11 @@ msgstr ""
 msgid "Manage the project fields"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:223 src/Ui/ProjectView.php:198
+#: src/Ui/ProjectFormView.php:223 src/Ui/ProjectView.php:201
 msgid "Conductors"
 msgstr ""
 
-#: src/Ui/ProjectFormView.php:224 src/Ui/ProjectView.php:202
+#: src/Ui/ProjectFormView.php:224 src/Ui/ProjectView.php:205
 msgid "Organizers"
 msgstr ""
 
@@ -1595,7 +1609,7 @@ msgid ""
 "changed."
 msgstr ""
 
-#: src/Ui/ProjectView.php:189 src/Ui/ProjectView.php:282
+#: src/Ui/ProjectView.php:189 src/Ui/ProjectView.php:285
 msgid "Status"
 msgstr ""
 
@@ -1603,43 +1617,43 @@ msgstr ""
 msgid "Dates"
 msgstr ""
 
-#: src/Ui/ProjectView.php:226
+#: src/Ui/ProjectView.php:229
 msgid "Email accepted participants"
 msgstr ""
 
-#: src/Ui/ProjectView.php:228
+#: src/Ui/ProjectView.php:231
 msgid "Email pending participants"
 msgstr ""
 
-#: src/Ui/ProjectView.php:230
+#: src/Ui/ProjectView.php:233
 msgid "Email accepted and pending"
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:253
+#: src/Ui/ProjectView.php:256
 #, php-format
 msgid "Change the status to \"%s\"?"
 msgstr ""
 
-#: src/Ui/ProjectView.php:259
+#: src/Ui/ProjectView.php:262
 msgid ""
 "All active members and organizers who have not been asked yet will be asked "
 "to respond."
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:265
+#: src/Ui/ProjectView.php:268
 #, php-format
 msgid "Move to \"%s\""
 msgstr ""
 
 #. translators: %s: project status
-#: src/Ui/ProjectView.php:267
+#: src/Ui/ProjectView.php:270
 #, php-format
 msgid "Back to \"%s\""
 msgstr ""
 
-#: src/Ui/ProjectView.php:308
+#: src/Ui/ProjectView.php:311
 msgid "Inform the members by email"
 msgstr ""
 

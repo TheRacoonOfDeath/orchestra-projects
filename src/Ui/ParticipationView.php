@@ -7,6 +7,7 @@ namespace Orchestra\Projects\Ui;
 use Orchestra\Core\Ui\Form;
 use Orchestra\Core\Ui\Html;
 use Orchestra\Core\Ui\Redirect;
+use Orchestra\Members\MembersService;
 use Orchestra\Projects\Admin\Names;
 use Orchestra\Projects\Assignment\AssignmentRepository;
 use Orchestra\Projects\Capabilities;
@@ -22,7 +23,8 @@ use Orchestra\Projects\Project\ProjectStatus;
 
 /**
  * Who accepted, declined or has not responded; organizers change decisions here. Every group can
- * be closed and opened and starts closed, because the lists are long.
+ * be closed and opened and starts closed, because the lists are long. Inactive members are listed
+ * only if they accepted, since that is the history of who took part.
  */
 final class ParticipationView
 {
@@ -36,6 +38,7 @@ final class ParticipationView
         private readonly ParticipationRepository $participations,
         private readonly AssignmentRepository $assignments,
         private readonly Names $names,
+        private readonly MembersService $members,
         private readonly bool $exportAvailable,
         private readonly ?ProjectAnswers $answers = null,
     ) {
@@ -47,7 +50,7 @@ final class ParticipationView
     public function summary(Project $project): string
     {
         $counts = \array_fill_keys(\array_map(static fn ($s) => $s->value, ParticipationStatus::cases()), 0);
-        foreach ($this->participations->forProject($project->id) as $participation) {
+        foreach ($this->listed($project) as $participation) {
             $counts[$participation->status->value]++;
         }
 
@@ -90,7 +93,7 @@ final class ParticipationView
 
     public function render(Project $project): string
     {
-        $all = $this->participations->forProject($project->id);
+        $all = $this->listed($project);
         if ($all === []) {
             return Html::empty($project->status === ProjectStatus::Draft
                 ? \__('Members are asked to respond when the project is opened.', 'orchestra-projects')
@@ -247,6 +250,21 @@ final class ParticipationView
         );
 
         return [Redirect::FIELD => $url . '#' . self::anchor($status)];
+    }
+
+    /**
+     * The participations shown and counted: inactive members only if they accepted.
+     *
+     * @return list<Participation>
+     */
+    private function listed(Project $project): array
+    {
+        return \array_values(\array_filter(
+            $this->participations->forProject($project->id),
+            fn (Participation $p): bool => $p->status === ParticipationStatus::Accepted
+                || $p->userId === null
+                || $this->members->isActive($p->userId)
+        ));
     }
 
     /**

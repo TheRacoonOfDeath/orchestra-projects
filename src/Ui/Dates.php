@@ -34,10 +34,12 @@ final class Dates
     }
 
     /**
-     * The registration deadline, e.g. "Respond by May 8, 2027", slightly highlighted in red while
-     * members can respond; "" if the project has none. Escaped.
+     * The registration deadline, e.g. "Respond by May 8, 2027"; "" if the project has none. Escaped.
+     *
+     * @param bool $highlight Whether to highlight it slightly in red, see
+     *                        {@see MemberProjectView::awaitsResponse()}
      */
-    public static function deadline(Project $project, bool $withLabel = true): string
+    public static function deadline(Project $project, bool $highlight, bool $withLabel = true): string
     {
         if ($project->registrationDeadline === null) {
             return '';
@@ -48,7 +50,7 @@ final class Dates
             ? \sprintf(\__('Respond by %s', 'orchestra-projects'), $date)
             : $date;
 
-        if (!$project->showsDeadline()) {
+        if (!$highlight) {
             return \esc_html($text);
         }
         Assets::enqueue();

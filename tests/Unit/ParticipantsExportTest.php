@@ -9,6 +9,7 @@ use Orchestra\Members\Profile\Profile;
 use Orchestra\Members\Profile\ProfileField;
 use Orchestra\Projects\Export\ParticipantsExport;
 use Orchestra\Projects\Field\ProjectField;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class ParticipantsExportTest extends TestCase
@@ -44,6 +45,61 @@ final class ParticipantsExportTest extends TestCase
             ['Muster', 'Anna', 'user2@example.com', 'No', '', '', ''],
             ['Muster', 'Mia', 'user1@example.com', 'Yes', 'vegan', 'Only from the 27th', 'Room booked from the 27th'],
         ], ParticipantsExport::table($fields, $people));
+    }
+
+    public function testAddsTheBirthDateAndTheAgeAtTheStartOfTheProject(): void
+    {
+        $people = [
+            [self::member(1, 'Mia', 'Muster'), new Profile(1, true, [], '2008-05-08'), '', ''],
+            [self::member(2, 'Anna', 'Muster'), new Profile(2, true, []), '', ''],
+            [self::member(3, 'Ben', 'Albers'), null, '', ''],
+        ];
+
+        $this->assertSame([
+            [
+                'Last name', 'First name', 'Email address', 'Birth date', 'Age at project start', 'Comment',
+                'Organizer note',
+            ],
+            ['Albers', 'Ben', 'user3@example.com', '', '', '', ''],
+            ['Muster', 'Anna', 'user2@example.com', '', '', '', ''],
+            ['Muster', 'Mia', 'user1@example.com', '2008-05-08', '18', '', ''],
+        ], ParticipantsExport::table([], $people, [], [], true, '2026-07-01'));
+        $withoutStart = ParticipantsExport::table([], [$people[0]], [], [], true, null);
+        $this->assertSame(['Muster', 'Mia', 'user1@example.com', '2008-05-08', '', '', ''], $withoutStart[1]);
+    }
+
+    public function testLeavesTheBirthDateOutWithAnOlderOrchestraMembers(): void
+    {
+        $people = [[self::member(1, 'Mia', 'Muster'), new Profile(1, true, [], '2008-05-08'), '', '']];
+
+        $this->assertSame(
+            ['Last name', 'First name', 'Email address', 'Comment', 'Organizer note'],
+            ParticipantsExport::table([], $people, [], [], false, '2026-07-01')[0]
+        );
+    }
+
+    /**
+     * @return array<string, array{string, ?string, string}>
+     */
+    public static function ages(): array
+    {
+        return [
+            'the day before the birthday' => ['2008-05-08', '2026-05-07', '17'],
+            'on the birthday' => ['2008-05-08', '2026-05-08', '18'],
+            'after the birthday' => ['2008-05-08', '2026-12-31', '18'],
+            'born on 29 February, before 1 March' => ['2008-02-29', '2026-02-28', '17'],
+            'born on 29 February, on 1 March' => ['2008-02-29', '2026-03-01', '18'],
+            'no birth date' => ['', '2026-05-08', ''],
+            'no start date' => ['2008-05-08', null, ''],
+            'empty start date' => ['2008-05-08', '', ''],
+            'born after the start' => ['2027-01-01', '2026-05-08', ''],
+        ];
+    }
+
+    #[DataProvider('ages')]
+    public function testCalculatesTheAgeInFullYears(string $birthDate, ?string $startDate, string $age): void
+    {
+        $this->assertSame($age, ParticipantsExport::age($birthDate, $startDate));
     }
 
     public function testCountsTheAnswersOfChoiceLists(): void

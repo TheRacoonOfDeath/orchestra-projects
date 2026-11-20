@@ -29,7 +29,7 @@
         "orchestra/core": "^0.19",
         "orchestra/email": "^0.10",
         "orchestra/library": "^0.2",
-        "orchestra/members": "^0.14",
+        "orchestra/members": "^0.22",
         "phpstan/phpstan": "^2.2",
         "phpunit/phpunit": "^12.0",
         "squizlabs/php_codesniffer": "^3.13",

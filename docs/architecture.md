@@ -45,6 +45,9 @@ See also the [GDPR documentation of orchestra-core](https://github.com/TheRacoon
   kept; the eraser reports them as retained. Deleting the account then anonymizes them (above).
 - Whether someone is inactive ("Name (inactive)", `Admin\Names`) is shown only to users with
   `orchestra_projects_participation_read_others` (conductors, organizers); members see the name.
+- The Participation tab and the participation counts list inactive members only if they accepted
+  (`ParticipationView`): who took part is history, a pending or declined response of someone who
+  left is not. The records are kept, so a reactivated member shows up again.
 - **Settings → Privacy** suggests a text for the privacy policy: who sees decisions, comments,
   answers to project fields, assignments, the participants export, and why the history is kept.
 - The answers to the project fields are not history: only the member and the organizers
@@ -121,10 +124,12 @@ Since 0.41. The project form (and the "Dates and status" box in wp-admin) has an
 **Registration deadline**: until when members should respond. It is information only: members can
 respond until the organizers move the project on, also after the deadline.
 
-- While the project is open for participation, the deadline is shown slightly highlighted in red
-  (`Dates::deadline()`, `.orchestra-projects-deadline`): on the card ("Respond by …") and on the
-  project page ("Registration deadline"). In other statuses the project page shows it without the
-  highlight and the card not at all.
+- While the project is open for participation, the card shows the deadline ("Respond by …"); the
+  project page always shows it ("Registration deadline"). It is highlighted slightly in red
+  (`Dates::deadline()`, `.orchestra-projects-deadline`) only while the current user still has to
+  respond (`MemberProjectView::awaitsResponse()`: project open, own participation pending). Members
+  who accepted or declined and users without a participation (e.g. staff) see it as plain text; in
+  other statuses the card leaves it out.
 - **Reminder** (`Email\DeadlineReminder`, with orchestra-email 0.10): seven days before the
   deadline, the automatic email `orchestra_projects_deadline_reminder` goes to every player whose
   participation is still pending (orchestra-email leaves out inactive members and those who turned
@@ -267,7 +272,7 @@ views in **Projects** in wp-admin (views in `src/Ui`, shared by both).
 
 | View | Who | Content |
 |------|-----|---------|
-| Project list | everyone | a card per project: the status above the title, the dates (the concerts only on the project page) and, while open for participation, the registration deadline in red; members who take part: response, "Questions" (members who accepted, see [Project fields](#project-fields)) and "Your parts", closed until opened (since 0.40, `<details class="orchestra-projects-parts">`): every piece of the program with its composer, below it their part with "new" and the download, or "No part assigned yet"; staff: all projects; organizers: "New project". The whole card opens the project (`orchestra-card--linked` of orchestra-core 0.15; its buttons and downloads stay clickable); the cards fill the width, up to three per row, and are as high as their content |
+| Project list | everyone | a card per project: the status above the title, the dates (the concerts only on the project page) and, while open for participation, the registration deadline (in red while the user has not responded yet); members who take part: response, "Questions" (members who accepted, see [Project fields](#project-fields)) and "Your parts", closed until opened (since 0.40, `<details class="orchestra-projects-parts">`): every piece of the program with its composer, below it their part with "new" and the download, or "No part assigned yet"; staff: all projects; organizers: "New project". The whole card opens the project (`orchestra-card--linked` of orchestra-core 0.15; its buttons and downloads stay clickable); the cards fill the width, up to three per row, and are as high as their content |
 | Project → Overview | everyone who may see the project | details (with the registration deadline), staff, description, own response, questions and parts (always open); email buttons and status changes for staff |
 | Project → Who accepted | members | the names of everyone who accepted (conductors and organizers see them on the Participation tab) |
 | Project → Program | everyone who may see the project | members: the ordered list of pieces; conductors and organizers: add, order and remove pieces |
@@ -307,8 +312,9 @@ after their name, explained below the last piece. It is created by orchestra-cor
 
 Organizers download the accepted participants of a project as a CSV file from the Participation
 tab (`admin-post.php?action=orchestra_projects_export_participants&project=ID`). It has one column
-each for last name, first name and email address, then one per profile field of orchestra-members
-in their order; checkboxes are exported as "Yes" or "No"; then one per project field the project
+each for last name, first name and email address, then (since 0.43, with orchestra-members 0.22)
+the birth date and the age at the start of the project, then one per profile field of
+orchestra-members in their order; checkboxes are exported as "Yes" or "No"; then one per project field the project
 shows (since 0.41), the same way; then the member's comment and the organizers' note. Users without first and last name get their display name as last name. Rows are
 ordered by last and first name.
 
@@ -326,8 +332,13 @@ use it for catering, e.g. "vegetarian 5, vegan 3".
 - Values starting with `=`, `+`, `-`, `@` or a tab are prefixed with `'`, so Excel never runs them
   as formulas.
 - Needs orchestra-members 0.9 for names and profile fields; with an older version the button is
-  hidden.
-- The file contains every profile field, which can be special categories of personal data (e.g.
+  hidden. The birth date needs orchestra-members 0.22 (`Profile::$birthDate`); with an older
+  version both columns are left out.
+- The birth date is in the "CSV date format" of the Orchestra language (`Y-m-d`, German `d.m.Y`),
+  which Excel reads as a date. The age is in full years on the project's start date
+  (`ParticipantsExport::age()`); it is empty when the member has not entered a birth date or the
+  project has no start date.
+- The file contains the birth date and every profile field, which can be special categories of personal data (e.g.
   dietary restrictions). It is generated on request and never stored on the site; once downloaded,
   it is the organizer's responsibility to keep it safe and delete it after the project.
 

@@ -193,7 +193,10 @@ final class ProjectView
             [Dates::concertsLabel($project), \esc_html(Dates::concerts($project) ?: '—')],
             ...($project->registrationDeadline === null
                 ? []
-                : [[\__('Registration deadline', 'orchestra-projects'), Dates::deadline($project, false)]]),
+                : [[
+                    \__('Registration deadline', 'orchestra-projects'),
+                    Dates::deadline($project, $this->memberView->awaitsResponse($project), false),
+                ]]),
             [
                 \__('Conductors', 'orchestra-projects'),
                 \esc_html($this->names->list($this->staff->userIds($project->id, StaffRepository::CONDUCTOR))),

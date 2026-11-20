@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Orchestra\Projects\Export;
 
+use DateTimeImmutable;
 use Orchestra\Members\Member;
 use Orchestra\Members\MembersService;
 use Orchestra\Members\Profile\Profile;
@@ -16,18 +17,22 @@ use Orchestra\Projects\Participation\ParticipationRepository;
 use Orchestra\Projects\Participation\ParticipationStatus;
 
 /**
- * The accepted participants of a project as a table: last name, first name, email address, one
- * column per profile field, one per project field the project shows, the member's comment and the
- * organizers' note. Below them, the number of participants per answer of every choice list (e.g. 5
- * vegetarian, 3 vegan). Profile values, answers, comments and notes are for organizers; the caller
- * checks the capabilities.
+ * The accepted participants of a project as a table: last name, first name, email address, birth
+ * date and age at the start of the project, one column per profile field, one per project field the
+ * project shows, the member's comment and the organizers' note. Below them, the number of
+ * participants per answer of every choice list (e.g. 5 vegetarian, 3 vegan). Profile values,
+ * answers, comments and notes are for organizers; the caller checks the capabilities.
  */
 final class ParticipantsExport
 {
+    /**
+     * @param bool $birthDates Whether the installed orchestra-members has the birth date (0.22)
+     */
     public function __construct(
         private readonly ParticipationRepository $participations,
         private readonly MembersService $members,
         private readonly ?ProjectAnswers $answers = null,
+        private readonly bool $birthDates = false,
     ) {
     }
 
@@ -71,7 +76,9 @@ final class ParticipantsExport
             $this->members->profileFields(),
             $people,
             $this->answers?->fields($project) ?? [],
-            $this->answers?->forProject($project) ?? []
+            $this->answers?->forProject($project) ?? [],
+            $this->birthDates,
+            $project->startDate
         );
     }
 
@@ -83,6 +90,8 @@ final class ParticipantsExport
      * @param list<array{Member, ?Profile, string, string}> $people member, profile, comment and note
      * @param list<ProjectField> $projectFields
      * @param array<int, array<string, string>> $projectAnswers user ID => field ID => answer
+     * @param bool $birthDates Whether to add the birth date and the age at the start of the project
+     * @param string|null $startDate The start of the project (Y-m-d), for the age
      * @return list<list<string>> the headings first, the counts of the choice lists last
      */
     public static function table(
@@ -90,6 +99,8 @@ final class ParticipantsExport
         array $people,
         array $projectFields = [],
         array $projectAnswers = [],
+        bool $birthDates = false,
+        ?string $startDate = null,
     ): array {
         $rows = [];
         $answers = [];
@@ -99,6 +110,11 @@ final class ParticipantsExport
                 $lastName = $member->displayName;
             }
             $row = [$lastName, $member->firstName, $member->email];
+            if ($birthDates) {
+                $birthDate = $profile->birthDate ?? '';
+                $row[] = self::date($birthDate);
+                $row[] = self::age($birthDate, $startDate);
+            }
             foreach ($fields as $field) {
                 $value = $profile?->value($field->id) ?? '';
                 $answers[$field->id][] = $value;
@@ -120,6 +136,9 @@ final class ParticipantsExport
             \__('Last name', 'orchestra-projects'),
             \__('First name', 'orchestra-projects'),
             \__('Email address', 'orchestra-projects'),
+            ...($birthDates
+                ? [\__('Birth date', 'orchestra-projects'), \__('Age at project start', 'orchestra-projects')]
+                : []),
             ...\array_map(static fn (ProfileField $field): string => $field->label, $fields),
             ...\array_map(static fn (ProjectField $field): string => $field->label, $projectFields),
             \__('Comment', 'orchestra-projects'),
@@ -139,6 +158,48 @@ final class ParticipantsExport
         }
 
         return [$headings, ...$rows, ...self::counts($choiceLists)];
+    }
+
+    /**
+     * The age in full years on the start date of the project, or "" if one of the dates is missing
+     * or the birth date is after the start.
+     *
+     * @param string $birthDate Y-m-d or ""
+     * @param string|null $startDate Y-m-d
+     */
+    public static function age(string $birthDate, ?string $startDate): string
+    {
+        $birth = self::parse($birthDate);
+        $start = self::parse($startDate ?? '');
+        if ($birth === null || $start === null || $birth > $start) {
+            return '';
+        }
+
+        return (string) $birth->diff($start)->y;
+    }
+
+    /**
+     * A date (Y-m-d) in the format that Excel reads as a date in the Orchestra language, or "".
+     */
+    private static function date(string $date): string
+    {
+        $parsed = self::parse($date);
+        if ($parsed === null) {
+            return $date;
+        }
+
+        /* translators: PHP date format of dates in the participants export, which Excel reads as dates */
+        return $parsed->format(\_x('Y-m-d', 'CSV date format', 'orchestra-projects'));
+    }
+
+    /**
+     * @param string $date Y-m-d or ""
+     */
+    private static function parse(string $date): ?DateTimeImmutable
+    {
+        $parsed = $date === '' ? false : DateTimeImmutable::createFromFormat('!Y-m-d', $date);
+
+        return $parsed === false ? null : $parsed;
     }
 
     /**
