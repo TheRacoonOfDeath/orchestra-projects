@@ -20,7 +20,7 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
   **Projects → Project Fields**) and chosen per project. Members who accepted answer them while the
   project is open for participation, in "Questions" on the card (closed until opened) and on the
   project page; organizers see the answers on the Participation tab and in the CSV export
-- An ordered program of pieces from the library
+- An ordered program of pieces from the library, with the duration of each piece and the total
 - Participation: opening a project asks every active member and organizer to accept or decline;
   the decision is final, organizers can change it. On the Participation tab, the accepted, pending
   and declined members are groups that open with a click
@@ -60,7 +60,7 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
 
 ## Installation
 
-1. Install and activate orchestra-core 0.4, orchestra-library 0.2 and orchestra-members 0.3 or later.
+1. Install and activate orchestra-core 0.4, orchestra-library 0.13 (for the durations in the program) and orchestra-members 0.3 or later.
 2. Upload `orchestra-projects-{VERSION}.zip` under **Plugins → Add New → Upload Plugin** and activate it.
 3. Create the Orchestra pages (**Create Orchestra pages** in wp-admin), or put `[orchestra_projects]` on a page.
 

@@ -7,8 +7,10 @@ namespace Orchestra\Projects\Ui;
 use Orchestra\Core\Ui\Form;
 use Orchestra\Core\Ui\Html;
 use Orchestra\Library\LibraryService;
+use Orchestra\Library\Piece\Duration;
 use Orchestra\Library\Piece\Piece;
 use Orchestra\Projects\Capabilities;
+use Orchestra\Projects\Program\ProgramDuration;
 use Orchestra\Projects\Program\ProgramRepository;
 use Orchestra\Projects\Program\ProgramService;
 use Orchestra\Projects\Project\Project;
@@ -31,12 +33,16 @@ final class ProgramView
     public function list(Project $project): string
     {
         $items = '';
+        $pieces = [];
         foreach ($this->program->pieceIds($project->id) as $pieceId) {
             $piece = $this->library->piece($pieceId);
             if ($piece !== null) {
+                $pieces[] = $piece;
                 $items .= '<li><strong>' . \esc_html($piece->title) . '</strong>'
                     . ($piece->composer === '' ? '' : '<span class="orchestra-muted">' . \esc_html($piece->composer)
                     . '</span>')
+                    . ($piece->duration === null ? '' : '<span class="orchestra-muted" style="margin-left:auto">'
+                    . \esc_html(Duration::format($piece->duration)) . '</span>')
                     . '</li>';
             }
         }
@@ -48,7 +54,7 @@ final class ProgramView
                         . ' chosen them.',
                     'orchestra-projects'
                 ) . '</p>'
-            : '<ol class="orchestra-program">' . $items . '</ol>';
+            : '<ol class="orchestra-program">' . $items . '</ol>' . self::total(ProgramDuration::of($pieces));
     }
 
     public function manage(Project $project): string
@@ -63,9 +69,13 @@ final class ProgramView
         }
 
         $rows = [];
+        $pieces = [];
         $last = \count($pieceIds) - 1;
         foreach ($pieceIds as $index => $pieceId) {
             $piece = $this->library->piece($pieceId);
+            if ($piece !== null) {
+                $pieces[] = $piece;
+            }
             $assignments = $this->programService->assignmentCount($project->id, $pieceId);
             $row = [
                 (string) ($index + 1),
@@ -73,6 +83,7 @@ final class ProgramView
                     . ($piece?->archived === true ? ' '
                     . Html::badge(\__('archived', 'orchestra-projects'), 'warning') : ''),
                 \esc_html($piece->composer ?? ''),
+                $piece?->duration === null ? '–' : \esc_html(Duration::format($piece->duration)),
                 (string) \count($this->library->parts($pieceId)),
                 (string) $assignments,
             ];
@@ -108,15 +119,37 @@ final class ProgramView
             '#',
             \__('Piece', 'orchestra-projects'),
             \__('Composer', 'orchestra-projects'),
+            \__('Duration', 'orchestra-projects'),
             \__('Parts', 'orchestra-projects'),
             \__('Assignments', 'orchestra-projects'),
         ];
         if ($editable) {
             $headings[] = '';
         }
-        $html .= Html::table($headings, $rows, \__('The program is empty.', 'orchestra-projects'));
+        $html .= Html::table($headings, $rows, \__('The program is empty.', 'orchestra-projects'))
+            . self::total(ProgramDuration::of($pieces));
 
         return $editable ? $html . $this->addForm($project, $pieceIds) : $html;
+    }
+
+    /**
+     * "Total: 42:30 (2 pieces without duration)", or nothing if no piece has a duration.
+     */
+    private static function total(ProgramDuration $total): string
+    {
+        if (!$total->known()) {
+            return '';
+        }
+
+        return '<p class="orchestra-program-total"><strong>' . \esc_html(\sprintf(
+            /* translators: %s: total duration, e.g. 42:30 */
+            \__('Total: %s', 'orchestra-projects'),
+            Duration::format($total->seconds)
+        )) . '</strong>' . ($total->missing === 0 ? '' : ' <span class="orchestra-muted">' . \esc_html(\sprintf(
+            /* translators: %d: number of pieces in the program without a duration */
+            \_n('(%d piece without duration)', '(%d pieces without duration)', $total->missing, 'orchestra-projects'),
+            $total->missing
+        )) . '</span>') . '</p>';
     }
 
     /**

@@ -331,7 +331,10 @@ act(organizer, spring, "program_down", piece=PIRATES)
 check(projects_api(f"echo json_encode($p->programPieceIds({spring}));") == [DANCE, PIRATES],
       "conductors and organizers order the program")
 act(conductor, spring, "program_up", piece=PIRATES)
+wp_eval(f'update_post_meta({PIRATES}, "orchestra_library_duration", 245);')
 _, page = conductor.get(manage_url(spring, "program"))
+check("4:05" in page and "Total: 4:05" in text(page) and "(1 piece without duration)" in text(page),
+      "the program shows the durations and their total, and how many pieces have none")
 check(projects_api(f"echo json_encode($p->programPieceIds({spring}));") == [PIRATES, DANCE]
       and '<option value="' + str(MARCH) not in page, "the add list offers no archived pieces")
 status, _ = act(mia, spring, "program_add", piece=MARCH)
@@ -416,6 +419,7 @@ _, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}&orchestra_tab=program
 program = page.split('<ol class="orchestra-program">', 1)[1].split("</ol>", 1)[0] if "orchestra-program" in page else ""
 check(program.index("Pirates of the Caribbean") < program.index("Lord of the Dance") and "program_up" not in page,
       "members see the ordered program as a list, without changing it")
+check("4:05" in program and "Total: 4:05" in text(page), "members see the durations and the total")
 
 _, page = mia.get(f"{DASHBOARD}&orchestra_project={spring}")
 check("Your comment: Only from the 27th" in text(page) and "<b>27th" not in page and "Change your comment" in page,

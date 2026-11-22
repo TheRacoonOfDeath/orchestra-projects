@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-20 12:06+0100\n"
+"POT-Creation-Date: 2026-11-22 22:19+0100\n"
 "PO-Revision-Date: 2026-10-16 00:00+0000\n"
 "Last-Translator: Julian Nickerl\n"
 "Language-Team: German\n"
@@ -160,7 +160,7 @@ msgstr "Projekt verwalten"
 
 #: src/Admin/ProjectsPage.php:67 src/Admin/ProjectsPage.php:68
 #: src/Admin/ProjectsPage.php:81 src/Admin/ProjectsPage.php:139
-#: src/Plugin.php:390 src/Project/ProjectPostType.php:51
+#: src/Plugin.php:391 src/Project/ProjectPostType.php:51
 msgid "Projects"
 msgstr "Projekte"
 
@@ -459,7 +459,7 @@ msgid "Assignments: %s"
 msgstr "Stimmverteilung: %s"
 
 #: src/Export/AssignmentsPdf.php:132 src/Ui/AssignmentsView.php:195
-#: src/Ui/PartChangesView.php:131 src/Ui/ParticipationView.php:135
+#: src/Ui/PartChangesView.php:131 src/Ui/ParticipationView.php:138
 msgid "Member"
 msgstr "Mitglied"
 
@@ -467,8 +467,8 @@ msgstr "Mitglied"
 msgid "Parts by member"
 msgstr "Stimmen nach Mitgliedern"
 
-#: src/Export/AssignmentsPdfController.php:73 src/Ui/ParticipationView.php:137
-#: src/Ui/ProgramView.php:112 src/Ui/ProjectView.php:95
+#: src/Export/AssignmentsPdfController.php:73 src/Ui/ParticipationView.php:140
+#: src/Ui/ProgramView.php:124 src/Ui/ProjectView.php:95
 msgid "Assignments"
 msgstr "Stimmverteilung"
 
@@ -681,20 +681,20 @@ msgstr "Angemeldet"
 msgid "Declined"
 msgstr "Abgesagt"
 
-#: src/Plugin.php:382
+#: src/Plugin.php:383
 msgid "Plan projects, respond to them and download your sheet music."
 msgstr "Projekte planen, dich anmelden und deine Noten herunterladen."
 
-#: src/Plugin.php:385
+#: src/Plugin.php:386
 msgid "Plan projects: program, participation, parts and seating."
 msgstr "Projekte planen: Programm, Teilnahme, Stimmverteilung und Sitzplan."
 
-#: src/Plugin.php:386
+#: src/Plugin.php:387
 msgid "Respond to projects, see your parts and download your sheet music."
 msgstr ""
 "Auf Projekte antworten, deine Stimmen sehen und deine Noten herunterladen."
 
-#: src/Plugin.php:415
+#: src/Plugin.php:416
 msgid ""
 "Orchestra Projects requires Orchestra Core 0.17, Orchestra Library and "
 "Orchestra Members to be active."
@@ -737,7 +737,7 @@ msgstr "Dein Kommentar"
 msgid "Assigned parts"
 msgstr "Eingeteilte Stimmen"
 
-#: src/Privacy/PersonalData.php:129 src/Ui/ProgramView.php:109
+#: src/Privacy/PersonalData.php:129 src/Ui/ProgramView.php:120
 msgid "Piece"
 msgstr "Stück"
 
@@ -857,7 +857,7 @@ msgstr "Das Stück ist bereits im Programm."
 msgid "The piece has assignments. Confirm that they are removed."
 msgstr "Das Stück hat Einteilungen. Bestätige, dass sie entfernt werden."
 
-#: src/Program/ProgramService.php:98 src/Ui/ProgramView.php:61
+#: src/Program/ProgramService.php:98 src/Ui/ProgramView.php:67
 msgid "The program of a completed project cannot be changed."
 msgstr ""
 "Das Programm eines abgeschlossenen Projekts kann nicht geändert werden."
@@ -1043,7 +1043,7 @@ msgstr ""
 msgid "Take over"
 msgstr "Übernehmen"
 
-#: src/Ui/AssignmentsView.php:416 src/Ui/ProgramView.php:97
+#: src/Ui/AssignmentsView.php:416 src/Ui/ProgramView.php:108
 #: src/Ui/ProjectFieldsView.php:112 src/Ui/ProjectFormView.php:174
 msgid "Remove"
 msgstr "Entfernen"
@@ -1258,12 +1258,12 @@ msgid "No email: turned off in the profile"
 msgstr "Keine E-Mail: im Profil abgeschaltet"
 
 #. translators: 1: number accepted, 2: number declined, 3: number pending
-#: src/Ui/ParticipationView.php:56
+#: src/Ui/ParticipationView.php:59
 #, php-format
 msgid "%1$d accepted, %2$d declined, %3$d pending"
 msgstr "%1$d angemeldet, %2$d abgesagt, %3$d unentschlossen"
 
-#: src/Ui/ParticipationView.php:76
+#: src/Ui/ParticipationView.php:79
 msgid ""
 "Nobody has accepted yet. Everyone who registers for the project is listed "
 "here."
@@ -1272,49 +1272,49 @@ msgstr ""
 "stehen hier."
 
 #. translators: %d: number of people
-#: src/Ui/ParticipationView.php:84
+#: src/Ui/ParticipationView.php:87
 #, php-format
 msgid "%d person has accepted."
 msgid_plural "%d people have accepted."
 msgstr[0] "%d Person hat sich angemeldet."
 msgstr[1] "%d Personen haben sich angemeldet."
 
-#: src/Ui/ParticipationView.php:96
+#: src/Ui/ParticipationView.php:99
 msgid "Members are asked to respond when the project is opened."
 msgstr ""
 "Die Mitglieder werden um eine Antwort gebeten, sobald das Projekt geöffnet "
 "wird."
 
-#: src/Ui/ParticipationView.php:97
+#: src/Ui/ParticipationView.php:100
 msgid "Nobody has been asked to respond."
 msgstr "Noch niemand wurde um eine Antwort gebeten."
 
-#: src/Ui/ParticipationView.php:129
+#: src/Ui/ParticipationView.php:132
 msgid "Nobody"
 msgstr "Niemand"
 
-#: src/Ui/ParticipationView.php:136
+#: src/Ui/ParticipationView.php:139
 msgid "Last change"
 msgstr "Letzte Änderung"
 
-#: src/Ui/ParticipationView.php:142
+#: src/Ui/ParticipationView.php:145
 msgid "Select"
 msgstr "Auswählen"
 
-#: src/Ui/ParticipationView.php:146
+#: src/Ui/ParticipationView.php:149
 msgid "Answers"
 msgstr "Antworten"
 
-#: src/Ui/ParticipationView.php:150
+#: src/Ui/ParticipationView.php:153
 msgid "Comment and note"
 msgstr "Kommentar und Notiz"
 
-#: src/Ui/ParticipationView.php:151 src/Ui/ParticipationView.php:387
+#: src/Ui/ParticipationView.php:154 src/Ui/ParticipationView.php:405
 msgid "Change"
 msgstr "Ändern"
 
 #. translators: %d: number of parts the member plays in the project
-#: src/Ui/ParticipationView.php:162
+#: src/Ui/ParticipationView.php:165
 #, php-format
 msgid "%d part"
 msgid_plural "%d parts"
@@ -1322,30 +1322,30 @@ msgstr[0] "%d Stimme"
 msgstr[1] "%d Stimmen"
 
 #. translators: %s: member name
-#: src/Ui/ParticipationView.php:170
+#: src/Ui/ParticipationView.php:173
 #, php-format
 msgid "Select %s"
 msgstr "%s auswählen"
 
-#: src/Ui/ParticipationView.php:184 src/Ui/ProjectView.php:123
+#: src/Ui/ParticipationView.php:187 src/Ui/ProjectView.php:123
 msgid "Edit"
 msgstr "Bearbeiten"
 
 #. translators: 1: number of answered questions, 2: number of questions
-#: src/Ui/ParticipationView.php:224
+#: src/Ui/ParticipationView.php:227
 #, php-format
 msgid "%1$d of %2$d answered"
 msgstr "%1$d von %2$d beantwortet"
 
-#: src/Ui/ParticipationView.php:227
+#: src/Ui/ParticipationView.php:230
 msgid "Required missing"
 msgstr "Pflichtangabe fehlt"
 
-#: src/Ui/ParticipationView.php:267
+#: src/Ui/ParticipationView.php:285
 msgid "Export accepted participants (CSV)"
 msgstr "Angemeldete exportieren (CSV)"
 
-#: src/Ui/ParticipationView.php:297
+#: src/Ui/ParticipationView.php:315
 msgid ""
 "Selected members who are no longer accepted lose their parts in this "
 "project. Continue?"
@@ -1353,44 +1353,44 @@ msgstr ""
 "Ausgewählte Mitglieder, die nicht mehr angemeldet sind, verlieren ihre "
 "Stimmen in diesem Projekt. Fortfahren?"
 
-#: src/Ui/ParticipationView.php:312
+#: src/Ui/ParticipationView.php:330
 msgid "Selected:"
 msgstr "Ausgewählte:"
 
-#: src/Ui/ParticipationView.php:313 src/Ui/ParticipationView.php:385
+#: src/Ui/ParticipationView.php:331 src/Ui/ParticipationView.php:403
 msgid "New status"
 msgstr "Neuer Status"
 
-#: src/Ui/ParticipationView.php:315
+#: src/Ui/ParticipationView.php:333
 msgid "Change selected"
 msgstr "Ausgewählte ändern"
 
-#: src/Ui/ParticipationView.php:331
+#: src/Ui/ParticipationView.php:349
 msgid "No comment"
 msgstr "Kein Kommentar"
 
-#: src/Ui/ParticipationView.php:338
+#: src/Ui/ParticipationView.php:356
 msgid "Add a note"
 msgstr "Notiz hinzufügen"
 
-#: src/Ui/ParticipationView.php:339
+#: src/Ui/ParticipationView.php:357
 msgid "Note:"
 msgstr "Notiz:"
 
-#: src/Ui/ParticipationView.php:348
+#: src/Ui/ParticipationView.php:366
 msgid "Note for the organizers"
 msgstr "Notiz für die Organisatoren"
 
-#: src/Ui/ParticipationView.php:350
+#: src/Ui/ParticipationView.php:368
 msgid "Only organizers see the note."
 msgstr "Nur Organisatoren sehen die Notiz."
 
-#: src/Ui/ParticipationView.php:351
+#: src/Ui/ParticipationView.php:369
 msgid "Save note"
 msgstr "Notiz speichern"
 
 #. translators: %d: number of assignments
-#: src/Ui/ParticipationView.php:370
+#: src/Ui/ParticipationView.php:388
 #, php-format
 msgid "The member's %d assignments in this project will be removed. Continue?"
 msgstr ""
@@ -1398,12 +1398,12 @@ msgstr ""
 "Fortfahren?"
 
 #. translators: %s: name of the organizer
-#: src/Ui/ParticipationView.php:406
+#: src/Ui/ParticipationView.php:424
 #, php-format
 msgid "entered by %s"
 msgstr "eingetragen von %s"
 
-#: src/Ui/ProgramView.php:47
+#: src/Ui/ProgramView.php:53
 msgid ""
 "The program has not been published yet. The pieces appear here once the "
 "conductors have chosen them."
@@ -1411,41 +1411,59 @@ msgstr ""
 "Das Programm steht noch nicht fest. Die Stücke erscheinen hier, sobald die "
 "Dirigenten sie ausgewählt haben."
 
-#: src/Ui/ProgramView.php:74
+#: src/Ui/ProgramView.php:84
 msgid "archived"
 msgstr "archiviert"
 
-#: src/Ui/ProgramView.php:88
+#: src/Ui/ProgramView.php:99
 msgid "Remove the piece from the program?"
 msgstr "Das Stück aus dem Programm entfernen?"
 
 #. translators: %d: number of assignments
-#: src/Ui/ProgramView.php:91
+#: src/Ui/ProgramView.php:102
 #, php-format
 msgid "Remove the piece? Its %d assignments will be removed."
 msgstr "Das Stück entfernen? Seine %d Einteilungen werden entfernt."
 
-#: src/Ui/ProgramView.php:110
+#: src/Ui/ProgramView.php:121
 msgid "Composer"
 msgstr "Komponist"
 
-#: src/Ui/ProgramView.php:111
+#: src/Ui/ProgramView.php:122
+msgid "Duration"
+msgstr "Dauer"
+
+#: src/Ui/ProgramView.php:123
 msgid "Parts"
 msgstr "Stimmen"
 
-#: src/Ui/ProgramView.php:117
+#: src/Ui/ProgramView.php:129
 msgid "The program is empty."
 msgstr "Das Programm ist leer."
 
-#: src/Ui/ProgramView.php:133
+#. translators: %s: total duration, e.g. 42:30
+#: src/Ui/ProgramView.php:146
+#, php-format
+msgid "Total: %s"
+msgstr "Gesamt: %s"
+
+#. translators: %d: number of pieces in the program without a duration
+#: src/Ui/ProgramView.php:150
+#, php-format
+msgid "(%d piece without duration)"
+msgid_plural "(%d pieces without duration)"
+msgstr[0] "(%d Stück ohne Dauer)"
+msgstr[1] "(%d Stücke ohne Dauer)"
+
+#: src/Ui/ProgramView.php:166
 msgid "All pieces of the library are in the program."
 msgstr "Alle Stücke der Notenbibliothek sind im Programm."
 
-#: src/Ui/ProgramView.php:146
+#: src/Ui/ProgramView.php:179
 msgid "Add a piece"
 msgstr "Ein Stück hinzufügen"
 
-#: src/Ui/ProgramView.php:149
+#: src/Ui/ProgramView.php:182
 msgid "Add to program"
 msgstr "Zum Programm hinzufügen"
 

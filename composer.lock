@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "25ac0623457515e324d5811021f1addb",
+    "content-hash": "ab79db3c789d86c7cd7f1ea74eb94ede",
     "packages": [
         {
             "name": "yahnis-elsts/plugin-update-checker",
@@ -529,16 +529,16 @@
         },
         {
             "name": "orchestra/library",
-            "version": "v0.2.0",
+            "version": "v0.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TheRacoonOfDeath/orchestra-library.git",
-                "reference": "88ab30b0528e419aa34c1fe566d60256160a758e"
+                "reference": "a6939d1ce15cb9fab2fb4f01a87668882d10952c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-library/zipball/88ab30b0528e419aa34c1fe566d60256160a758e",
-                "reference": "88ab30b0528e419aa34c1fe566d60256160a758e",
+                "url": "https://api.github.com/repos/TheRacoonOfDeath/orchestra-library/zipball/a6939d1ce15cb9fab2fb4f01a87668882d10952c",
+                "reference": "a6939d1ce15cb9fab2fb4f01a87668882d10952c",
                 "shasum": ""
             },
             "require": {
@@ -547,7 +547,7 @@
                 "yahnis-elsts/plugin-update-checker": "^5.7"
             },
             "require-dev": {
-                "orchestra/core": "^0.4",
+                "orchestra/core": "^0.19",
                 "phpstan/phpstan": "^2.2",
                 "phpunit/phpunit": "^12.0",
                 "squizlabs/php_codesniffer": "^3.13",
@@ -588,14 +588,14 @@
                 ]
             },
             "license": [
-                "MIT"
+                "GPL-2.0-or-later"
             ],
             "description": "Pieces, parts and sheet music for the Orchestra plugin suite.",
             "support": {
-                "source": "https://github.com/TheRacoonOfDeath/orchestra-library/tree/v0.2.0",
+                "source": "https://github.com/TheRacoonOfDeath/orchestra-library/tree/v0.13.0",
                 "issues": "https://github.com/TheRacoonOfDeath/orchestra-library/issues"
             },
-            "time": "2026-10-15T12:40:37+00:00"
+            "time": "2026-11-22T21:34:22+00:00"
         },
         {
             "name": "orchestra/members",

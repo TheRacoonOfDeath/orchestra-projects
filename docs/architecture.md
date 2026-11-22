@@ -115,6 +115,11 @@ See also the [GDPR documentation of orchestra-core](https://github.com/TheRacoon
   has no namesake are left without a part.
 - Removing a piece from the program removes its assignments, after a confirmation.
 - Archived and unpublished pieces cannot be added to programs.
+- The Program tab shows the duration of each piece (from orchestra-library 0.13, `Piece::$duration`)
+  and below the program the total (`Program\ProgramDuration`), formatted with the library's
+  `Duration::format()`. Everyone who sees the program sees them. Pieces without a duration are left
+  out of the sum, and the total says how many there are ("Total: 42:30 (2 pieces without
+  duration)"); without any duration, there is no total.
 - orchestra-library refuses to delete pieces in a program and parts with assignments
   (`orchestra_library_piece_delete_blockers`, `orchestra_library_part_delete_blockers`).
 

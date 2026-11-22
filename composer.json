@@ -28,7 +28,7 @@
     "require-dev": {
         "orchestra/core": "^0.19",
         "orchestra/email": "^0.10",
-        "orchestra/library": "^0.2",
+        "orchestra/library": "^0.13",
         "orchestra/members": "^0.22",
         "phpstan/phpstan": "^2.2",
         "phpunit/phpunit": "^12.0",
