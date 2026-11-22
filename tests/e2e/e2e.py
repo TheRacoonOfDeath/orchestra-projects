@@ -454,6 +454,10 @@ check(status == 403, "conductors cannot change participation")
 
 # --- Participants export --------------------------------------------------------------------
 wp("user", "update", str(ids["mia"]), "--first_name=Mia", "--last_name=Müller")
+# A new orchestra has no profile fields since orchestra-members 0.23.
+wp_eval('update_option("orchestra_members_profile_fields", ['
+        '["id" => "financial_support", "label" => "Financial support", "type" => "checkbox", "hint" => ""],'
+        ' ["id" => "dietary_restrictions", "label" => "Dietary restrictions", "type" => "textarea", "hint" => ""]]);')
 wp("user", "meta", "update", str(ids["mia"]), "orchestra_members_financial_support", "1")
 wp("user", "meta", "update", str(ids["mia"]), "orchestra_members_dietary_restrictions", '=1+1, "vegan"\nno nuts')
 EXPORT = f"/wp-admin/admin-post.php?action=orchestra_projects_export_participants&project={spring}"
