@@ -71,7 +71,8 @@ With orchestra-email 0.10, orchestra-projects registers the automatic emails
 and since 0.37 `Email\StatusEmails::OPEN_ID` (`orchestra_projects_open`) and
 `Email\StatusEmails::PARTS_ASSIGNED_ID` (`orchestra_projects_parts_assigned`), see
 [Informing members about status changes](architecture.md#informing-members-about-status-changes),
-and since 0.41 `Email\DeadlineReminder::ID` (`orchestra_projects_deadline_reminder`), see
+since 0.41 `Email\DeadlineReminder::ID` (`orchestra_projects_deadline_reminder`) and since 0.45
+`Email\DeadlineReminder::LAST_CHANCE_ID` (`orchestra_projects_deadline_last_chance`), see
 [Registration deadline](architecture.md#registration-deadline).
 
 ## Hooks used

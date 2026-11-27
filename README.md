@@ -13,8 +13,8 @@ Part of the Orchestra plugin suite. Requires [orchestra-core](https://github.com
   completed projects
 - A registration deadline per project, shown on the card and the project page while the project is
   open for participation, in red for members who have not responded yet; seven days before it, the members who have not responded yet
-  get a reminder email (with orchestra-email 0.10 or later; organizers change the text on the Email
-  page)
+  get a reminder email, and on the day of the deadline a second one starting with a red "Last
+  chance!" (with orchestra-email 0.10 or later; organizers change both texts on the Email page)
 - Project fields: questions to the participants (text, long text, checkbox or choice list, optionally
   required), defined centrally by the organizers (**Project fields** on the projects page, or
   **Projects → Project Fields**) and chosen per project. Members who accepted answer them while the

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orchestra-projects\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-22 22:19+0100\n"
+"POT-Creation-Date: 2026-11-27 15:48+0100\n"
 "PO-Revision-Date: 2026-10-16 00:00+0000\n"
 "Last-Translator: Julian Nickerl\n"
 "Language-Team: German\n"
@@ -160,7 +160,7 @@ msgstr "Projekt verwalten"
 
 #: src/Admin/ProjectsPage.php:67 src/Admin/ProjectsPage.php:68
 #: src/Admin/ProjectsPage.php:81 src/Admin/ProjectsPage.php:139
-#: src/Plugin.php:391 src/Project/ProjectPostType.php:51
+#: src/Plugin.php:391 src/Project/ProjectPostType.php:53
 msgid "Projects"
 msgstr "Projekte"
 
@@ -169,7 +169,7 @@ msgid "All Projects"
 msgstr "Alle Projekte"
 
 #: src/Admin/ProjectsPage.php:88 src/Admin/ProjectsPage.php:89
-#: src/Project/ProjectPostType.php:53
+#: src/Project/ProjectPostType.php:55
 msgid "Add Project"
 msgstr "Projekt hinzufügen"
 
@@ -260,12 +260,12 @@ msgstr ""
 "p>{changes}<p>Alle deine Stimmen und die Noten findest du auf der Seite des "
 "Projekts: {link}</p>"
 
-#: src/Email/ChangedPartsEmail.php:73 src/Email/DeadlineReminder.php:76
+#: src/Email/ChangedPartsEmail.php:73 src/Email/DeadlineReminder.php:107
 #: src/Email/StatusEmails.php:67
 msgid "The name of the member"
 msgstr "Der Name des Mitglieds"
 
-#: src/Email/ChangedPartsEmail.php:74 src/Email/DeadlineReminder.php:77
+#: src/Email/ChangedPartsEmail.php:74 src/Email/DeadlineReminder.php:108
 #: src/Email/StatusEmails.php:68
 msgid "The name of the project"
 msgstr "Der Name des Projekts"
@@ -310,11 +310,11 @@ msgstr "%1$s → %2$s"
 msgid "a removed part"
 msgstr "eine entfernte Stimme"
 
-#: src/Email/DeadlineReminder.php:58
+#: src/Email/DeadlineReminder.php:61
 msgid "Registration deadline reminder"
 msgstr "Erinnerung an den Anmeldeschluss"
 
-#: src/Email/DeadlineReminder.php:62
+#: src/Email/DeadlineReminder.php:65
 #, php-format
 msgid ""
 "Sent automatically %d days before the registration deadline of a project to "
@@ -323,11 +323,11 @@ msgstr ""
 "Wird automatisch %d Tage vor dem Anmeldeschluss eines Projekts an alle "
 "aktiven Mitglieder geschickt, die noch unentschlossen sind."
 
-#: src/Email/DeadlineReminder.php:69
+#: src/Email/DeadlineReminder.php:72
 msgid "Reminder: please respond to {project} by {deadline}"
 msgstr "Erinnerung: Bitte melde dich bis {deadline} für {project} an oder ab"
 
-#: src/Email/DeadlineReminder.php:71
+#: src/Email/DeadlineReminder.php:74
 msgid ""
 "<p>Hello {name},</p><p>you have not told us yet whether you take part in the "
 "project {project} ({dates}). Please respond by {deadline}: {link}</p>"
@@ -335,20 +335,48 @@ msgstr ""
 "<p>Hallo {name},</p><p>du hast uns noch nicht gesagt, ob du beim Projekt "
 "{project} ({dates}) dabei bist. Bitte antworte bis {deadline}: {link}</p>"
 
-#: src/Email/DeadlineReminder.php:78 src/Email/StatusEmails.php:69
+#: src/Email/DeadlineReminder.php:82
+msgid "Registration deadline: last chance"
+msgstr "Anmeldeschluss: letzte Chance"
+
+#: src/Email/DeadlineReminder.php:84
+msgid ""
+"Sent automatically on the day of the registration deadline of a project to "
+"all active members who have not responded yet."
+msgstr ""
+"Wird automatisch am Tag des Anmeldeschlusses eines Projekts an alle aktiven "
+"Mitglieder geschickt, die noch unentschlossen sind."
+
+#: src/Email/DeadlineReminder.php:89
+msgid "Last chance: please respond to {project} today"
+msgstr "Letzte Chance: Bitte melde dich heute für {project} an oder ab"
+
+#: src/Email/DeadlineReminder.php:91
+msgid ""
+"<p><span style=\"color: #d63638; font-size: 24px;\"><strong>Last chance!</"
+"strong></span></p><p>Hello {name},</p><p>you have not told us yet whether "
+"you take part in the project {project} ({dates}). Today, {deadline}, is the "
+"registration deadline. Please respond now: {link}</p>"
+msgstr ""
+"<p><span style=\"color: #d63638; font-size: 24px;\"><strong>Letzte Chance!</"
+"strong></span></p><p>Hallo {name},</p><p>du hast uns noch nicht gesagt, ob "
+"du beim Projekt {project} ({dates}) dabei bist. Heute, am {deadline}, ist "
+"Anmeldeschluss. Bitte antworte jetzt: {link}</p>"
+
+#: src/Email/DeadlineReminder.php:109 src/Email/StatusEmails.php:69
 msgid "The dates of the project"
 msgstr "Die Termine des Projekts"
 
-#: src/Email/DeadlineReminder.php:79
+#: src/Email/DeadlineReminder.php:110
 msgid "The registration deadline"
 msgstr "Der Anmeldeschluss"
 
-#: src/Email/DeadlineReminder.php:80 src/Email/StatusEmails.php:88
+#: src/Email/DeadlineReminder.php:111 src/Email/StatusEmails.php:88
 msgid "The link to the project, where members respond"
 msgstr "Der Link zum Projekt, wo die Mitglieder antworten"
 
 #. translators: %s: project name
-#: src/Email/DeadlineReminder.php:178
+#: src/Email/DeadlineReminder.php:255
 #, php-format
 msgid "Registration deadline: %s"
 msgstr "Anmeldeschluss: %s"
@@ -712,7 +740,7 @@ msgstr "Projektteilnahme"
 
 #: src/Privacy/PersonalData.php:97 src/Privacy/PersonalData.php:125
 #: src/Privacy/PersonalData.php:145 src/Privacy/PersonalData.php:168
-#: src/Project/ProjectPostType.php:52
+#: src/Project/ProjectPostType.php:54
 msgid "Project"
 msgstr "Projekt"
 
@@ -901,23 +929,23 @@ msgstr "Konzertdatum"
 msgid "The end date must not be before the start date."
 msgstr "Das Enddatum darf nicht vor dem Startdatum liegen."
 
-#: src/Project/ProjectPostType.php:54
+#: src/Project/ProjectPostType.php:56
 msgid "Add New Project"
 msgstr "Neues Projekt hinzufügen"
 
-#: src/Project/ProjectPostType.php:55
+#: src/Project/ProjectPostType.php:57
 msgid "Edit Project"
 msgstr "Projekt bearbeiten"
 
-#: src/Project/ProjectPostType.php:56
+#: src/Project/ProjectPostType.php:58
 msgid "New Project"
 msgstr "Neues Projekt"
 
-#: src/Project/ProjectPostType.php:57
+#: src/Project/ProjectPostType.php:59
 msgid "No projects found."
 msgstr "Keine Projekte gefunden."
 
-#: src/Project/ProjectPostType.php:58
+#: src/Project/ProjectPostType.php:60
 msgid "No projects found in Trash."
 msgstr "Keine Projekte im Papierkorb gefunden."
 

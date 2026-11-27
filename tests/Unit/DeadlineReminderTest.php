@@ -64,6 +64,48 @@ final class DeadlineReminderTest extends TestCase
         ));
     }
 
+    public function testTheLastChanceIsDueOnlyOnTheDeadlineDay(): void
+    {
+        $project = self::project('2027-03-15');
+        $this->assertFalse(DeadlineReminder::lastChanceDue($project, '2027-01-01', '2027-01-01', null, '2027-03-14'));
+        $this->assertTrue(DeadlineReminder::lastChanceDue($project, '2027-01-01', '2027-01-01', null, '2027-03-15'));
+        $this->assertFalse(DeadlineReminder::lastChanceDue($project, '2027-01-01', '2027-01-01', null, '2027-03-16'));
+    }
+
+    public function testTheLastChanceIsSentOncePerDeadline(): void
+    {
+        $this->assertFalse(
+            DeadlineReminder::lastChanceDue(self::project('2027-03-15'), null, null, '2027-03-15', '2027-03-15')
+        );
+        $this->assertTrue(
+            DeadlineReminder::lastChanceDue(self::project('2027-03-20'), null, null, '2027-03-15', '2027-03-20'),
+            'a new deadline gets its own last chance'
+        );
+    }
+
+    public function testTheLastChanceNeedsTheProjectOpenAndTheDeadlineSetTheDayBefore(): void
+    {
+        $project = self::project('2027-03-15');
+        $this->assertFalse(DeadlineReminder::lastChanceDue($project, '2027-03-15', '2027-01-01', null, '2027-03-15'));
+        $this->assertFalse(DeadlineReminder::lastChanceDue($project, '2027-01-01', '2027-03-15', null, '2027-03-15'));
+        $this->assertTrue(
+            DeadlineReminder::lastChanceDue($project, '2027-03-14', '2027-03-14', null, '2027-03-15'),
+            'without the seven-day reminder, the last chance still comes'
+        );
+    }
+
+    public function testOnlyOpenProjectsWithADeadlineGetALastChance(): void
+    {
+        $this->assertFalse(DeadlineReminder::lastChanceDue(self::project(null), null, null, null, '2027-03-15'));
+        $this->assertFalse(DeadlineReminder::lastChanceDue(
+            self::project('2027-03-15', ProjectStatus::Preparation),
+            null,
+            null,
+            null,
+            '2027-03-15'
+        ));
+    }
+
     private static function project(?string $deadline, ProjectStatus $status = ProjectStatus::Open): Project
     {
         return new Project(1, 'Spring Concert', '', $status, '2027-04-01', '2027-04-10', [], $deadline);

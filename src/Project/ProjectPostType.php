@@ -30,6 +30,8 @@ final class ProjectPostType
     public const META_OPENED_ON = 'orchestra_projects_opened_on';
     /** The deadline (Y-m-d) the reminder was sent for */
     public const META_REMINDER_SENT = 'orchestra_projects_reminder_sent';
+    /** The deadline (Y-m-d) the last-chance email was sent for */
+    public const META_LAST_CHANCE_SENT = 'orchestra_projects_last_chance_sent';
     /** The IDs of the project fields shown in the project, see {@see \Orchestra\Projects\Field\ProjectFields} */
     public const META_FIELDS = 'orchestra_projects_fields';
     /** The statuses whose automatic email was sent, see {@see \Orchestra\Projects\Email\StatusEmails} */

@@ -10,7 +10,7 @@ active status, only through their public services.
 |------|---------|
 | Project: name, description | custom post type `orchestra_project` (title, content) |
 | Project status and dates | post meta `orchestra_projects_status`, `_start_date`, `_end_date` (Y-m-d); `_concert_date` once per concert |
-| Registration deadline (since 0.41) | post meta `orchestra_projects_registration_deadline` (Y-m-d), `_deadline_set_on` (the day it was set), `_opened_on` (the day the project was last opened), `_reminder_sent` (the deadline the reminder was sent for) |
+| Registration deadline (since 0.41) | post meta `orchestra_projects_registration_deadline` (Y-m-d), `_deadline_set_on` (the day it was set), `_opened_on` (the day the project was last opened), `_reminder_sent` (the deadline the reminder was sent for), `_last_chance_sent` (since 0.45, the deadline the last chance was sent for) |
 | Project fields (since 0.41) | option `orchestra_projects_fields` (the fields, in display order); post meta `orchestra_projects_fields` (the IDs of the fields a project shows) |
 | Answers to the project fields (since 0.41) | table `orchestra_projects_answers` (project, user, field ID, answer; schema version 7); empty answers are not stored |
 | Conductors and organizers of a project | table `orchestra_projects_staff` |
@@ -149,6 +149,18 @@ respond until the organizers move the project on, also after the deadline.
     that account is deleted (`post_author` 0), it has no reply address.
   - Placeholders `{name}`, `{project}`, `{dates}`, `{deadline}` and `{link}` (the project page);
     organizers change the text on the Email page under "Automatic emails".
+- **Last chance** (since 0.45, same class and WP-Cron event): on the day of the deadline, the
+  automatic email `orchestra_projects_deadline_last_chance` goes to the same players. Its default
+  text starts with a red "Last chance!" (an inline `color`/`font-size` style, which orchestra-email
+  keeps); otherwise it is like the reminder, with the same sender and placeholders and its own text
+  under "Automatic emails".
+  - It is sent once per deadline (`_last_chance_sent`), only on the deadline day: a WP-Cron that
+    misses the whole day does not send it afterwards.
+  - It is skipped if the project was opened or the deadline set on the deadline day itself. It does
+    not depend on the reminder: a deadline set with less than seven days left gets only the last
+    chance.
+  - If the reminder is still due on the deadline day (a late WP-Cron), it is marked as sent and only
+    the last chance goes out, so nobody gets two emails on one day.
 
 ## Project fields
 

@@ -1280,6 +1280,23 @@ wp_eval(f'update_post_meta({autumn}, "orchestra_projects_registration_deadline",
         f' update_post_meta({autumn}, "orchestra_projects_deadline_set_on", "{day(0)}");')
 wp("cron", "event", "run", "orchestra_projects_deadline_reminders")
 check(len(mails()) == before + len(sent), "a deadline set with less than seven days left gets no reminder")
+before = len(mails())
+wp_eval(f'update_post_meta({autumn}, "orchestra_projects_registration_deadline", "{day(0)}");'
+        f' update_post_meta({autumn}, "orchestra_projects_deadline_set_on", "{day(-1)}");')
+wp("cron", "event", "run", "orchestra_projects_deadline_reminders")
+sent = mails()[before:]
+check(sorted(m["to"] for m in sent) == pending,
+      f"on the deadline day, the undecided members get one last chance: {[m['to'] for m in sent]}")
+check(sent and sent[0]["subject"].startswith("Last chance: please respond to Autumn Workshop today")
+      and "Last chance!" in sent[0]["message"] and "color: #d63638" in sent[0]["message"],
+      "the last chance has its own subject and a red heading")
+wp("cron", "event", "run", "orchestra_projects_deadline_reminders")
+check(len(mails()) == before + len(sent), "the last chance is sent once")
+before = len(mails())
+wp_eval(f'update_post_meta({autumn}, "orchestra_projects_last_chance_sent", "");'
+        f' update_post_meta({autumn}, "orchestra_projects_deadline_set_on", "{day(0)}");')
+wp("cron", "event", "run", "orchestra_projects_deadline_reminders")
+check(len(mails()) == before, "a deadline set on the deadline day gets no last chance")
 
 act(organizer, autumn, "status", target="preparation")
 _, page = mia.get(f"{DASHBOARD}&orchestra_project={autumn}")
